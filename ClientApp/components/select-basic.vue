@@ -51,11 +51,13 @@
     <div class="form-group">
       <component :is="currentChart" :points="points" :graphic ="selectedGraphic" :devices ="devices"></component>
     </div>
+    
     </div>
  
 </template>
 <script>
   import chart from './time-chart.vue';
+  
  
   export default {
     data() {

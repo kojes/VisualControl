@@ -10,11 +10,11 @@ namespace VueExample.Controllers
     [Route("api/[controller]/[action]")]
     public class WaferController : Controller
     {
-        private WaferProvider waferProvider;
+        private readonly WaferProvider _waferProvider = new WaferProvider();
         [HttpGet]
         public IActionResult GetAll()
         {
-           return Ok(waferProvider.GetWafers());
+           return Ok(_waferProvider.GetWafers());
         }
     }
 }

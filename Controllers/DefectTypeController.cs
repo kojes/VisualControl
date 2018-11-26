@@ -1,11 +1,30 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using VueExample.Models;
+using VueExample.Providers;
 
 namespace VueExample.Controllers
 {
-    public class DefectTypeController
+    [Route("api/[controller]/[action]")]
+    public class DefectTypeController : Controller
     {
+        DefectTypeProvider defectTypeProvider = new DefectTypeProvider();
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            try
+            {
+                return Ok(defectTypeProvider.GetDefectTypes());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+            
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace VueExample.Contexts
         public DbSet<Device> Device { get; set; }
         public DbSet<Measurement> Measurement { get; set; }
         public DbSet<MeasuredDevice> MeasuredDevice { get; set; }
+      
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"data source = SRV6\SRV3; Initial Catalog = CrossTesting; persist security info = True; user id = labuser; password = zxvitr78KK; MultipleActiveResultSets = True;");

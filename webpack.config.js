@@ -1,14 +1,15 @@
-const path = require('path')
-const webpack = require('webpack')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-const bundleOutputDir = './wwwroot/dist'
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
+const bundleOutputDir = './wwwroot/dist';
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = () => {
-  console.log('Building for \x1b[33m%s\x1b[0m', process.env.NODE_ENV)
+  console.log('Building for \x1b[33m%s\x1b[0m', process.env.NODE_ENV);
 
-  const isDevBuild = !(process.env.NODE_ENV && process.env.NODE_ENV === 'production')
-  const extractCSS = new ExtractTextPlugin('site.css')
+  const isDevBuild = !(process.env.NODE_ENV && process.env.NODE_ENV === 'production');
+  const extractCSS = new ExtractTextPlugin('site.css');
 
   return [{
     stats: { modules: false },
@@ -42,6 +43,7 @@ module.exports = () => {
       ]
     },
     plugins: [
+      new VueLoaderPlugin(),
       new webpack.DllReferencePlugin({
         context: __dirname,
         manifest: require('./wwwroot/dist/vendor-manifest.json')

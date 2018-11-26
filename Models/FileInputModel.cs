@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
-namespace VueExample.Utilities
+namespace VueExample.Models
 {
     public class FileInputModel
     {
+        public string Name { get; set; }
+        public IFormFile FileToUpload { get; set; }
     }
 }

@@ -15,5 +15,7 @@ namespace VueExample.Models
         public string StageName { get; set; }
         [Column("id_process")]
         public int ProcessId { get; set; }
+        [Column("id_cp")]
+        public int? CodeProductId { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace VueExample.Models
     [Table("Die")]
     public class Die
     {
-        [Column("die_id")]
+        [Column("id_die")]
         public long DieId { get; set; }
         [Column("Wafer_id")]
         public string WaferId { get; set; }

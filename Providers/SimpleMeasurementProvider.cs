@@ -32,13 +32,13 @@ namespace VueExample.Providers
             {
                 foreach (var codeproductid in codeProductIdList.Distinct().ToList())
                 {
-                    processIdList.Add(db.CodeProduct.FirstOrDefault(x=>x.IdCp == codeproductid).ProcessId);
-                    codeProductList.Add(db.CodeProduct.FirstOrDefault(x => x.IdCp == codeproductid));
+                    processIdList.Add(db.CodeProducts.FirstOrDefault(x=>x.IdCp == codeproductid).ProcessId);
+                    codeProductList.Add(db.CodeProducts.FirstOrDefault(x => x.IdCp == codeproductid));
                 }
 
                 foreach (var processid in processIdList)
                 {
-                    processList.Add(db.Process.FirstOrDefault(x=>x.ProcessId == processid));
+                    processList.Add(db.Processes.FirstOrDefault(x=>x.ProcessId == processid));
                 }
             }
 
