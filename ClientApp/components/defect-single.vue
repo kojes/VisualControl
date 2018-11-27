@@ -1,12 +1,17 @@
 <template>
   <div id="container" class="container-fluid">
+    <loading :active.sync="isLoading"
+             :can-cancel="false"
+             :color="overlayColor"
+             :loader="overlayLoader"
+             :is-full-page="false" ></loading>
+             
+    <form v-on:submit.prevent="">
 
-
-    <form>
-
+     
       <div class="form-row">
 
-        <div class="form-group col-md-2 col-lg-2 offset-2">
+        <div class="form-group col-md-2 col-lg-2 offset-3">
           <label for="waferSelect">Название пластины:</label>
           <model-list-select :list="wafers"
                              v-model="selectedWafer" id="waferSelect" placeholder="Выберите пластину для добавления дефекта" option-value="waferId"
@@ -28,7 +33,7 @@
 
       <div class="form-row">
 
-        <div class="form-group col-md-2 col-lg-2 offset-2">
+        <div class="form-group col-md-2 col-lg-2 offset-3">
           <label for="dieSelect">Код кристалла:</label>
           <model-list-select :list="dies"
                              v-model="selectedDie" id="dieSelect" placeholder="Выберите номер кристалла для добавления дефекта" option-value="dieId"
@@ -49,7 +54,7 @@
 
       <div class="form-row">
 
-        <div class="form-group col-md-2 col-lg-2 offset-2">
+        <div class="form-group col-md-2 col-lg-2 offset-3">
           <label for="dangerlevelSelect">Опасность дефекта:</label>
           <model-list-select :list="dangerlevels"
                              v-model="selectedDangerLevel" id="dangerlevelSelect" placeholder="Выберите опасность дефекта" option-value="dangerLevelId"
@@ -58,7 +63,7 @@
           </div>
 
         <div class="form-group col-md-3 col-lg-3 d-flex align-items-stretch">
-          <button type="submit" class="btn btn-outline-primary btn-block">Сохранить дефект</button>
+          <button type="submit" v-on:click="savedefect" class="btn btn-outline-primary btn-block">Сохранить дефект</button>
         </div>
        
          
@@ -66,8 +71,8 @@
         </div>
 
       <div class="form-row">
-        <div class="form-group col-md-5 col-lg-5 offset-2">
-          <photo-uploader></photo-uploader>
+        <div class="form-group col-md-5 col-lg-5 offset-3">
+          <photo-uploader v-on:fileLoaded="fileLoaded"></photo-uploader>
         </div>
        
       </div>
@@ -80,15 +85,22 @@
 <script>
 
   import photouploader from './photo-uploader.vue';
+  import Loading from 'vue-loading-overlay';
+  import 'vue-loading-overlay/dist/vue-loading.css';
+  
   import { ModelListSelect } from 'vue-search-select';
   export default {
     data() {
       return {
+        overlayColor: "#3434ff",
+        overlayLoader: "spinner",
+        isLoading: true,
         wafers: [],
         dies: [],
         stages: [],
         dangerlevels: [],
         defecttypes: [],
+        loadedFiles: [],
         selectedStage: {},
         selectedDie: {},
         selectedWafer: {},
@@ -97,7 +109,7 @@
       }
     },
     components: {
-      'photo-uploader': photouploader, ModelListSelect
+      'photo-uploader': photouploader, ModelListSelect, Loading
     },
     watch:
     {
@@ -110,6 +122,41 @@
         let responseStages = await this.$http.get(`/api/stage/getstagesbycodeproductid?codeproductid=${codeproductid}`);
         this.stages = responseStages.data;
         this.selectedStage = this.stages[0];
+      }
+    },
+    methods:
+    {
+      savedefect: async function ()
+      {
+        if (this.loadedFiles.length == 0)
+        {
+            this.$swal({
+              type: 'error',
+              text: 'Загрузите фото дефекта',
+              toast: true,
+              showConfirmButton: false,
+              position: 'center-start',
+              timer: 4000
+            });
+        }
+        else
+        {
+          let defectdata =
+            {
+                waferId: this.selectedDie.waferId,
+                dieId: this.selectedDie.dieId,
+                defectTypeId: this.selectedDefectType.defectTypeId,
+                dangerLevel: this.selectedDangerLevel.dangerLevelId,
+                stageId: this.selectedStage.stageId,
+                loadedFiles: this.loadedFiles
+            };
+          let response = await this.$http.post(`/api/defect/savenewdefect`, defectdata);
+        }
+      },
+
+      fileLoaded: function (fileId)
+      {
+         this.loadedFiles.push(fileId);
       }
     },
     async created() {
@@ -127,7 +174,9 @@
       this.defecttypes = response.data;
       this.selectedDefectType = this.defecttypes[0];
 
+      this.isLoading = false;
     }
+    
   }
 
 </script>

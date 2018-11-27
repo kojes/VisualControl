@@ -27,6 +27,7 @@
     "vue": "^2.5.16",
     "vue-eagle-modal": "^1.0.0",
     "vue-filepond": "^4.0.1",
+    "vue-loading-overlay": "^3.1.0",
     "vue-router": "^2.8.1",
     "vue-search-select": "^2.7.0",
     "vue-server-renderer": "^2.5.16",

@@ -1,23 +1,25 @@
 <template>
-  <div id="app">
-
-    <file-pond ref="pond"
+  <div id="photouploader">
+        <file-pond ref="pond"
                class-name="my-pond"
                label-idle="Загрузите фото..."
                labelFileProcessing = "Загрузка"
+               labelFileProcessingError = "Ошибка при загрузке"
+               labelTapToRetry = "Нажмите для повтора"
                labelFileProcessingComplete = "Загрузка завершена"
                labelTapToCancel ="Нажмите для отмены"
                labelTapToUndo ="Нажмите для удаления"
                allow-multiple="true"
                accepted-file-types="image/jpeg, image/png"
                v-on:init="handleFilePondInit"
+               v-on:processfile ="handleProcessFile"
                v-bind:server="server"/>
                
   </div>
 </template>
 
 <script>
-  // Import FilePond
+ 
   import vueFilePond from 'vue-filepond';
 
   // Import plugins
@@ -35,8 +37,21 @@
   export default {
     data: function () {
       return {
+        loadedimages: [],
         server: {
-          process: './api/photouploading/saveimage',
+          process: {
+            url: './api/photouploading/saveimage',
+            method: 'POST',
+            withCredentials: false,
+            onload: function (response) {
+              return response;
+            },
+            onerror: function (response) {
+              return response;
+            }
+           
+          },
+
           fetch: null,
           revert: './api/photouploading/revertimage'
         }
@@ -48,7 +63,14 @@
        
         
        
+      },
+      handleProcessFile: function () {
+        console.log('File was loaded');
+        this.$emit('fileLoaded', this.$refs.pond.getFile().serverId);
+       
       }
+
+     
     },
     components: {
       FilePond
