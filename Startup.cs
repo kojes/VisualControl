@@ -1,9 +1,12 @@
+using System.Reflection;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace VueExample
 {
@@ -12,6 +15,7 @@ namespace VueExample
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+           
         }
 
         public IConfiguration Configuration { get; }
@@ -22,11 +26,13 @@ namespace VueExample
             // Add framework services.
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddAutoMapper();
 
             // Simple example with dependency injection for a data provider.
             services.AddSingleton<Providers.IWeatherProvider, Providers.WeatherProviderFake>();
             services.AddSingleton<Providers.IMeasurementProvider, Providers.SimpleMeasurementProvider>();
             services.AddSingleton<Providers.IGraphicProvider, Providers.BasicGraphicProvider>();
+            services.AddSingleton<Providers.IDefectProvider, Providers.DefectProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

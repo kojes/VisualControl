@@ -15,7 +15,7 @@ fontawesome.library.add(
   require('@fortawesome/fontawesome-free-brands/faFontAwesome'),
   require('@fortawesome/fontawesome-free-brands/faMicrosoft'),
   require('@fortawesome/fontawesome-free-brands/faVuejs')
-)
+);
 
 export {
   FontAwesomeIcon

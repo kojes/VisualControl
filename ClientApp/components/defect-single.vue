@@ -63,7 +63,7 @@
           </div>
 
         <div class="form-group col-md-3 col-lg-3 d-flex align-items-stretch">
-          <button type="submit" v-on:click="savedefect" class="btn btn-outline-primary btn-block">Сохранить дефект</button>
+          <button type="submit" v-on:click="debouncedSaveDefect" class="btn btn-outline-primary btn-block">Сохранить дефект</button>
         </div>
        
          
@@ -95,6 +95,7 @@
         overlayColor: "#3434ff",
         overlayLoader: "spinner",
         isLoading: true,
+        debouncedSaveDefect: {},
         wafers: [],
         dies: [],
         stages: [],
@@ -144,11 +145,12 @@
           let defectdata =
             {
                 waferId: this.selectedDie.waferId,
+                operator: "Strelnikov",
                 dieId: this.selectedDie.dieId,
                 defectTypeId: this.selectedDefectType.defectTypeId,
-                dangerLevel: this.selectedDangerLevel.dangerLevelId,
+                dangerLevelId: this.selectedDangerLevel.dangerLevelId,
                 stageId: this.selectedStage.stageId,
-                loadedFiles: this.loadedFiles
+                LoadedPhotosList: this.loadedFiles
             };
           let response = await this.$http.post(`/api/defect/savenewdefect`, defectdata);
         }
@@ -175,6 +177,7 @@
       this.selectedDefectType = this.defecttypes[0];
 
       this.isLoading = false;
+      this.debouncedSaveDefect = this._.debounce(this.savedefect, 2000);
     }
     
   }

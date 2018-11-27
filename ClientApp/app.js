@@ -6,11 +6,13 @@ import { sync } from 'vuex-router-sync'
 import App from 'components/app-root'
 import { FontAwesomeIcon } from './icons'
 import VueSweetalert2 from 'vue-sweetalert2';
+import VueLodash from 'vue-lodash'
 
 
 
 // Registration of global components
 Vue.component('icon', FontAwesomeIcon);
+Vue.use(VueLodash);
 Vue.use(VueSweetalert2);
 
 
