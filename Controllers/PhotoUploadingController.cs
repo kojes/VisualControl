@@ -19,12 +19,13 @@ namespace VueExample.Controllers
         public IActionResult SaveImage()
         {
             var pathFolder = Guid.NewGuid().ToString("N");
-            Directory.CreateDirectory($"C:\\project_data\\{pathFolder}");
+            var tempFolderPath = Path.GetTempPath();
+            Directory.CreateDirectory($"{tempFolderPath}\\{pathFolder}");
             if (HttpContext.Request.Form.Files[0] != null)
             {
                 var file = HttpContext.Request.Form.Files[0];
                 
-                using (FileStream fs = new FileStream($"C:\\project_data\\{pathFolder}\\{file.FileName}", FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+                using (FileStream fs = new FileStream($"{tempFolderPath}\\{pathFolder}\\{file.FileName}", FileMode.CreateNew, FileAccess.Write, FileShare.Write))
                 {
                     file.CopyTo(fs);
                 }
@@ -39,12 +40,13 @@ namespace VueExample.Controllers
         [HttpDelete]
         public IActionResult RevertImage()
         {
+            var tempFolderPath = Path.GetTempPath();
             try
             {
                 using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
                 {
                     var pathFolder = reader.ReadToEnd();
-                    Directory.Delete($"C:\\project_data\\{pathFolder}", true);
+                    Directory.Delete($"{tempFolderPath}\\{pathFolder}", true);
                 }
                 return Ok();
             }
