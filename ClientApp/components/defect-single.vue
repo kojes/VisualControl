@@ -72,7 +72,7 @@
 
       <div class="form-row">
         <div class="form-group col-md-5 col-lg-5 offset-3">
-          <photo-uploader :reset="resetPhotoUploader" v-on:fileLoaded="fileLoaded" v-on:photoUploaderReseted="photouploaderReseted"></photo-uploader>
+          <photo-uploader :reset="resetPhotoUploader" v-on:fileLoaded="fileLoaded" ></photo-uploader>
         </div>
        
       </div>
@@ -97,7 +97,7 @@
         isLoading: true,
         debouncedSaveDefect: {},
         wafers: [],
-        resetPhotoUploader: "reseted",
+        resetPhotoUploader: "",
         dies: [],
         stages: [],
         dangerlevels: [],
@@ -143,45 +143,31 @@
         }
         else
         {
+          this.resetPhotoUploader = "noreset";
           let defectdata =
             {
                 waferId: this.selectedDie.waferId,
                 operator: "Strelnikov",
+                dieCode: this.selectedDie.code,
                 dieId: this.selectedDie.dieId,
                 defectTypeId: this.selectedDefectType.defectTypeId,
                 dangerLevelId: this.selectedDangerLevel.dangerLevelId,
                 stageId: this.selectedStage.stageId,
                 LoadedPhotosList: this.loadedFiles
             };
+          this.isLoading = true;
           let response = await this.$http.post(`/api/defect/savenewdefect`, defectdata);
-          this.loadedFiles = [];
-          if (response.data.error === "")
-          {
-            this.$swal({
-              type: 'success',
-              text: 'Дефект успешно загружен, кристалл №' + this.selectedDie.code,
-              toast: true,
-              showConfirmButton: false,
-              position: 'center-start',
-              timer: 4000
-            });
-          
-            this.resetPhotoUploader = "need reset";
-          }
-          else
-          {
-            this.$swal({
-              type: 'error',
-              text: response.data.error,
-              toast: true,
-              showConfirmButton: false,
-              position: 'center-start',
-              timer: 4000
-            });
-           
-          }
-
-        
+          this.loadedFiles = [];                            
+          this.resetPhotoUploader = "reset";          
+          this.$swal({
+            type: response.data.responseType,
+            text: response.data.message,
+            toast: true,
+            showConfirmButton: false,
+            position: 'top-end',
+            timer: 4000
+          });
+          this.isLoading = false;     
 
         }
       },
@@ -189,11 +175,6 @@
       fileLoaded: function (fileId)
       {
          this.loadedFiles.push(fileId);
-      },
-
-      photouploaderReseted: function ()
-      { 
-          this.resetPhotoUploader = "reseted";
       }
 
     },

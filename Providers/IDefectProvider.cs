@@ -11,5 +11,6 @@ namespace VueExample.Providers
     {
         int InsertNewDefect(Defect defect);
         void DeleteById(int defectId);
+        int GetDuplicate(long dieId, int stageId, int defectTypeId);
     }
 }

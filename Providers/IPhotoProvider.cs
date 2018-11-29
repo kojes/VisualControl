@@ -9,5 +9,6 @@ namespace VueExample.Providers
     public interface IPhotoProvider
     {
         string InsertPhoto(Photo photo);
+        List<Photo> GetPhotosByDefectId(int defectId);
     }
 }

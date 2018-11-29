@@ -29,5 +29,17 @@ namespace VueExample.Providers
                 visualControlContext.SaveChanges();
             }
         }
+
+        public int GetDuplicate(long dieId, int stageId, int defectTypeId)
+        {
+            Defect duplicate;
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                duplicate = visualControlContext.Defects.FirstOrDefault(x =>
+                    x.DieId == dieId && x.DefectTypeId == defectTypeId && x.StageId == stageId);
+            }
+
+            return duplicate?.DefectId ?? 0;
+        }
     }
 }

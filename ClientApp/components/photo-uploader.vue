@@ -54,14 +54,14 @@
           },
 
           fetch: null,
-          revert: './api/photouploading/revertimage'
+          revert: null
         }
       };
     },
     methods: {
       
       handleProcessFile: function () {
-        console.log('File was loaded');
+       
         this.$emit('fileLoaded', this.$refs.pond.getFile().serverId);
        
       }
@@ -72,12 +72,12 @@
     {
         reset: function ()
         {
-          if (this.reset === "need reset")
+          if (this.reset === "reset")
           {
-              this.$refs.pond.removeFiles();
-              this.$emit('photouploaderReseted');
+            this.$refs.pond.removeFiles();
           }
-        
+           
+            
         }
     },
     components: {

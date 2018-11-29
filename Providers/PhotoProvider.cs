@@ -19,5 +19,17 @@ namespace VueExample.Providers
 
             return photo.Guid;
         }
+
+        public List<Photo> GetPhotosByDefectId(int defectId)
+        {
+            List<Photo> photosList;
+
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                photosList = visualControlContext.Photos.Where(x => x.DefectId == defectId).ToList();
+            }
+
+            return photosList;
+        }
     }
 }

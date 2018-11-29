@@ -10,6 +10,7 @@ namespace VueExample.ViewModels
         public int DefectId { get; set; }
         public long DieId { get; set; }
         public string WaferId { get; set; }
+        public string DieCode { get; set; }
         public int StageId { get; set; }
         public int DefectTypeId { get; set; }
         public int DangerLevelId { get; set; }

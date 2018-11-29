@@ -43,7 +43,7 @@ namespace VueExample
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
-
+                app.UseStatusCodePages();
                 // Webpack initialization with hot-reload.
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
