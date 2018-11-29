@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VueExample.Contexts;
 using VueExample.Models;
 
 namespace VueExample.Providers
@@ -10,7 +11,13 @@ namespace VueExample.Providers
     {
         public string InsertPhoto(Photo photo)
         {
-            throw new NotImplementedException();
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                visualControlContext.Add(photo);
+                visualControlContext.SaveChanges();
+            }
+
+            return photo.Guid;
         }
     }
 }

@@ -33,6 +33,7 @@ namespace VueExample
             services.AddSingleton<Providers.IMeasurementProvider, Providers.SimpleMeasurementProvider>();
             services.AddSingleton<Providers.IGraphicProvider, Providers.BasicGraphicProvider>();
             services.AddSingleton<Providers.IDefectProvider, Providers.DefectProvider>();
+            services.AddSingleton<Providers.IPhotoProvider, Providers.PhotoProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

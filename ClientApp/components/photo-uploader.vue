@@ -11,7 +11,6 @@
                labelTapToUndo ="Нажмите для удаления"
                allow-multiple="true"
                accepted-file-types="image/jpeg, image/png"
-               v-on:init="handleFilePondInit"
                v-on:processfile ="handleProcessFile"
                v-bind:server="server"/>
                
@@ -35,9 +34,11 @@
   
   
   export default {
+
+    props: ['reset'],
     data: function () {
       return {
-        loadedimages: [],
+        
         server: {
           process: {
             url: './api/photouploading/saveimage',
@@ -58,12 +59,7 @@
       };
     },
     methods: {
-      handleFilePondInit: function () {
-        console.log('FilePond has initialized');
-       
-        
-       
-      },
+      
       handleProcessFile: function () {
         console.log('File was loaded');
         this.$emit('fileLoaded', this.$refs.pond.getFile().serverId);
@@ -71,6 +67,18 @@
       }
 
      
+    },
+    watch:
+    {
+        reset: function ()
+        {
+          if (this.reset === "need reset")
+          {
+              this.$refs.pond.removeFiles();
+              this.$emit('photouploaderReseted');
+          }
+        
+        }
     },
     components: {
       FilePond

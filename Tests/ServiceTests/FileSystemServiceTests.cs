@@ -15,7 +15,6 @@ namespace VueExample.Tests.ServiceTests
         public void FindFolderInTemporaryFolder_Folder_ShouldFindAndReturnFolder()
         {
             var folderName = FileSystemService.FindFolderInTemporaryFolder("VS");
-            var directories = Directory.GetDirectories(Path.GetTempPath());
             Assert.Equal("VS", folderName);
         }
 

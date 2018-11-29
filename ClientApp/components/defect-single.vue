@@ -72,7 +72,7 @@
 
       <div class="form-row">
         <div class="form-group col-md-5 col-lg-5 offset-3">
-          <photo-uploader v-on:fileLoaded="fileLoaded"></photo-uploader>
+          <photo-uploader :reset="resetPhotoUploader" v-on:fileLoaded="fileLoaded" v-on:photoUploaderReseted="photouploaderReseted"></photo-uploader>
         </div>
        
       </div>
@@ -97,6 +97,7 @@
         isLoading: true,
         debouncedSaveDefect: {},
         wafers: [],
+        resetPhotoUploader: "reseted",
         dies: [],
         stages: [],
         dangerlevels: [],
@@ -153,13 +154,48 @@
                 LoadedPhotosList: this.loadedFiles
             };
           let response = await this.$http.post(`/api/defect/savenewdefect`, defectdata);
+          this.loadedFiles = [];
+          if (response.data.error === "")
+          {
+            this.$swal({
+              type: 'success',
+              text: 'Дефект успешно загружен, кристалл №' + this.selectedDie.code,
+              toast: true,
+              showConfirmButton: false,
+              position: 'center-start',
+              timer: 4000
+            });
+          
+            this.resetPhotoUploader = "need reset";
+          }
+          else
+          {
+            this.$swal({
+              type: 'error',
+              text: response.data.error,
+              toast: true,
+              showConfirmButton: false,
+              position: 'center-start',
+              timer: 4000
+            });
+           
+          }
+
+        
+
         }
       },
 
       fileLoaded: function (fileId)
       {
          this.loadedFiles.push(fileId);
+      },
+
+      photouploaderReseted: function ()
+      { 
+          this.resetPhotoUploader = "reseted";
       }
+
     },
     async created() {
 
