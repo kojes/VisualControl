@@ -137,7 +137,7 @@
               text: 'Загрузите фото дефекта',
               toast: true,
               showConfirmButton: false,
-              position: 'center-start',
+              position: 'top-end',
               timer: 4000
             });
         }
