@@ -38,19 +38,27 @@
     </div>
     <div class="row">
       <div class="col-9">
-        <v-carousel cycle="false" height="undefined" interval="99999999" hide-delimiters="true">
-          <v-carousel-item v-for="(item,i) in items"
-                           :key="i"
-                           :src="item.src"></v-carousel-item>
-        </v-carousel>
+
+        <transition-group tag="div">
+          <img v-for="(photo, index) in photos"
+               :key="index"
+               @click="showLightbox(photo.guid)"
+               :src="photoStorageAddress + photo.guid + '.jpg'" />
+        </transition-group>
+
+        <lightbox id="mylightbox"
+                  ref="lightbox"
+                  :images="photos"
+                  :directory="photoStorageAddress"
+                  :timeoutDuration="5000" />
       </div>
     </div>
    </div>
 </template>
 
 <script>
- 
 
+ 
   export default {
     props: ['defectId'],
 
@@ -74,18 +82,27 @@
             this.dangerLevel = response.data;
           });
 
-          let defectTypeId = this.defect.defectTypeId;
+            let defectTypeId = this.defect.defectTypeId;
             this.$http.get(`/api/defecttype/getbyid?defecttypeId=${defectTypeId}`).then((response) => {
             this.defectType = response.data;
             });
 
             this.date = this.defect.date;
-            this.operator = {name: this.defect.operator}
+            this.operator = { name: this.defect.operator }
+
+            
+          
            
         });
         
+          this.$http.get(`/api/photo/getphotosbydefectid?defectId=${defectId}`).then((response) => {
+            this.photos = response.data;
+          });
 
-           
+          let waferId = this.photos[0].waferId;
+          this.$http.get(`/api/photo/getphotostorageaddress`).then((response) => {
+            this.photoStorageAddress = response.data + "/" + waferId + "/";
+          });   
 
       
 
@@ -97,24 +114,36 @@
         defectType: {},
         dangerLevel: {},
         date: "",
+        photoStorageAddress: "",
         operator: {},
         photos: [],
-        items: [
-          {
-            src: 'http://192.168.11.10/photostorage/096_1/3b473e8e1e734140b513a928106deea9.jpg'
-          },
-          {
-            src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg'
-          },
-          {
-            src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg'
-          },
-          {
-            src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg'
-          }
-        ]
-              
+       
       }
     }
   }
 </script>
+
+<style>
+  img {
+    width: 270px;
+    height: 180px;
+    margin: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+  }
+
+  .thumbnailfade-leave-active,
+  .thumbnailfade-enter-active {
+    transition: all 0.4s ease;
+  }
+
+  .thumbnailfade-enter-active {
+    transition-delay: 0.4s;
+  }
+
+  .thumbnailfade-enter,
+  .thumbnailfade-leave-to {
+    opacity: 0;
+  }
+</style>

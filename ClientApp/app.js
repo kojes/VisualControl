@@ -8,19 +8,24 @@ import { FontAwesomeIcon } from './icons'
 import VueSweetalert2 from 'vue-sweetalert2';
 import VueLodash from 'vue-lodash'
 import Vuetify from 'vuetify'
+import Lightbox from 'vue-my-photos'
+
 
 
 
 
 // Registration of global components
 import '@fortawesome/fontawesome-free/css/all.css'
-
+Vue.component('icon', FontAwesomeIcon);
+Vue.component('lightbox', Lightbox);
 Vue.use(VueLodash);
 Vue.use(VueSweetalert2);
+Vue.use(Lightbox);
 
-Vue.use(Vuetify, {
-  iconfont: 'fa'
-})
+Vue.use(Vuetify,
+  {
+    iconfont: 'fa'
+  });
 import 'vuetify/dist/vuetify.min.css'
 
 

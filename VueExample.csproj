@@ -33,6 +33,9 @@
     <Content Remove="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\PhotoController.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="ClientApp\images\" />
   </ItemGroup>
 
