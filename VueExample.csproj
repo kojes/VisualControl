@@ -30,11 +30,12 @@
     <Content Remove="ClientApp\**" />
   </ItemGroup>
   <ItemGroup>
-    <Content Remove="tsconfig.json" />
+    <Compile Remove="ViewModels\PhotoViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\PhotoController.cs" />
+    <Content Remove="tsconfig.json" />
   </ItemGroup>
+  
   <ItemGroup>
     <Folder Include="ClientApp\images\" />
   </ItemGroup>

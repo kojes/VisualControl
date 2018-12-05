@@ -16,6 +16,7 @@ import Lightbox from 'vue-my-photos'
 
 // Registration of global components
 import '@fortawesome/fontawesome-free/css/all.css'
+import 'bootstrap/dist/css/bootstrap.css'
 Vue.component('icon', FontAwesomeIcon);
 Vue.component('lightbox', Lightbox);
 Vue.use(VueLodash);

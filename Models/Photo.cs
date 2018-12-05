@@ -17,5 +17,11 @@ namespace VueExample.Models
         public int DefectId { get; set; }
         [Column("wafer_id")]
         public string WaferId { get; set; }
+        [NotMapped]
+        public string Name
+        {
+            get { return Guid + ".jpg"; }
+        }
+               
     }
 }
