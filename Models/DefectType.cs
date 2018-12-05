@@ -12,5 +12,6 @@ namespace VueExample.Models
         [Column("id_defecttype")]
         public int DefectTypeId { get; set; }
         public string Description { get; set; }
+        public string Color { get; set; }
     }
 }

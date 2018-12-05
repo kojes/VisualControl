@@ -10,6 +10,7 @@ namespace VueExample.Providers
     public interface IDefectProvider
     {
         int InsertNewDefect(Defect defect);
+        Defect GetById(int defectId);
         void DeleteById(int defectId);
         int GetDuplicate(long dieId, int stageId, int defectTypeId);
     }

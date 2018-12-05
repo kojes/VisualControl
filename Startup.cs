@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -45,10 +46,19 @@ namespace VueExample
                 app.UseBrowserLink();
                 app.UseStatusCodePages();
                 // Webpack initialization with hot-reload.
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+                try
                 {
-                    HotModuleReplacement = true,
-                });
+                    app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+                    {
+                        HotModuleReplacement = true,
+                    });
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+               
             }
             else
             {

@@ -7,13 +7,21 @@ import App from 'components/app-root'
 import { FontAwesomeIcon } from './icons'
 import VueSweetalert2 from 'vue-sweetalert2';
 import VueLodash from 'vue-lodash'
+import Vuetify from 'vuetify'
+
 
 
 
 // Registration of global components
-Vue.component('icon', FontAwesomeIcon);
+import '@fortawesome/fontawesome-free/css/all.css'
+
 Vue.use(VueLodash);
 Vue.use(VueSweetalert2);
+
+Vue.use(Vuetify, {
+  iconfont: 'fa'
+})
+import 'vuetify/dist/vuetify.min.css'
 
 
 

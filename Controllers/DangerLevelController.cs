@@ -18,7 +18,7 @@ namespace VueExample.Controllers
         {
             try
             {
-                return Ok(dangerLevelProvider.GetDangerLevels());
+                return Ok(dangerLevelProvider.GetAll());
             }
             catch (Exception e)
             {
@@ -26,6 +26,12 @@ namespace VueExample.Controllers
                 return StatusCode(500);
             }
             
+        }
+
+        [HttpGet]
+        public IActionResult GetById(int dangerlevelId)
+        {
+            return Ok(dangerLevelProvider.GetById(dangerlevelId));
         }
     }
 }

@@ -15,6 +15,7 @@ namespace VueExample.Models
         public int? Danger { get; set; }
         [Column("Specification")]
         public string Specification { get; set; }
+        public string Color { get; set; }
 
     }
 }

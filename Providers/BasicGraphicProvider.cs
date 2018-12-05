@@ -4,17 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using VueExample.Contexts;
 using VueExample.Models;
+using VueExample.Repository;
 
 namespace VueExample.Providers
 {
-    public class BasicGraphicProvider : IGraphicProvider
+    public class BasicGraphicProvider :  Repository<Graphic>, IGraphicProvider
     {
         public Graphic GetGraphicById(int id)
         {
-            using (ApplicationContext appContext = new ApplicationContext())
-            {
-                return appContext.Graphic.FirstOrDefault(x => x.GraphicId == id);
-            }
+            throw new NotImplementedException();
         }
     }
 }

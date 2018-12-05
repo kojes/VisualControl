@@ -16,5 +16,13 @@ namespace VueExample.Providers
                 return srv6Context.Stages.Where(x => x.ProcessId == processId && x.CodeProductId == null).ToList();
             }
         }
+
+        public Stage GetById(int stageId)
+        {
+            using (var srv6Context = new Srv6Context())
+            {
+                return srv6Context.Stages.Find(stageId);
+            }
+        }
     }
 }

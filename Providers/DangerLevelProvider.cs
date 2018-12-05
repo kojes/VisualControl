@@ -4,17 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using VueExample.Contexts;
 using VueExample.Models;
+using VueExample.Repository;
 
 namespace VueExample.Providers
 {
-    public class DangerLevelProvider
+    public class DangerLevelProvider : Repository<DangerLevel>
     {
-        public List<DangerLevel> GetDangerLevels()
-        {
-            using (VisualControlContext appContext = new VisualControlContext())
-            {
-                return appContext.DangerLevels.ToList();
-            }
-        }
+        
     }
 }

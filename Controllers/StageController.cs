@@ -31,5 +31,11 @@ namespace VueExample.Controllers
             
         }
 
+        [HttpGet]
+        public IActionResult GetById([FromQuery(Name = "stageId")] int stageId)
+        {
+            return Ok(stageProvider.GetById(stageId));
+        }
+
     }
 }

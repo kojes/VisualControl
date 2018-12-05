@@ -19,7 +19,7 @@ namespace VueExample.Controllers
         [HttpGet("[action]")]
         public IActionResult GetById(int id)
         {
-            var graphic = graphicProvider.GetGraphicById(id);
+            var graphic = graphicProvider.GetById(id);
             return Ok(graphic);
         }
     }

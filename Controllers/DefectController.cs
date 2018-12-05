@@ -25,6 +25,12 @@ namespace VueExample.Controllers
             _photoProvider = photoProvider;
         }
 
+        [HttpGet]
+        public IActionResult GetById(int defectId)
+        {
+            return Ok(_defectProvider.GetById(defectId));
+        }
+
         [HttpPost]
         public IActionResult SaveNewDefect([FromBody]DefectViewModel defectViewModel)
         {

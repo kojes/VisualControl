@@ -20,6 +20,14 @@ namespace VueExample.Providers
             return defect.DefectId;
         }
 
+        public Defect GetById(int defectId)
+        {
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                return visualControlContext.Defects.Find(defectId);
+            }
+        }
+
         public void DeleteById(int defectId)
         {
             using (VisualControlContext visualControlContext = new VisualControlContext())
