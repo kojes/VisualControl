@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using VueExample.Contexts;
 using VueExample.Models;
+using VueExample.Repository;
 
 namespace VueExample.Providers
 {
-    public class DieProvider
+    public class DieProvider : RepositorySRV6<Die>
     {
         public List<Die> GetDiesByWaferId(string waferId)
         {

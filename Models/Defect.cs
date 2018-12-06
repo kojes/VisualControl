@@ -22,6 +22,8 @@ namespace VueExample.Models
         public int DangerLevelId { get; set; }
         public string Operator { get; set; }
         public DateTime Date { get; set; }
+        [Column("wafer_id")]
+        public string WaferId { get; set; }
         [JsonIgnore]
         public virtual ICollection<DefectDefectComment> DefectDefectComments { get; set; }
     }

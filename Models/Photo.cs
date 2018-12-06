@@ -15,8 +15,7 @@ namespace VueExample.Models
         public string Guid { get; set; }
         [Column("id_defect")]
         public int DefectId { get; set; }
-        [Column("wafer_id")]
-        public string WaferId { get; set; }
+        
         [NotMapped]
         public string Name
         {

@@ -49,5 +49,13 @@ namespace VueExample.Providers
 
             return duplicate?.DefectId ?? 0;
         }
+
+        public List<Defect> GetByWaferId(string waferId)
+        {
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                return visualControlContext.Defects.Where(x => x.WaferId == waferId).ToList();
+            }
+        }
     }
 }

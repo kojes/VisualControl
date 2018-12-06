@@ -13,5 +13,6 @@ namespace VueExample.Providers
         Defect GetById(int defectId);
         void DeleteById(int defectId);
         int GetDuplicate(long dieId, int stageId, int defectTypeId);
+        List<Defect> GetByWaferId(string waferId);
     }
 }

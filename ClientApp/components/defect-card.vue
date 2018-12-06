@@ -1,64 +1,65 @@
 <template>
-  <div class="card w-50 text-primary rounded border shadow">
-    <div class="card-header">
-      <h3 class="card-title">{{'Дефект ID:' + defect.defectId}}</h3>
-    </div>
-   <div class="container card-body">
-   
-     <div class="row">
-      <div class="col-4">
-        <v-text-field :value="stage.stageName"
-                      label="Технологический этап:"
-                      color="success"
-                      readonly>
+  <div class="row mt-4">
+    <div class="card w-75 rounded border" style="box-shadow : 2px 0px 9px 0" v-bind:style="cardStyle">
+      <div class="card-header">
+        <h3 class="card-title" style="color:#343a40">{{'Дефект ID: ' + defect.defectId}}</h3>
+      </div>
+      <div class="container card-body">
 
-        </v-text-field>
-      </div>
-      <div class="col-4">
-        <v-text-field :value="defectType.description"
-                      label="Тип дефекта:"
-                      readonly>
-        </v-text-field>
-      </div>
-      <div class="col-4">
-        <v-text-field :value="dangerLevel.specification"
-                      label="Опасность дефекта:"
-                      readonly>
-        </v-text-field>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-4">
-        <v-text-field :value="operator.name"
-                      label="Инженер:"
-                      readonly>
-        </v-text-field>
-      </div>
-      <div class="col-4">
-        <v-text-field :value="date"
-                      label="Дата загрузки дефекта:"
-                      readonly>
-        </v-text-field>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12 border rounded shadow-sm" >
-        <h4>Фотографии дефектов</h4>
-        <transition-group name="thumbnailfade" tag="div">
-          <v-lazy-image v-for="(photo, index) in photos"
-               :key="index"
-               v-on:click.native="showLightbox(photo.name)"
-               :src="photoStorageAddress + photo.name" />
-        </transition-group>
+        <div class="row">
+          <div class="col-4">
+            <v-text-field :value="stage.stageName"
+                          label="Технологический этап:"
+                          color="success"
+                          readonly>
+            </v-text-field>
+          </div>
+          <div class="col-4">
+            <v-text-field :value="defectType.description"
+                          label="Тип дефекта:"
+                          readonly>
+            </v-text-field>
+          </div>
+          <div class="col-4">
+            <v-text-field :value="dangerLevel.specification"
+                          label="Опасность дефекта:"
+                          readonly>
+            </v-text-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <v-text-field :value="operator.name"
+                          label="Инженер:"
+                          readonly>
+            </v-text-field>
+          </div>
+          <div class="col-4">
+            <v-text-field :value="date"
+                          label="Дата загрузки дефекта:"
+                          readonly>
+            </v-text-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 border rounded shadow-sm">
+            <h4 style="color:#343a40">Фотографии дефектов</h4>
+            <transition-group name="thumbnailfade" tag="div">
+              <v-lazy-image v-for="(photo, index) in photos"
+                            :key="index"
+                            v-on:click.native="showLightbox(photo.name)"
+                            :src="photoStorageAddress + photo.name" />
+            </transition-group>
 
-        <lightbox id="mylightbox"
-                  ref="lightbox"
-                  :images="photos"
-                  :directory="photoStorageAddress"
-                  :timeoutDuration="5000" />
+            <lightbox id="mylightbox"
+                      ref="lightbox"
+                      :images="photos"
+                      :directory="photoStorageAddress"
+                      :timeoutDuration="5000" />
+          </div>
+        </div>
       </div>
     </div>
-   </div>
   </div>
 </template>
 
@@ -74,7 +75,7 @@
 
     mounted() {
 
-      this.defectId = 19;
+     
       let defectId = this.defectId;
       this.$http.get(`/api/defect/getbyid?defectId=${defectId}`).then((response) => {
         this.defect = response.data;
@@ -113,14 +114,19 @@
     watch:
     {
 
-      photos: async function () {
+      defect: async function () {
 
-        let waferId = this.photos[0].waferId;
+        let waferId = this.defect.waferId;
         await this.$http.get(`/api/photo/getphotostorageaddress`).then((response) => {
           this.photoStorageAddress = response.data + waferId + "/";
         });
 
-        this.topsrc = this.photos[0].name;
+        
+      },
+
+      defectType: function ()
+      {
+         this.cardStyle.color = this.dangerLevel.color;
       }
 
     },
@@ -146,8 +152,10 @@
           photoStorageAddress: "",
           operator: {},
           photos: [],
-          topsrc: {}
-
+          cardStyle: {
+            color: ''
+           }
+          
         }
       }
   }

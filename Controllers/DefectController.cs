@@ -31,6 +31,12 @@ namespace VueExample.Controllers
             return Ok(_defectProvider.GetById(defectId));
         }
 
+        [HttpGet]
+        public IActionResult GetByWaferId(string waferId)
+        {
+            return Ok(_defectProvider.GetByWaferId(waferId));
+        }
+
         [HttpPost]
         public IActionResult SaveNewDefect([FromBody]DefectViewModel defectViewModel)
         {
@@ -61,8 +67,8 @@ namespace VueExample.Controllers
                     var photo = new Photo
                     {
                         DefectId = defectId,
-                        Guid = photoGuid,
-                        WaferId = defectViewModel.WaferId
+                        Guid = photoGuid
+                      
                     };
                     _photoProvider.InsertPhoto(photo);
                     FileSystemService.DeleteFolderInTemporaryFolder(photoGuid);
