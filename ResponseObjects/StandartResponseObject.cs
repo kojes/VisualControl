@@ -10,6 +10,7 @@ namespace VueExample.ResponseObjects
         public string Body { get; set; }
         public string ResponseType { get; set; }
         public string Message { get; set; }
+        public string ErrorCode { get; set; }
 
         
 
@@ -20,8 +21,8 @@ namespace VueExample.ResponseObjects
         public T Body { get; set; }
         public string ResponseType { get; set; }
         public string Message { get; set; }
-      
-       
+        public string ErrorCode { get; set; }
+
 
     }
 }

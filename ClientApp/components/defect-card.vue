@@ -1,6 +1,6 @@
 <template>
   <div class="row mt-4">
-    <div class="card w-75 rounded border" style="box-shadow : 2px 0px 9px 0" v-bind:style="cardStyle">
+    <div class="card w-75 rounded border" style="box-shadow : 2px 0px 9px 0">
       <div class="card-header">
         <h3 class="card-title" style="color:#343a40">{{'Дефект ID: ' + defect.defectId}}</h3>
       </div>
