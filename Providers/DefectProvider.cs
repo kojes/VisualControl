@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using VueExample.Contexts;
 using VueExample.Models;
+using VueExample.Repository;
 using VueExample.ViewModels;
 
 namespace VueExample.Providers
 {
-    public class DefectProvider : IDefectProvider
+    public class DefectProvider : Repository<Defect>, IDefectProvider
     {
         public int InsertNewDefect(Defect defect)
         {
@@ -27,6 +28,8 @@ namespace VueExample.Providers
                 return visualControlContext.Defects.Find(defectId);
             }
         }
+
+      
 
         public void DeleteById(int defectId)
         {

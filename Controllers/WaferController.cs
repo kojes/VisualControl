@@ -11,10 +11,17 @@ namespace VueExample.Controllers
     public class WaferController : Controller
     {
         private readonly WaferProvider _waferProvider = new WaferProvider();
+        private readonly DefectProvider _defectProvider = new DefectProvider();
         [HttpGet]
         public IActionResult GetAll()
         {
            return Ok(_waferProvider.GetWafers());
+        }
+
+        [HttpGet]
+        public IActionResult GetAllWithDefects()
+        {
+            return Ok(_defectProvider.GetAll().Select(x=>x.WaferId).Distinct());
         }
     }
 }

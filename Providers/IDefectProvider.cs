@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VueExample.Models;
+using VueExample.Repository;
 using VueExample.ViewModels;
 
 namespace VueExample.Providers
 {
-    public interface IDefectProvider
+    public interface IDefectProvider 
     {
         int InsertNewDefect(Defect defect);
         Defect GetById(int defectId);

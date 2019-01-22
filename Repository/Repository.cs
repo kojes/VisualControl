@@ -28,7 +28,7 @@ namespace VueExample.Repository
             return entity;
         }
 
-        public List<T> GetAll()
+        public virtual List<T> GetAll()
         {
             using (var context = new VisualControlContext())
             {

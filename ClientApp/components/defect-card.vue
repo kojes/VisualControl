@@ -1,6 +1,6 @@
 <template>
-  <div class="row mt-4">
-    <div class="card w-75 rounded border" style="box-shadow : 2px 0px 9px 0">
+  <div class="row">
+    <div class="card w-100 rounded border" style="box-shadow : 2px 0px 9px 0">
       <div class="card-header">
         <h3 class="card-title" style="color:#343a40">{{'Дефект ID: ' + defect.defectId}}</h3>
       </div>
@@ -43,7 +43,7 @@
         </div>
         <div class="row">
           <div class="col-12 border rounded shadow-sm">
-            <h4 style="color:#343a40">Фотографии дефектов</h4>
+            <h4 style="color:#343a40">Фотографии дефекта</h4>
             <transition-group name="thumbnailfade" tag="div">
               <v-lazy-image v-for="(photo, index) in photos"
                             :key="index"
@@ -75,7 +75,10 @@
 
     mounted() {
 
-     
+      if (this.$route.params.defectid != null)
+      {
+        this.defectId = this.$route.params.defectid;
+      }
       let defectId = this.defectId;
       this.$http.get(`/api/defect/getbyid?defectId=${defectId}`).then((response) => {
         this.defect = response.data;
