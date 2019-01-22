@@ -41,6 +41,12 @@
   <ItemGroup>
     <Folder Include="ClientApp\images\" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="ClientApp\static\images\abstract-art-black-background-1040499.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <Target Name="RunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
