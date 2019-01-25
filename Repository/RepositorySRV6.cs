@@ -16,6 +16,14 @@ namespace VueExample.Repository
             }
         }
 
+        public virtual async Task<T> GetByIdAsync(int id)
+        {
+            using (var context = new Srv6Context())
+            {
+                return await context.Set<T>().FindAsync(id);
+            }
+        }
+
         public T Add(T entity)
         {
             using (var context = new Srv6Context())

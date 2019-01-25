@@ -1,13 +1,22 @@
 <template>
-  <v-app>
-    <v-parallax dark
-                src="https://images.pexels.com/photos/749147/pexels-photo-749147.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260">
-      <v-layout align-center
-                column
-                justify-center>
-        <h1 class="display-2 font-weight-thin mb-3">404</h1>
-        <h4 class="subheading">Запрошенный адрес не существует</h4>
-      </v-layout>
-    </v-parallax>
-  </v-app>
+   <v-layout>
+    <v-flex xs12 sm6 lg12>
+      <v-card>
+        <v-img class="white--text"
+               height="750px"
+               src="https://images.pexels.com/photos/1587/blurred-background.jpg?auto=compress&cs=tinysrgb&h=750&w=1260">
+          <v-container fill-height fluid>
+            <v-layout fill-height align-center justify-center>
+              <v-flex align-center justify-center offset-lg6>
+                <span style="font-size:72px">404</span><br>
+                <span>Запрошенный адрес не существует</span>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-img>
+     
+       
+      </v-card>
+    </v-flex>
+  </v-layout>
 </template>

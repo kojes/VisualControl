@@ -1,84 +1,77 @@
 <template>
-  <div id="container" class="container-fluid">
-    <loading :active.sync="isLoading"
-             :can-cancel="false"
-             :color="overlayColor"
-             :loader="overlayLoader"
-             :is-full-page="false" ></loading>
-             
-    <form v-on:submit.prevent="">
+  
+    <v-container grid-list-lg>
+      <loading :active.sync="isLoading"
+               :can-cancel="false"
+               :color="overlayColor"
+               :loader="overlayLoader"
+               :is-full-page="false"></loading>
+
+
 
      
-      <div class="form-row">
+        <v-layout align-start justify-center row>
 
-        <div class="form-group col-md-2 col-lg-2 offset-3">
-          <label for="waferSelect">Название пластины:</label>
-          <model-list-select :list="wafers"
-                             v-model="selectedWafer" id="waferSelect" placeholder="Выберите пластину для добавления дефекта" option-value="waferId"
-                             option-text="waferId">
-          </model-list-select>
-        </div>
-        <div class="form-group col-md-3 col-lg-3">
-          <label for="stageSelect">Название технологического этапа:</label>
-          <model-list-select :list="stages"
-                             v-model="selectedStage" id="stageSelect" placeholder="Выберите технологический этап" option-value="stageId"
-                             option-text="stageName">
-          </model-list-select>
+          <v-flex lg4>
+            <v-autocomplete :items="wafers" v-model="selectedWafer" label="Выберите пластину для добавления дефекта" return-object item-text="waferId"></v-autocomplete>
+          </v-flex>
+          <v-flex lg4>
 
-        </div>
+            <v-select :items="stages"
+                      v-model="selectedStage"  label="Выберите технологический этап" return-object item-value="stageId"
+                      item-text="stageName">
+            </v-select>
 
-       
-
-      </div>
-
-      <div class="form-row">
-
-        <div class="form-group col-md-2 col-lg-2 offset-3">
-          <label for="dieSelect">Код кристалла:</label>
-          <model-list-select :list="dies"
-                             v-model="selectedDie" id="dieSelect" placeholder="Выберите номер кристалла для добавления дефекта" option-value="dieId"
-                             option-text="code">
-          </model-list-select>
-        </div>
-        <div class="form-group col-md-3 col-lg-3">
-          <label for="defecttypeSelect">Тип дефекта:</label>
-          <model-list-select :list="defecttypes"
-                             v-model="selectedDefectType" id="defecttypeSelect" placeholder="Выберите тип дефекта" option-value="defectTypeId"
-                             option-text="description">
-          </model-list-select>
-
-        </div>
-      
-      </div>
+          </v-flex>
 
 
-      <div class="form-row">
 
-        <div class="form-group col-md-2 col-lg-2 offset-3">
-          <label for="dangerlevelSelect">Опасность дефекта:</label>
-          <model-list-select :list="dangerlevels"
-                             v-model="selectedDangerLevel" id="dangerlevelSelect" placeholder="Выберите опасность дефекта" option-value="dangerLevelId"
-                             option-text="specification">
-          </model-list-select>
-          </div>
+        </v-layout>
+     
 
-        <div class="form-group col-md-3 col-lg-3 d-flex align-items-stretch">
-          <button type="submit" v-on:click="debouncedSaveDefect" class="btn btn-outline-primary btn-block">Сохранить дефект</button>
-        </div>
-       
-         
+        <v-layout align-start justify-center row>
 
-        </div>
+          <v-flex lg4>
 
-      <div class="form-row">
-        <div class="form-group col-md-5 col-lg-5 offset-3">
-          <photo-uploader :reset="resetPhotoUploader" v-on:fileLoaded="fileLoaded" ></photo-uploader>
-        </div>
-       
-      </div>
-</form>
-  </div>
+            <v-autocomplete :items="dies" v-model="selectedDie" label="Выберите номер кристалла для добавления дефекта" return-object item-text="code"></v-autocomplete>
 
+          </v-flex>
+          <v-flex lg4>
+
+            <v-select :items="defecttypes"
+                      v-model="selectedDefectType" label="Выберите тип дефекта" return-object item-value="defectTypeId"
+                      item-text="description">
+            </v-select>
+
+          </v-flex>
+        </v-layout>
+
+
+        <v-layout align-start justify-center row>
+
+          <v-flex lg4>
+
+            <v-select :items="dangerlevels"
+                      v-model="selectedDangerLevel" label="Выберите опасность дефекта" return-object item-value="dangerLevelId"
+                      item-text="specification">
+            </v-select>
+          </v-flex>
+
+          <v-flex lg4>
+            <v-btn block @click="debouncedSaveDefect" color="indigo">Сохранить дефект</v-btn>
+          </v-flex>
+        </v-layout>
+        <v-layout align-start justify-center row>
+          <v-flex lg8>
+
+            <photo-uploader :reset="resetPhotoUploader" v-on:fileLoaded="fileLoaded"></photo-uploader>
+
+
+          </v-flex>
+        </v-layout>
+
+</v-container>
+  
 
 </template>
 
@@ -87,8 +80,6 @@
   import photouploader from './photo-uploader.vue';
   import Loading from 'vue-loading-overlay';
   import 'vue-loading-overlay/dist/vue-loading.css';
-  
-  import { ModelListSelect } from 'vue-search-select';
   export default {
     data() {
       return {
@@ -111,7 +102,7 @@
       }
     },
     components: {
-      'photo-uploader': photouploader, ModelListSelect, Loading
+      'photo-uploader': photouploader, Loading
     },
     watch:
     {

@@ -16,6 +16,14 @@ namespace VueExample.Repository
             }
         }
 
+        public virtual async Task<T> GetByIdAsync(int id)
+        {
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                return await visualControlContext.Set<T>().FindAsync(id);
+            }
+        }
+
         public T Add(T entity)
         {
             using (VisualControlContext context = new VisualControlContext())

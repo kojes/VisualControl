@@ -26,9 +26,12 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetById(int defectId)
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetById(int defectId)
         {
-            return Ok(_defectProvider.GetById(defectId));
+            var defect = await _defectProvider.GetByIdAsync(defectId);
+            return CreatedAtAction(nameof(GetById), defect);
+
         }
 
         [HttpGet]
@@ -42,6 +45,7 @@ namespace VueExample.Controllers
         {
 
             var emptyPhotos = new List<string>();
+            var ims = new ImageManipulationService();
             defectViewModel.Date = DateTime.Now;
             var defectId = _defectProvider.GetDuplicate(defectViewModel.DieId, defectViewModel.StageId, defectViewModel.DefectTypeId);
             var response = new StandardResponseObject { ResponseType = "success", Message = $"Обнаружен идентичный дефект в БД, загруженные фото добавлены к существующему дефекту, кристалл №{defectViewModel.DieCode} на пластине {defectViewModel.WaferId}"};
@@ -64,6 +68,7 @@ namespace VueExample.Controllers
                 if (!String.IsNullOrEmpty(FileSystemService.FindFolderInTemporaryFolder(photoGuid)))
                 {
                     System.IO.File.Move(FileSystemService.GetFirstFilePathFromFolderInTemporaryFolder(photoGuid), photoStorageFolder + "\\" + photoGuid + ".jpg");
+                    ims.ResizeImage(256, 256, 75, photoStorageFolder + "\\" + photoGuid + ".jpg", photoStorageFolder + "\\" + photoGuid + "_MINI.jpg");
                     var photo = new Photo
                     {
                         DefectId = defectId,

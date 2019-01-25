@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using VueExample.Models;
+using VueExample.Services;
 
 namespace VueExample.Controllers
 {
@@ -18,6 +14,7 @@ namespace VueExample.Controllers
         [Consumes("multipart/form-data")]
         public IActionResult SaveImage()
         {
+          
             var pathFolder = Guid.NewGuid().ToString("N");
             var tempFolderPath = Path.GetTempPath();
             Directory.CreateDirectory($"{tempFolderPath}\\{pathFolder}");
@@ -25,10 +22,13 @@ namespace VueExample.Controllers
             {
                 var file = HttpContext.Request.Form.Files[0];
                 
-                using (FileStream fs = new FileStream($"{tempFolderPath}\\{pathFolder}\\{file.FileName}", FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+                using (FileStream fs = new FileStream($"{tempFolderPath}\\{pathFolder}\\LG{file.FileName}", FileMode.CreateNew, FileAccess.Write, FileShare.Write))
                 {
                     file.CopyTo(fs);
                 }
+
+              
+
                 return Content(pathFolder);
             }
 

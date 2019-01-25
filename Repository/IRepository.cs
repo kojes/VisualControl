@@ -10,6 +10,7 @@ namespace VueExample.Repository
     public interface IRepository<T>
     {
         T GetById(int id);
+        Task<T> GetByIdAsync(int id);
         T Add(T entity);
         List<T> GetAll();
         bool RemoveById(int id);

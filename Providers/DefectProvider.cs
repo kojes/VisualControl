@@ -29,7 +29,14 @@ namespace VueExample.Providers
             }
         }
 
-      
+        public async Task<Defect> GetByIdAsync(int defectId)
+        {
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                return await visualControlContext.Defects.FindAsync(defectId);
+            }
+        }
+
 
         public void DeleteById(int defectId)
         {

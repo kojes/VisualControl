@@ -12,6 +12,7 @@ namespace VueExample.Providers
     {
         int InsertNewDefect(Defect defect);
         Defect GetById(int defectId);
+        Task<Defect> GetByIdAsync(int defectId);
         void DeleteById(int defectId);
         int GetDuplicate(long dieId, int stageId, int defectTypeId);
         List<Defect> GetByWaferId(string waferId);

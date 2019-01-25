@@ -9,6 +9,7 @@ using VueExample.Providers;
 namespace VueExample.Controllers
 {
     [Route("api/[controller]/[action]")]
+
     public class DangerLevelController : Controller
     {
         DangerLevelProvider dangerLevelProvider = new DangerLevelProvider();
@@ -29,9 +30,10 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(200)]
         public IActionResult GetById(int dangerlevelId)
         {
-            return Ok(dangerLevelProvider.GetById(dangerlevelId));
+            return Ok(dangerLevelProvider.GetByIdAsync(dangerlevelId));
         }
     }
 }
