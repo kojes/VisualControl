@@ -9,6 +9,7 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import VueLodash from 'vue-lodash'
 import Vuetify from 'vuetify'
 import Lightbox from 'vue-my-photos'
+import Vuelidate from 'vuelidate'
 
 
 
@@ -23,8 +24,7 @@ Vue.component('lightbox', Lightbox);
 Vue.use(VueLodash);
 Vue.use(VueSweetalert2);
 Vue.use(Lightbox);
-
-
+Vue.use(Vuelidate);
 Vue.use(Vuetify);
 
 import 'vuetify/dist/vuetify.min.css'

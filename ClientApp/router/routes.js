@@ -1,12 +1,15 @@
 import HomePage from 'components/home-page'
-import SelectBasic from 'components/select-basic'
 import DefectCard from 'components/defect-card'
 import DefectSingle from 'components/defect-single'
 import DefectVue from 'components/defect-mainvue'
+import DangerLevel from 'components/dangerlevel-crud'
+import DefectType from 'components/defecttype-crud'
 import NotFound from 'components/error-404'
 
 export const routes = [
   { name: "home", path: "/", component: HomePage, display: "Начальный экран", nav: true, icon: "home" },
+  { name: "defecttypeCRUD", path: "/defecttype", component: DefectType, display: "DefectType", nav: true, icon: "category" },
+  { name: "dangerlevelCRUD", path: "/dangerlevel", component: DangerLevel, display: "DangerLevel", nav: true, icon: "report_problem" },
  // { name: "basic", path: "/select-basic", component: SelectBasic, display: "Просмотр измерений", nav: true },
   { path: "/defect/:defectid", component: DefectCard },
   { name: "adddefect", path: "/adddefect", component: DefectSingle, display: "Добавление дефекта", nav: true },

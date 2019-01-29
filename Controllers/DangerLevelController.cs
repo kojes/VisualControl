@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VueExample.Models;
 using VueExample.Providers;
 
 namespace VueExample.Controllers
@@ -12,14 +9,14 @@ namespace VueExample.Controllers
 
     public class DangerLevelController : Controller
     {
-        DangerLevelProvider dangerLevelProvider = new DangerLevelProvider();
+        private readonly DangerLevelProvider _dangerLevelProvider = new DangerLevelProvider();
 
         [HttpGet]
         public IActionResult GetAll()
         {
             try
             {
-                return Ok(dangerLevelProvider.GetAll());
+                return Ok(_dangerLevelProvider.GetAll());
             }
             catch (Exception e)
             {
@@ -31,9 +28,10 @@ namespace VueExample.Controllers
 
         [HttpGet]
         [ProducesResponseType(200)]
-        public IActionResult GetById(int dangerlevelId)
+        public async Task<IActionResult> GetById(int dangerLevelId)
         {
-            return Ok(dangerLevelProvider.GetByIdAsync(dangerlevelId));
+            var dangerLevel = await _dangerLevelProvider.GetByIdAsync(dangerLevelId);
+            return CreatedAtAction(nameof(GetById), dangerLevel);
         }
     }
 }

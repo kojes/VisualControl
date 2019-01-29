@@ -44,6 +44,10 @@
   </ItemGroup>
   
   <ItemGroup>
+    <None Include="ClientApp\components\dangerlevel-crud.vue" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update="ClientApp\static\images\abstract-art-black-background-1040499.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
