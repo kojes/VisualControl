@@ -13,6 +13,7 @@ namespace VueExample.Contexts
         public DbSet<DangerLevel> DangerLevels { get; set; }
         public DbSet<Defect> Defects { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

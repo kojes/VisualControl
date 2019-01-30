@@ -1,12 +1,17 @@
 using System;
 using System.Reflection;
+using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using VueExample.Helpers;
+using VueExample.Providers;
 
 
 namespace VueExample
@@ -16,28 +21,50 @@ namespace VueExample
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-           
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddAutoMapper();
+            services.AddOptions();
 
-            // Simple example with dependency injection for a data provider.
-            services.AddSingleton<Providers.IWeatherProvider, Providers.WeatherProviderFake>();
-            services.AddSingleton<Providers.IMeasurementProvider, Providers.SimpleMeasurementProvider>();
-            services.AddSingleton<Providers.IGraphicProvider, Providers.BasicGraphicProvider>();
-            services.AddSingleton<Providers.IDefectProvider, Providers.DefectProvider>();
-            services.AddSingleton<Providers.IPhotoProvider, Providers.PhotoProvider>();
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+
+
+            services.AddScoped<IUserProvider, UserProvider>();
+            services.AddSingleton<IWeatherProvider, WeatherProviderFake>();
+            services.AddSingleton<IMeasurementProvider, SimpleMeasurementProvider>();
+            services.AddSingleton<IGraphicProvider, BasicGraphicProvider>();
+            services.AddSingleton<IDefectProvider, DefectProvider>();
+            services.AddSingleton<IPhotoProvider, PhotoProvider>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -45,37 +72,29 @@ namespace VueExample
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
                 app.UseStatusCodePages();
-                // Webpack initialization with hot-reload.
-                try
+                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
-                    app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                    {
-                        HotModuleReplacement = true,
-                    });
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-               
+                    HotModuleReplacement = true
+                });
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
 
+
+            app.UseAuthentication();
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
 
                 routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
+                    "spa-fallback",
+                    new {controller = "Home", action = "Index"});
             });
         }
     }
