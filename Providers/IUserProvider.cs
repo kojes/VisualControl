@@ -8,7 +8,8 @@ namespace VueExample.Providers
 {
     public interface IUserProvider
     {
-    
-        User Authenticate(string userUsername, string userPassword);
+        List<User> GetAll();
+        User Authenticate(User user);
+        User RegistryUser(User user);
     }
 }

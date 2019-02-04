@@ -1,5 +1,6 @@
-import { userService } from "../services";
-import { router } from "../router";
+import { userService } from "../../services";
+import router from '../../router/index'
+  ;
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
@@ -17,13 +18,28 @@ export const authentication = {
         .then(
           currentUser => {
               commit("loginSuccess", currentUser);
-            router.push("/");
+              router.push("/");
           },
           error => {
             commit("loginFailure", error);
             dispatch("alert/error", error, { root: true });
           }
         );
+      },
+    registry({ dispatch, commit }, {user}) {
+      //commit("loginRequest", { username });
+
+      userService.registry(user);
+      //.then(
+      //  currentUser => {
+      //    commit("loginSuccess", currentUser);
+      //    this.$router.push("/");
+      //  },
+      //  error => {
+      //    commit("loginFailure", error);
+      //    dispatch("alert/error", error, { root: true });
+      //  }
+      //);
     },
     logout({ commit }) {
       userService.logout();

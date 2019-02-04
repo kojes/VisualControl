@@ -20,6 +20,7 @@
     "filepond": "^3.3.2",
     "filepond-plugin-image-preview": "^3.1.4",
     "material-icons": "^0.2.3",
+    "transliteration": "^2.1.2",
     "v-lazy-image": "^1.2.2",
     "verte": "0.0.10",
     "vue": "^2.5.16",

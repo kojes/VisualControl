@@ -112,7 +112,7 @@
      
         <v-container grid-list-lg>
           <v-layout row wrap>
-            <v-flex lg3 v-for="defect in defectsOnCurrentPage">
+            <v-flex lg3 v-for="defect in defectsOnCurrentPage" :key="defect.defectId">
 
               <defect-card :defectId="defect.defectId" :dieCode="defectFilter.avbDiesList.find(x=>x.dieId===defect.dieId).code"></defect-card>
               <v-divider light></v-divider>
