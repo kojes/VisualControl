@@ -26,20 +26,21 @@ export const authentication = {
           }
         );
       },
-    registry({ dispatch, commit }, {user}) {
-      //commit("loginRequest", { username });
 
-      userService.registry(user);
-      //.then(
-      //  currentUser => {
-      //    commit("loginSuccess", currentUser);
-      //    this.$router.push("/");
-      //  },
-      //  error => {
-      //    commit("loginFailure", error);
-      //    dispatch("alert/error", error, { root: true });
-      //  }
-      //);
+    registry({ dispatch, commit }, {user}) {
+      commit("registryRequest", { user });
+
+      userService.registry(user)
+      .then(
+        currentUser => {
+          commit("registrySuccess", currentUser);
+          router.push("/");
+        },
+        error => {
+          commit("registryFailure", error);
+          dispatch("alert/error", error, { root: true });
+        }
+      );
     },
     logout({ commit }) {
       userService.logout();
@@ -59,6 +60,18 @@ export const authentication = {
       state.status = {};
       state.user = null;
     },
+      registryRequest(state, currentUser) {
+        state.status = { loggingIn: true };
+        state.user = currentUser;
+      },
+      registrySuccess(state, currentUser) {
+        state.status = { loggedIn: true };
+        state.user = currentUser;
+      },
+      registryFailure(state) {
+        state.status = {};
+        state.user = null;
+      },
     logout(state) {
       state.status = {};
       state.user = null;

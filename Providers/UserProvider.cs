@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using VueExample.Contexts;
 using VueExample.Helpers;
 using VueExample.Models;
+using VueExample.ResponseObjects;
 
 namespace VueExample.Providers
 {
@@ -54,6 +55,24 @@ namespace VueExample.Providers
         public List<User> GetAll()
         {
             return _usersList;
+        }
+
+        public Error IsExistUserDuplicate(User user)
+        {
+            using (var visualControlContext = new VisualControlContext())
+            {
+                if (visualControlContext.Users.Any(x => x.Username == user.Username))
+                {
+                    return new Error("Пользователь с таким логином уже существует", "RE001");
+                }
+
+                if (visualControlContext.Users.Any(x => x.Email == user.Email))
+                {
+                    return new Error("Пользователь с таким почтовым ящиком уже существует", "RE002");
+                }
+            }
+
+            return null;
         }
 
        

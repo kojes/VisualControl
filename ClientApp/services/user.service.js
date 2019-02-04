@@ -41,7 +41,10 @@ function registry(user) {
     data: user
     
     
-  });
+  }).then(handleResponse)
+    .then(u => {
+       return login(u.body.username, u.body.password);
+    });
 }
 
 function logout() {

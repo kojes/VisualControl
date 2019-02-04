@@ -1,10 +1,7 @@
 <template>
 
   <v-container grid-list-lg>
-
-
-
-
+    
     <v-layout align-start wrap>
 
       <v-flex lg4 offset-lg4>
@@ -16,24 +13,27 @@
         <v-text-field v-model="password" outline label="Пароль:" type="password" :error-messages="passwordErrors" @input="$v.password.$touch()" @blur="$v.password.$touch()">
         </v-text-field>
       </v-flex>
-
-
-
+      
       <v-flex lg4 offset-lg4>
-        <v-btn block outline :disabled="loggingIn" @click="handleSubmit">Войти</v-btn>
-
-
+        <v-btn block outline :disabled="loggingIn" @click="handleSubmit">Войти</v-btn>        
       </v-flex>
+
       <v-flex lg4 offset-lg4>
         <v-btn block @click="goToRegistry">Регистрация</v-btn>
-
-
       </v-flex>
 
     </v-layout>
 
 
-
+    <v-snackbar v-model="errorSnackbar"                           
+                top>
+      {{ snackbarText }}
+      <v-btn color="pink"
+             flat
+             @click="errorSnackbar = false">
+        Закрыть
+      </v-btn>
+    </v-snackbar>
 
 
 
@@ -48,12 +48,25 @@ export default {
       return {
         username: "Molchanov",
         password: "123456",
+        errorSnackbar: false,
         submitted: false
       }
     },
     computed: {
       loggingIn() {
         return this.$store.state.authentication.status.loggingIn;
+      },
+
+      snackbarText()
+      {
+         let request = this.$store.state.alert.message;
+         if (request)
+         {
+           this.errorSnackbar = true;
+           return request.response.data.message;
+         }
+         this.errorSnackbar = false;
+         return ""; 
       },
 
       passwordErrors() {
@@ -87,6 +100,7 @@ export default {
           const { dispatch } = this.$store;
           if (username && password) {
             dispatch('authentication/login', { username, password });
+            
           }
         }
       },

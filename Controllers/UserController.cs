@@ -37,12 +37,23 @@ namespace VueExample.Controllers
         [HttpPost]
         public IActionResult Registry([FromBody] RegistryViewModel registryViewModel)
         {
-            var currentUser = _userProvider.RegistryUser(_mapper.Map<User>(registryViewModel));
+            var user = _mapper.Map<User>(registryViewModel);
+            
+            var duplicateError = _userProvider.IsExistUserDuplicate(user);
+            if (duplicateError == null)
+            {
+                var currentUser = _userProvider.RegistryUser(user);
+                if (currentUser.Id == 0)
+                    return BadRequest(new StandardResponseObject { Message = "Ошибка при регистрации пользователя" });
 
-            if (currentUser.Id == 0)
-                return BadRequest(new StandardResponseObject { Message = "" });
+                return Ok(new StandardResponseObject<User> { Body = currentUser, Message = "Успешная регистрация" });
+            }
+            else
+            {
+                return BadRequest(new StandardResponseObject { Message = duplicateError.Message });
+            }
 
-            return Ok(new StandardResponseObject<User> { Body = currentUser, Message = "" });
+          
 
         }
 

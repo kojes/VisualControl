@@ -13,7 +13,10 @@
                             readonly>
 
               </v-text-field>
-
+             
+            </v-flex>
+            <v-flex>
+              <v-btn outline to="\login" color="teal">Я уже зарегистрирован в системе</v-btn>
             </v-flex>
             <v-flex lg4 offset-lg4>
               <v-text-field v-model="password"
@@ -25,6 +28,7 @@
                             @input="$v.password.$touch()"
                             @blur="$v.password.$touch()">
               </v-text-field>
+            
             </v-flex>
             <v-flex lg4 offset-lg4>
               <v-text-field v-model="firstname"
@@ -57,11 +61,20 @@
               </v-text-field>
             </v-flex>
             <v-flex lg4 offset-lg5>
-               <v-btn outline @click="registerAttempt">Зарегистрироваться в системе</v-btn>
+               <v-btn outline @click.native="registerAttempt">Зарегистрироваться в системе</v-btn>
             </v-flex>
+            
           </v-layout>
         </form>
-      
+    <v-snackbar v-model="errorSnackbar"
+                top>
+      {{ snackbarText }}
+      <v-btn color="pink"
+             flat
+             @click="errorSnackbar = false">
+        Закрыть
+      </v-btn>
+    </v-snackbar>
      
 </v-container>
 </template>
@@ -72,11 +85,12 @@
   export default {
     data() {
       return {
-       
-        password: "123456",
-        firstname: 'Роман',
-        surname: 'Молчанов',
-        email: 'molchanov@svrost.ru'
+
+        errorSnackbar: false,
+        password: '1234556',
+        firstname: 'Денис',
+        surname: 'Куликов',
+        email: 'kulikov@svrost.ru'
        
       }
     },
@@ -100,6 +114,17 @@
       login()
       {
           return tr(this.surname);
+      },
+
+      snackbarText()
+      {
+        let request = this.$store.state.alert.message;
+        if (request) {
+          this.errorSnackbar = true;
+          return request.response.data.message;
+        }
+        this.errorSnackbar = false;
+        return ""; 
       },
 
       passwordErrors() {

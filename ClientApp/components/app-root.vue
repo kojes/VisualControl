@@ -2,7 +2,7 @@
   <div id="main__app">
     <v-app dark>
 
-      <v-navigation-drawer fixed
+      <v-navigation-drawer v-if="auth" fixed
                            v-model="drawer"
                            app>
         <v-toolbar flat class="transparent">
@@ -39,9 +39,8 @@
       <v-toolbar v-if="auth" color="indigo" fixed app>
         <v-toolbar-side-icon v-if="auth" @click.stop="drawer = !drawer"><v-icon>drag_indicator</v-icon></v-toolbar-side-icon>
         <v-toolbar-title>Система визуального контроля</v-toolbar-title>
-        <v-btn @click="logout" fab dark color="teal">
-          <v-icon dark>list</v-icon>
-        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn to="/login" dark outline>Выйти из системы </v-btn>
       </v-toolbar>
       <v-content>
 
@@ -104,11 +103,12 @@
 
      methods:
      {
-       logout()
-       {
-         this.drawer = false;
-         this.$route.push({ path: "/login" });
-         
+       
+     },
+
+     watch: {
+       $route(to, from) {
+          this.$store.dispatch('alert/clear');
        }
      },
 
