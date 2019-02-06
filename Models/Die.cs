@@ -15,5 +15,9 @@ namespace VueExample.Models
         public string WaferId { get; set; }
         [Column("Code")]
         public string Code { get; set; }
+        [Column("x")]
+        public short XCoordinate { get; set; }
+        [Column("y")]
+        public short YCoordinate { get; set; }
     }
 }

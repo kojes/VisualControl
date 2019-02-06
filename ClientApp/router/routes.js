@@ -4,6 +4,7 @@ import DefectSingle from 'components/defect-single'
 import DefectVue from 'components/defect-mainvue'
 import DangerLevel from 'components/dangerlevel-crud'
 import DefectType from 'components/defecttype-crud'
+import WaferMap from 'components/wafermap-trtd'
 
 //Service components
 import LoginPage from 'components/login-page'
@@ -13,7 +14,8 @@ import NotFound from 'components/error-404'
 export const routes = [
   { name: "home", path: "/", component: HomePage, display: "Начальный экран", nav: true, icon: "home" },
   { name: "registration", path: '/registration', component: RegistrationPage },
-  { name: "login", path: '/login', component: LoginPage},
+  { name: "login", path: '/login', component: LoginPage },
+  { name: "wafermap", path: '/wm', component: WaferMap, display: "WaferMap", nav: true },
   { name: "defecttypeCRUD", path: "/defecttype", component: DefectType, display: "DefectType", nav: true, icon: "category" },
   { name: "dangerlevelCRUD", path: "/dangerlevel", component: DangerLevel, display: "DangerLevel", nav: true, icon: "report_problem" },
  // { name: "basic", path: "/select-basic", component: SelectBasic, display: "Просмотр измерений", nav: true },

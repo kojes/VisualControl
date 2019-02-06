@@ -57,7 +57,7 @@
 </template>
 <script>
   import chart from './time-chart.vue';
-  
+  props: ['points', 'graphic', 'devices']
  
   export default {
     data() {

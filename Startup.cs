@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -57,11 +55,13 @@ namespace VueExample
 
 
             services.AddScoped<IUserProvider, UserProvider>();
-            services.AddSingleton<IWeatherProvider, WeatherProviderFake>();
-            services.AddSingleton<IMeasurementProvider, SimpleMeasurementProvider>();
-            services.AddSingleton<IGraphicProvider, BasicGraphicProvider>();
-            services.AddSingleton<IDefectProvider, DefectProvider>();
-            services.AddSingleton<IPhotoProvider, PhotoProvider>();
+            services.AddTransient<IWaferMapProvider, WaferMapProvider>();
+            services.AddTransient<IDieProvider, DieProvider>();
+            services.AddTransient<IWeatherProvider, WeatherProviderFake>();
+            services.AddTransient<IMeasurementProvider, SimpleMeasurementProvider>();
+            services.AddTransient<IGraphicProvider, BasicGraphicProvider>();
+            services.AddTransient<IDefectProvider, DefectProvider>();
+            services.AddTransient<IPhotoProvider, PhotoProvider>();
         }
 
 

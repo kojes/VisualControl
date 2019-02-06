@@ -8,7 +8,7 @@ using VueExample.Repository;
 
 namespace VueExample.Providers
 {
-    public class DieProvider : RepositorySRV6<Die>
+    public class DieProvider : RepositorySRV6<Die>, IDieProvider
     {
         public List<Die> GetDiesByWaferId(string waferId)
         {
