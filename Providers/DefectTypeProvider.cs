@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using VueExample.Contexts;
 using VueExample.Models;
 using VueExample.Repository;
@@ -17,6 +15,17 @@ namespace VueExample.Providers
             {
                 return applicationContext.DefectTypes.ToList();
             }
+        }
+
+        public List<DefectType> GetDefectTypesFromDefectList(List<Defect> defectList)
+        {
+            var defectTypeList = new List<DefectType>();
+            foreach (var defect in defectList)
+            {
+                defectTypeList.Add(defect.DefectType);
+            }
+
+            return defectTypeList;
         }
 
         public AfterDbManipulationObject<DefectType> AddDefectType(string description, string color)

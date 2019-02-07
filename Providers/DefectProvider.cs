@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VueExample.Contexts;
 using VueExample.Models;
 using VueExample.Repository;
@@ -49,6 +50,14 @@ namespace VueExample.Providers
             using (VisualControlContext visualControlContext = new VisualControlContext())
             {
                 return visualControlContext.Defects.Where(x => x.WaferId == waferId).ToList();
+            }
+        }
+
+        public List<Defect> GetByWaferIdWithIncludes(string waferId)
+        {
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                return visualControlContext.Defects.Include(x=>x.DangerLevel).Include(x=>x.DefectType).Where(x => x.WaferId == waferId).ToList();
             }
         }
     }

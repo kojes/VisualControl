@@ -26,11 +26,12 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetBadByDefectType(string waferId, int defectTypeId)
+        public IActionResult GetByDefectType(string waferId, int defectTypeId, int dangerLevelId)
         {
             var defectsList = _defectProvider.GetByWaferId(waferId);
             var defectType = _defectTypeProvider.GetById(defectTypeId);
-            var defectiveDies = _defectiveDieProvider.GetBadByDefectType(defectsList, defectType);
+            var dangerLevel = _dangerLevelProvider.GetById(dangerLevelId);
+            var defectiveDies = _defectiveDieProvider.GetBadByDefectType(defectsList, defectType, dangerLevel);
             return Ok(defectiveDies);
         }
 

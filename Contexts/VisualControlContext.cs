@@ -19,5 +19,16 @@ namespace VueExample.Contexts
         {
             optionsBuilder.UseSqlServer(@"data source = SRV3\SRV3; Initial Catalog = VisualControl; persist security info = True; user id = vcu; password = zxvitr78KK; MultipleActiveResultSets = True;");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DefectType>()
+                .HasMany(c => c.Defects)
+                .WithOne(e => e.DefectType);
+
+            modelBuilder.Entity<DangerLevel>()
+                .HasMany(c => c.Defects)
+                .WithOne(e => e.DangerLevel);
+        }
     }
 }

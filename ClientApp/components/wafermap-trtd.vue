@@ -7,92 +7,92 @@
 </template>
 
 <script>
-  //props: ['diesJSON', 'waferId']
+ 
   export default {
+    props: ['defectedDies', 'waferId', 'streetSize', 'fieldHeight', 'fieldWidth'],
+
     data() {
       return {
         dies: [],
-        streetSize: 7,
-        fieldHeight: 840,
-        fieldWidth: 840,
-        waferId: "",
-        diesJSON: ""
+        fieldViewBox: "",
+        
+      
+       
+       
       }
     },  
 
-    created() {
-      this.waferId = "E258";
-     
-     
-
-    },
-
+   
     computed:
     {
-      fieldViewBox() {
-        return `0 0 ${this.fieldHeight} ${this.fieldWidth}`
-      }
+      
 
     },
 
     watch:
     {
 
-      diesJSON: function ()
+      defectedDies: function ()
       {
-        let selectedWafer = this.waferId;
-        this.$http.get(`/api/defectivedie/getbydangerlevel?waferId=${selectedWafer}&dangerLevelId=${1}`)
-          .then((response) => {
-            let corruptedDies = response.data;
-            for (var i = 0; i < corruptedDies.length; i++) {
-              this.dies.find(d => d.id === corruptedDies[i].dieId).fill = corruptedDies[i].color;
-            }
-          })
-          .catch((error) => {
+        
+        for (var i = 0; i < this.defectedDies.length; i++) {
+          this.dies.find(d => d.id === this.defectedDies[i].dieId).fill = this.defectedDies[i].color;
+        }
+      },
 
+      fieldWidth: {
+        immediate: true,
+        handler(newVal, oldVal) {
+          this.fieldViewBox = `0 0 ${this.fieldHeight} ${this.fieldWidth}`;
 
-          });
+        }
       },
 
       
-      waferId: function()
-      {
-        let fieldObject = {};
-        fieldObject.waferId = this.waferId;
-        fieldObject.fieldHeight = this.fieldHeight;
-        fieldObject.fieldWidth = this.fieldWidth;
-        fieldObject.streetSize = this.streetSize;
+      waferId: {
 
-        this.$http({method: "post",
+
+        immediate: true,
+        handler(newVal, oldVal) {
+
+          let fieldObject = {};
+          fieldObject.waferId = this.waferId;
+          fieldObject.fieldHeight = this.fieldHeight;
+          fieldObject.fieldWidth = this.fieldWidth;
+          fieldObject.streetSize = this.streetSize;
+
+          this.$http({
+            method: "post",
             url: `/api/wafermap/getformedwafermap`, data: fieldObject, config: {
-            headers: {
-              'Accept': "application/json",
-              'Content-Type': "application/json"
+              headers: {
+                'Accept': "application/json",
+                'Content-Type': "application/json"
+              }
             }
-          }
-        })
-          .then((response) => {
-            if (response.status === 200) {
-              this.dies = response.data;
-              this.diesJSON = "1";
-            }
-
-
-
           })
-          .catch((error) => {
+            .then((response) => {
+              if (response.status === 200) {
+                this.dies = response.data;
 
-            if (error.response.status === 400) {
-              this.dies = [];
-            }
-          });
-
+              }
 
 
+
+            })
+            .catch((error) => {
+
+              if (error.response.status === 400) {
+                this.dies = [];
+              }
+            });
+
+
+
+        }
       }
 
-     
-     
+
+
     }
   }
 </script>

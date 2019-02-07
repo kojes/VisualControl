@@ -226,9 +226,9 @@
             let selectedWafer = this.selectedWafer;
          
                     
-            this.selectedDies = [];
-            this.selectedDefects = [];
-            this.$http.get(`/api/defect/getbywaferid?waferId=${selectedWafer}`).then((response) => {
+              this.selectedDies = [];
+              this.selectedDefects = [];
+              this.$http.get(`/api/defect/getbywaferid?waferId=${selectedWafer}`).then((response) => {
               this.defects = response.data;
               let defects = this.defects;
               this.filterLoading = true;
@@ -240,7 +240,7 @@
                 .then((response) => {
                   if (response.data.errorCode === "OK") {
                     this.defectFilter = response.data.body;
-                    //this.$store.commit('setDefectFilter', response.data.body);
+                   
                     let currentdie = this.defectFilter.avbDiesList.find(x => x.dieId == this.selectedsingledieId);
                     if (this.selectedsingledieId && currentdie)
                     {

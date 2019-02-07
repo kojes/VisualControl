@@ -18,9 +18,9 @@ namespace VueExample.Providers
             return JsonConvert.SerializeObject(defectiveDiesList);
         }
 
-        public string GetBadByDefectType(List<Defect> defectList, DefectType defectType)
+        public string GetBadByDefectType(List<Defect> defectList, DefectType defectType, DangerLevel dangerLevel)
         {
-            var dieIdList = defectList.Where(x => x.DangerLevelId == 1 && x.DefectTypeId == defectType.DefectTypeId)
+            var dieIdList = defectList.Where(x => x.DangerLevelId == dangerLevel.DangerLevelId && x.DefectTypeId == defectType.DefectTypeId)
                 .Select(x => x.DieId).Distinct().ToList();
             var defectiveDiesList = new List<DefectiveDie>();
             foreach (var dieId in dieIdList)
