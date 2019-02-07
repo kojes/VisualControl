@@ -20,15 +20,18 @@ namespace VueExample.ServiceModels
         public string Fill { get; }
         [JsonProperty(PropertyName = "id")]
         public long DieId { get; }
+        [JsonProperty(PropertyName = "code")]
+        public string Code { get; }
 
-        public WaferMapDie(double xCoordinate, double yCoordinate, double height, double width, long dieId)
+        public WaferMapDie(double xCoordinate, double yCoordinate, double height, double width, long dieId, string code)
         {
+            Code = code;
             DieId = dieId;
             XCoordinate = xCoordinate;
             YCoordinate = yCoordinate;
             Height = height;
             Width = width;
-            Fill = "#c1c1c1";
+            Fill = "#b6b6b6";
         }
     }
 }

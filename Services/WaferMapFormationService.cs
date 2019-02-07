@@ -49,7 +49,7 @@ namespace VueExample.Services
                     (die.XCoordinate - XCoordinateMin) * xGridCellSize +
                     (die.XCoordinate - XCoordinateMin) * StreetSize,
                     (die.YCoordinate - YCoordinateMin) * yGridCellSize +
-                    (die.YCoordinate - YCoordinateMin) * StreetSize, yGridCellSize, xGridCellSize, die.DieId));
+                    (die.YCoordinate - YCoordinateMin) * StreetSize, yGridCellSize, xGridCellSize, die.DieId, die.Code));
 
             return waferMapDieList;
         }

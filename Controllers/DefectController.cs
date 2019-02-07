@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -64,8 +63,7 @@ namespace VueExample.Controllers
          
             var photoStorageFolder = FileSystemService.CreateNewFolder(ExtraConfiguration.PhotoStoragePath, defectViewModel.WaferId);
             foreach (var photoGuid in defectViewModel.LoadedPhotosList)
-            {
-                if (!String.IsNullOrEmpty(FileSystemService.FindFolderInTemporaryFolder(photoGuid)))
+                if (!string.IsNullOrEmpty(FileSystemService.FindFolderInTemporaryFolder(photoGuid)))
                 {
                     System.IO.File.Move(FileSystemService.GetFirstFilePathFromFolderInTemporaryFolder(photoGuid), photoStorageFolder + "\\" + photoGuid + ".jpg");
                     ims.ResizeImage(256, 256, 75, photoStorageFolder + "\\" + photoGuid + ".jpg", photoStorageFolder + "\\" + photoGuid + "_MINI.jpg");
@@ -82,14 +80,10 @@ namespace VueExample.Controllers
                 {
                     emptyPhotos.Add(photoGuid);
                 }
-            }
 
             if (emptyPhotos.Count == defectViewModel.LoadedPhotosList.Count)
             {
-                if (_photoProvider.GetPhotosByDefectId(defectId).Count == 0)
-                {
-                    _defectProvider.DeleteById(defectId);
-                }
+                if (_photoProvider.GetPhotosByDefectId(defectId).Count == 0) _defectProvider.DeleteById(defectId);
                 response = new StandardResponseObject {ResponseType = "error", Message = "Загрузите фото дефекта"};
             }
 
