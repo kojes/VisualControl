@@ -2,7 +2,7 @@
   <v-container grid-list-lg>
     <v-layout row>
       <v-flex d-flex lg7>
-        <wafermap-trtd :defectedDies="defectedDies" :waferId="waferId" :streetSize="streetSize" :fieldHeight="fieldHeight" :fieldWidth="fieldWidth">
+        <wafermap-trtd :defectiveDiesSearchProps="defectiveDiesSearchProps" :waferId="waferId" :streetSize="streetSize" :fieldHeight="fieldHeight" :fieldWidth="fieldWidth">
         </wafermap-trtd>
       </v-flex>
       <v-flex d-flex lg3>
@@ -18,8 +18,7 @@
                                     box
                                     outline
                                     label="Выберите пластину">
-
-                    </v-autocomplete>
+                   </v-autocomplete>
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -33,12 +32,11 @@
                               item-value="DefectTypeId"
                               outline
                               :disabled="checkboxAllTypes"
-                              label="Выберите тип дефекта">
+                              :label="selectedDefectTypeLabel">
                     </v-select>
                     <v-checkbox label="Показать все типы дефектов"
                                 v-model="checkboxAllTypes">
-
-                                </v-checkbox>
+                   </v-checkbox>
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -52,8 +50,7 @@
                               item-value="DangerLevelId"
                               outline
                               :disabled="checkboxOnlyBad"
-                              label="Выберите опасность дефекта">
-
+                              :label="selectedDangerLevelLabel">
                     </v-select>
                     <v-checkbox label="Показать только бракованные"
                                 v-model="checkboxOnlyBad">
@@ -83,14 +80,15 @@
 
     data() {
       return {
-        defectedDies: [],
+
+        defectiveDiesSearchProps: {dangerLevel: "", defectType: ""},
         waferId: "",
         streetSize: 7,
         fieldHeight: 840,
         fieldWidth: 840,
         selectedWafer: "",
-        selectedDefectType: {},
-        selectedDangerLevel: {},
+        selectedDefectType: "all",
+        selectedDangerLevel: 1,
         wafers: [],
         availableDefectTypes: [],
         availableDangerLevels: [],
@@ -104,6 +102,7 @@
       'wafermap-trtd': WaferMap
     },
 
+
     created()
     {
       this.$http.get(`/api/wafer/getallwithdefects`).then((response) => {
@@ -111,26 +110,54 @@
       });
     },
 
+    computed:
+    {
+      selectedDangerLevelLabel()
+      {
+         return this.checkboxOnlyBad ? "Выбран" : "Выберите опасность дефекта";
+      },
+
+      selectedDefectTypeLabel() {
+        return this.checkboxAllTypes ? "Все типы дефектов" : "Выберите тип дефекта";
+      }
+    },
+
     watch:
     {
       selectedWafer: function (val, oldVal) {
         if (val != null) {
           this.waferId = this.selectedWafer;
-          this.$http.get(`/api/defectivedie/getbydangerlevel?waferId=${this.waferId}&dangerLevelId=${1}`)
-            .then((response) => {
-              this.defectedDies = response.data;
-             
-            })
-            .catch((error) => {
-
-
-            });
+          this.checkboxOnlyBad = true;
+          this.checkboxAllTypes = true;
+         
 
         }
       },
 
+      checkboxOnlyBad: function ()
+      {
+         this.selectedDangerLevel = 1;
+      },
+
+
+      checkboxAllTypes: function ()
+      {
+         this.selectedDefectType = "all";
+      },
+
+      selectedDefectType: function ()
+      {
+         this.defectiveDiesSearchProps = { dangerLevel: this.selectedDangerLevel, defectType: this.selectedDefectType };
+      },
+
+      selectedDangerLevel: function ()
+      {
+         this.defectiveDiesSearchProps = { dangerLevel: this.selectedDangerLevel, defectType: this.selectedDefectType };
+      },
+
       waferId: async function ()
       {
+
            await this.$http.get(`/api/defecttype/getbywaferid?waferId=${this.waferId}`)
              .then((response) => {
                this.availableDefectTypes = response.data;
@@ -146,7 +173,8 @@
           .catch((error) => {
 
 
-          });
+             });
+          this.defectiveDiesSearchProps = { dangerLevel: 1, defectType: "all" };
       }
     }
 
