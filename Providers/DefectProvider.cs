@@ -53,6 +53,14 @@ namespace VueExample.Providers
             }
         }
 
+        public List<Defect> GetByDieId(long dieId)
+        {
+            using (VisualControlContext visualControlContext = new VisualControlContext())
+            {
+                return visualControlContext.Defects.Where(x => x.DieId == dieId).ToList();
+            }
+        }
+
         public List<Defect> GetByWaferIdWithIncludes(string waferId)
         {
             using (VisualControlContext visualControlContext = new VisualControlContext())

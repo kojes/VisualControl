@@ -15,6 +15,7 @@ namespace VueExample.Services
         private int XCoordinateMin { get; }
         private int YCoordinateMax { get; }
         private int XCoordinateMax { get; }
+      
         private readonly List<Die> _dieList;
 
 
@@ -35,6 +36,8 @@ namespace VueExample.Services
         {
             return JsonConvert.SerializeObject(WaferMapFormation());
         }
+
+       
 
         private List<WaferMapDie> WaferMapFormation()
         {

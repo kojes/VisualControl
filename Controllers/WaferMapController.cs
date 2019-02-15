@@ -10,12 +10,12 @@ namespace VueExample.Controllers
     public class WaferMapController : Controller
     {
         private readonly IDieProvider _dieProvider;
-       
+        private readonly IWaferMapProvider _waferMapProvider;
 
-        public WaferMapController(IDieProvider dieProvider)
+        public WaferMapController(IDieProvider dieProvider, IWaferMapProvider waferMapProvider)
         {
             _dieProvider = dieProvider;
-          
+            _waferMapProvider = waferMapProvider;
         }
 
         [HttpPost]
@@ -26,9 +26,11 @@ namespace VueExample.Controllers
             {
                 return BadRequest();
             }
+
+            var orientation = _waferMapProvider.GetByWaferId(waferMapFieldViewModel.WaferId).Orientation;
             var waferMapFormed = new WaferMapFormationService(waferMapFieldViewModel.FieldHeight,
                 waferMapFieldViewModel.FieldWidth, waferMapFieldViewModel.StreetSize, diesList).GetFormedWaferMap();
-            return Ok(waferMapFormed);
+            return Ok(new {waferMapFormed, orientation});
         }
     }
 }

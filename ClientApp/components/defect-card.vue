@@ -14,8 +14,10 @@
       <v-container grid-list-lg>
         <loading :active.sync="isloading"
                  :can-cancel="false"
-                 color="#4b0082"
+                 color="#6b6b6b"
                  loader="bars"
+                 opacity="1"
+                 background-color="#303030"
                  :is-full-page="false">
 
         </loading>
@@ -195,9 +197,13 @@
 
       });
 
-      this.$http.get(`/api/photo/getphotosbydefectid?defectId=${defectId}`).then((response) => {
-        this.photos = response.data;
-      });
+
+     
+
+        this.$http.get(`/api/photo/getphotosbydefectid?defectId=${defectId}`).then((response) => {
+          this.photos = response.data;
+        });
+    
       
 
     },

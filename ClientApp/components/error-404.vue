@@ -4,7 +4,7 @@
       <v-card>
         <v-img class="white--text"
                height="750px"
-               src="https://images.pexels.com/photos/1587/blurred-background.jpg?auto=compress&cs=tinysrgb&h=750&w=1260">
+               src="http://192.168.11.10/photostorage/static/">
           <v-container fill-height fluid>
             <v-layout fill-height align-center justify-center>
               <v-flex align-center justify-center offset-lg6>

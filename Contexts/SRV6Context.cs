@@ -14,7 +14,9 @@ namespace VueExample.Contexts
         public DbSet<Wafer> Wafers { get; set; }
         public DbSet<Die> Dies { get; set; }
         public DbSet<Stage> Stages { get; set; }
-        
+        public DbSet<WaferMap> WaferMaps { get; set; }
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"data source = SRV6\SRV3; Initial Catalog = db_process; persist security info = True; user id = labuser; password = zxvitr78KK; MultipleActiveResultSets = True;");

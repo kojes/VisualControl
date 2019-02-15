@@ -22,7 +22,9 @@ namespace VueExample.ServiceModels
         public long DieId { get; }
         [JsonProperty(PropertyName = "code")]
         public string Code { get; }
-
+        [JsonProperty(PropertyName = "isActive")]
+        public bool IsActive { get; }
+       
         public WaferMapDie(double xCoordinate, double yCoordinate, double height, double width, long dieId, string code)
         {
             Code = code;
@@ -31,7 +33,8 @@ namespace VueExample.ServiceModels
             YCoordinate = yCoordinate;
             Height = height;
             Width = width;
-            Fill = "#b6b6b6";
+            IsActive = false;
+            Fill = "#303030";
         }
     }
 }

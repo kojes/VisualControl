@@ -15,7 +15,7 @@ export const routes = [
   { name: "home", path: "/", component: HomePage, display: "Начальный экран", nav: true, icon: "home" },
   { name: "registration", path: '/registration', component: RegistrationPage },
   { name: "login", path: '/login', component: LoginPage },
-  { name: "wafermap", path: '/wafermap', component: WaferMap, display: "WaferMap", nav: true },
+  { name: "wafermap", path: '/wafermap', component: WaferMap, display: "WaferMap", nav: true, icon: "blur_circular" },
   { name: "defecttypeCRUD", path: "/defecttype", component: DefectType, display: "DefectType", nav: true, icon: "category" },
   { name: "dangerlevelCRUD", path: "/dangerlevel", component: DangerLevel, display: "DangerLevel", nav: true, icon: "report_problem" },
  // { name: "basic", path: "/select-basic", component: SelectBasic, display: "Просмотр измерений", nav: true },

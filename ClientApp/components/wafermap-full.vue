@@ -2,7 +2,7 @@
   <v-container grid-list-lg>
     <v-layout row>
       <v-flex d-flex lg7>
-        <wafermap-trtd :defectiveDiesSearchProps="defectiveDiesSearchProps" :waferId="waferId" :streetSize="streetSize" :fieldHeight="fieldHeight" :fieldWidth="fieldWidth">
+        <wafermap-trtd @show-footer="showDefects" :defectiveDiesSearchProps="defectiveDiesSearchProps" :waferId="waferId" :streetSize="streetSize" :fieldHeight="fieldHeight" :fieldWidth="fieldWidth">
         </wafermap-trtd>
       </v-flex>
       <v-flex d-flex lg3>
@@ -18,7 +18,7 @@
                                     box
                                     outline
                                     label="Выберите пластину">
-                   </v-autocomplete>
+                    </v-autocomplete>
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -36,7 +36,7 @@
                     </v-select>
                     <v-checkbox label="Показать все типы дефектов"
                                 v-model="checkboxAllTypes">
-                   </v-checkbox>
+                    </v-checkbox>
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -70,12 +70,37 @@
         </v-layout>
       </v-flex>
     </v-layout>
+    <v-bottom-sheet persistent v-model="footer">
+     
+  <v-container fill-height class="bottomsheet" grid-list-lg>
+   
+  <v-layout row wrap>
+   
+    <v-toolbar flat class="transparent">
+     
+
+      <v-spacer></v-spacer>
+      <v-btn icon color="pink" @click="footer = false">
+        <v-icon>close</v-icon>
+      </v-btn>
+    </v-toolbar>
+    <v-flex lg3 v-for="defect in selectedDefects.defects" :key="defect.defectId">
+     
+      <defect-card :defectId="defect.defectId" :dieCode="selectedDefects.dieCode"></defect-card>
+      <v-divider light></v-divider>
+
+    </v-flex>
+  </v-layout>
+  </v-container>
+
+  </v-bottom-sheet>
   </v-container>
 </template>
 
 
 <script>
   import WaferMap from './wafermap-trtd.vue'
+  import DefectCard from './defect-card.vue'
   export default {
 
     data() {
@@ -83,9 +108,11 @@
 
         defectiveDiesSearchProps: {dangerLevel: "", defectType: ""},
         waferId: "",
-        streetSize: 7,
-        fieldHeight: 840,
-        fieldWidth: 840,
+        footer: false,
+        streetSize: 6,
+        fieldHeight: 720,
+        fieldWidth: 720,
+        selectedDefects: {},
         selectedWafer: "",
         selectedDefectType: "all",
         selectedDangerLevel: 1,
@@ -93,13 +120,24 @@
         availableDefectTypes: [],
         availableDangerLevels: [],
         checkboxAllTypes: true,
-        checkboxOnlyBad: true
+        checkboxOnlyBad: true,
+        
 
       }
     },
 
     components: {
-      'wafermap-trtd': WaferMap
+      'wafermap-trtd': WaferMap, 'defect-card': DefectCard
+    },
+
+    methods:
+    {
+      showDefects(selectedDefects)
+      {
+        this.footer = true;
+        this.selectedDefects = selectedDefects;
+        
+      }
     },
 
 
@@ -114,7 +152,7 @@
     {
       selectedDangerLevelLabel()
       {
-         return this.checkboxOnlyBad ? "Выбран" : "Выберите опасность дефекта";
+         return this.checkboxOnlyBad ? "Выбрано" : "Выберите опасность дефекта";
       },
 
       selectedDefectTypeLabel() {
@@ -182,3 +220,10 @@
   }
 
 </script>
+
+<style scoped>
+  .bottomsheet {
+    background-color: rgba(48, 48, 48, 0.9);
+    
+  }
+</style>

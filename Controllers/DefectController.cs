@@ -39,6 +39,12 @@ namespace VueExample.Controllers
             return Ok(_defectProvider.GetByWaferId(waferId));
         }
 
+        [HttpGet]
+        public IActionResult GetByDieId(long dieId)
+        {
+            return Ok(_defectProvider.GetByDieId(dieId));
+        }
+
         [HttpPost]
         public IActionResult SaveNewDefect([FromBody]DefectViewModel defectViewModel)
         {
