@@ -16,6 +16,15 @@ namespace VueExample.Repository
             }
         }
 
+        
+        public virtual T GetById(long id)
+        {
+            using (VisualControlContext context = new VisualControlContext())
+            {
+                return context.Set<T>().Find(id);
+            }
+        }
+
         public virtual async Task<T> GetByIdAsync(int id)
         {
             using (VisualControlContext visualControlContext = new VisualControlContext())

@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using VueExample.Color;
 using VueExample.Helpers;
 using VueExample.Providers;
-
+using VueExample.Providers.Srv6.Interfaces;
+using VueExample.Services;
 
 namespace VueExample
 {
@@ -28,6 +30,7 @@ namespace VueExample
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddAutoMapper();
+            services.AddLazyCache();
             services.AddOptions();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -52,16 +55,19 @@ namespace VueExample
                         ValidateAudience = false
                     };
                 });
-
+                
+            
 
             services.AddScoped<IUserProvider, UserProvider>();
             services.AddTransient<IWaferMapProvider, WaferMapProvider>();
             services.AddTransient<IDieProvider, DieProvider>();
-            services.AddTransient<IWeatherProvider, WeatherProviderFake>();
             services.AddTransient<IMeasurementProvider, SimpleMeasurementProvider>();
             services.AddTransient<IGraphicProvider, BasicGraphicProvider>();
             services.AddTransient<IDefectProvider, DefectProvider>();
             services.AddTransient<IPhotoProvider, PhotoProvider>();
+            services.AddTransient<IChartJSProvider, ChartJSProvider>();
+            services.AddTransient<IDieValueService, DieValueService>();
+            services.AddTransient<IColorService, ColorService>();
         }
 
 

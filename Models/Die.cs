@@ -19,5 +19,7 @@ namespace VueExample.Models
         public short XCoordinate { get; set; }
         [Column("y")]
         public short YCoordinate { get; set; }
+        [Column("id_dt")]
+        public int? DieTypeId { get; set; }
     }
 }

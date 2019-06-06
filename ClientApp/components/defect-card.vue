@@ -1,7 +1,7 @@
 <template>
   <v-hover>
     <v-card slot-scope="{ hover }" class="card-shadow" :class="`elevation-${hover ? 12 : 0}`">
-    
+
       <lightbox id="mylightbox"
                 ref="lightbox"
                 :images="photos"
@@ -16,28 +16,28 @@
                  :can-cancel="false"
                  color="#6b6b6b"
                  loader="bars"
-                 opacity="1"
+                 :opacity="1"
                  background-color="#303030"
                  :is-full-page="false">
 
         </loading>
 
-
         <v-layout align-start justify-space-between>
-        <span>Кристалл:{{dieCode}}</span>
-        <v-tooltip top>
+          <span>Кристалл:{{dieCode}}</span>
+          <v-tooltip top>
 
-          <v-icon large slot="activator" :color="dangerLevel.color">{{badgeDangerIcon}}</v-icon>
+            <v-icon large slot="activator" :color="dangerLevel.color">{{badgeDangerIcon}}</v-icon>
 
-          <span>{{dangerLevel.specification}}</span>
-        </v-tooltip>
+            <span>{{dangerLevel.specification}}</span>
+          </v-tooltip>
         </v-layout>
 
-      
+
         <v-tabs color="indigo"
                 dark
+                slider-color="primary"
                 icons-and-text>
-      
+
 
           <v-tab href="#stage">
             Этап
@@ -53,50 +53,59 @@
             Доп.инфо
             <v-icon>watch_later</v-icon>
           </v-tab>
-        
+
           <v-tab-item value="stage">
+
             <v-card flat>
-              <v-layout align-start justify-start row>
-                <v-flex lg12>
+              <v-card-text>
+                <v-layout>
                   <v-text-field :value="stage.stageName"
                                 label="Технологический этап:"
                                 readonly>
                   </v-text-field>
-                </v-flex>
-              </v-layout>
+                </v-layout>
+              </v-card-text>
+
             </v-card>
+
           </v-tab-item>
           <v-tab-item value="defecttype">
-            <v-card flat>
-              <v-layout align-start justify-start row>
 
-                <v-flex lg12>
+            <v-card flat>
+              <v-card-text>
+                <v-layout>
                   <v-text-field :value="defectType.description"
                                 label="Тип дефекта:"
                                 readonly>
                   </v-text-field>
-                </v-flex>
-
-              </v-layout>
+                </v-layout>
+              </v-card-text>
             </v-card>
+
           </v-tab-item>
           <v-tab-item value="extra">
+
+
             <v-card flat>
-              <v-layout align-start justify-start row>
-                <v-flex lg6>
+              <v-card-text>
+                <v-layout>
                   <v-text-field :value="operator.name"
                                 label="Инженер:"
                                 readonly>
                   </v-text-field>
-                </v-flex>
-                <v-flex lg6>
                   <v-text-field :value="date.split('T')[0]"
                                 label="Дата загрузки:"
                                 readonly>
                   </v-text-field>
-                </v-flex>
-              </v-layout>
+                </v-layout>
+              </v-card-text>
             </v-card>
+
+
+
+
+
+
           </v-tab-item>
 
         </v-tabs>
@@ -155,7 +164,7 @@
       </v-container>
 
     </v-card>
-   </v-hover>
+  </v-hover>
 
 </template>
 
@@ -171,38 +180,38 @@
     mounted() {
 
      
-      let defectId = this.defectId;
-      this.$http.get(`/api/defect/getbyid?defectId=${defectId}`).then((response) => {
-        this.defect = response.data;
-        let stageId = this.defect.stageId;
+      //let defectId = this.defectId;
+      //this.$http.get(`/api/defect/getbyid?defectId=${defectId}`).then((response) => {
+      //  this.defect = response.data;
+      //  let stageId = this.defect.stageId;
 
-        this.$http.get(`/api/stage/getbyid?stageId=${stageId}`).then((response) => {
-          this.stage = response.data;
-        });
-        let dangerLevelId = this.defect.dangerLevelId;
-        this.$http.get(`/api/dangerlevel/getbyid?dangerlevelId=${dangerLevelId}`).then((response) => {
-          this.dangerLevel = response.data;
-        });
+      //  this.$http.get(`/api/stage/getbyid?stageId=${stageId}`).then((response) => {
+      //    this.stage = response.data;
+      //  });
+      //  let dangerLevelId = this.defect.dangerLevelId;
+      //  this.$http.get(`/api/dangerlevel/getbyid?dangerlevelId=${dangerLevelId}`).then((response) => {
+      //    this.dangerLevel = response.data;
+      //  });
 
-        let defectTypeId = this.defect.defectTypeId;
-        this.$http.get(`/api/defecttype/getbyid?defecttypeId=${defectTypeId}`).then((response) => {
-          this.defectType = response.data;
-        });
+      //  let defectTypeId = this.defect.defectTypeId;
+      //  this.$http.get(`/api/defecttype/getbyid?defecttypeId=${defectTypeId}`).then((response) => {
+      //    this.defectType = response.data;
+      //  });
 
-        this.date = this.defect.date;
-        this.operator = { name: this.defect.operator }
-
-
+      //  this.date = this.defect.date;
+      //  this.operator = { name: this.defect.operator }
 
 
-      });
+
+
+      //});
 
 
      
 
-        this.$http.get(`/api/photo/getphotosbydefectid?defectId=${defectId}`).then((response) => {
-          this.photos = response.data;
-        });
+      //  this.$http.get(`/api/photo/getphotosbydefectid?defectId=${defectId}`).then((response) => {
+      //    this.photos = response.data;
+      //  });
     
       
 
@@ -231,48 +240,56 @@
     watch:
     {
 
-      defectId: function () {
-        this.isloading = true;
-        let defectId = this.defectId;
-        this.$http.get(`/api/defect/getbyid?defectId=${defectId}`).then((response) => {
-          this.defect = response.data;
-          let stageId = this.defect.stageId;
+      defectId: {
 
-          this.$http.get(`/api/stage/getbyid?stageId=${stageId}`).then((response) => {
-            this.stage = response.data;
+
+        immediate: true,
+        handler(newVal, oldVal) {
+
+
+          this.isloading = true;
+          let defectId = this.defectId;
+          this.$http.get(`/api/defect/getbyid?defectId=${defectId}`).then((response) => {
+            this.defect = response.data;
+            let stageId = this.defect.stageId;
+
+            this.$http.get(`/api/stage/getbyid?stageId=${stageId}`).then((response) => {
+              this.stage = response.data;
+            });
+            let dangerLevelId = this.defect.dangerLevelId;
+            this.$http.get(`/api/dangerlevel/getbyid?dangerlevelId=${dangerLevelId}`).then((response) => {
+              this.dangerLevel = response.data;
+            });
+
+            let defectTypeId = this.defect.defectTypeId;
+            this.$http.get(`/api/defecttype/getbyid?defecttypeId=${defectTypeId}`).then((response) => {
+              this.defectType = response.data;
+            });
+
+            this.date = this.defect.date;
+            this.operator = { name: this.defect.operator }
+
+
+
+
           });
-          let dangerLevelId = this.defect.dangerLevelId;
-          this.$http.get(`/api/dangerlevel/getbyid?dangerlevelId=${dangerLevelId}`).then((response) => {
-            this.dangerLevel = response.data;
+
+          this.$http.get(`/api/photo/getphotosbydefectid?defectId=${defectId}`).then((response) => {
+            this.photos = response.data;
+          });
+        }
+        },
+
+        defect: async function () {
+
+          let waferId = this.defect.waferId;
+          await this.$http.get(`/api/photo/getphotostorageaddress`).then((response) => {
+            this.photoStorageAddress = response.data + waferId + "/";
+            this.isloading = false;
           });
 
-          let defectTypeId = this.defect.defectTypeId;
-          this.$http.get(`/api/defecttype/getbyid?defecttypeId=${defectTypeId}`).then((response) => {
-            this.defectType = response.data;
-          });
 
-          this.date = this.defect.date;
-          this.operator = { name: this.defect.operator }
-
-
-
-
-        });
-
-        this.$http.get(`/api/photo/getphotosbydefectid?defectId=${defectId}`).then((response) => {
-          this.photos = response.data;
-        });
-      },
-
-      defect: async function () {
-
-        let waferId = this.defect.waferId;
-        await this.$http.get(`/api/photo/getphotostorageaddress`).then((response) => {
-          this.photoStorageAddress = response.data + waferId + "/";
-          this.isloading = false;
-        });
-
-
+        
       }
 
     },

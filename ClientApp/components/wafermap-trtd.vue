@@ -1,12 +1,12 @@
 <template>
 <v-container fluid grid-list-lg>
- 
+  
     <svg :style="svgRotation" :height="fieldHeight" :width="fieldWidth" :viewBox="fieldViewBox">
       
-     <polyline fill="none"  stroke="rgba(63, 81, 181, 0.9)" stroke-width="4" stroke-dasharray="25"
+     <polyline fill="none"  stroke="#fc0" stroke-width="4" stroke-dasharray="25"
                     :points="cutting" />
               
-      <g v-for="(die, key, index) in dies" :key="die.id">
+      <g v-for="(die, key) in dies" :key="die.id">
         <rect  :dieIndex="key" :x="die.x" :y="die.y" :width="die.width" :height="die.height" :fill="die.fill" @click="showmenu" @contextmenu="showmenu" />
         
       </g>
@@ -29,25 +29,26 @@
   <v-bottom-nav v-model="showNav"
                 :active.sync="currentOrientation"
                 color="transparent">
-    <v-btn :value="0" flat color="rgba(63, 81, 181, 1)">
+    <v-btn :value="0" flat color="#fc0">
       0°
       
     </v-btn>
 
-    <v-btn :value="90" flat color="rgba(63, 81, 181, 1)">
+    <v-btn :value="90" flat color="#fc0">
       90°
 
     </v-btn>
 
-    <v-btn :value="180" flat color="rgba(63, 81, 181, 1)">
+    <v-btn :value="180" flat color="#fc0">
       180°
      
     </v-btn>
 
-    <v-btn :value="270" flat color="rgba(63, 81, 181, 1)">
+    <v-btn :value="270" flat color="#fc0">
       270°
      
     </v-btn>
+    
   </v-bottom-nav>
 
 </v-container>
@@ -67,7 +68,7 @@
         showNav: false,
         x: 0,
         y: 0,
-        initialOrientation: 0,
+        initialOrientation: -1,
         currentOrientation: -1,
         defectiveDies: [],
         fieldViewBox: "",
@@ -236,7 +237,7 @@
         //ONLY IF HEIGHT === WIDTH
         let bBorder = this.fieldHeight / 6;
         let tBorder = this.fieldHeight / 6 * 5;
-        if (this.initialOrientation === null)
+        if (this.initialOrientation === -1)
         {
           return `0,0 0,0`
         }
@@ -271,8 +272,9 @@
 
 <style scoped>
   rect:hover {
-    stroke: rgba(63, 81, 181, 0.5);
-    stroke-width: 3
+    stroke: #fc0;
+    stroke-width: 2;
+    stroke-opacity: 0.3
   }
 
  

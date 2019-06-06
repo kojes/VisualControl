@@ -3,13 +3,11 @@ namespace VueExample.ResponseObjects
     public class Error
     {
         public string Message { get; }
-        public string Danger { get; }
         public string Code { get; }
 
-        public Error(string message, string code = "A000", string danger = "A" )
+        public Error(string message, string code = "A000")
         {
             Message = message;
-            Danger = danger;
             Code = code;
         }
 

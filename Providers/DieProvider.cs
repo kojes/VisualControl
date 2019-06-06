@@ -14,8 +14,10 @@ namespace VueExample.Providers
         {
             using (Srv6Context srv6Context = new Srv6Context())
             {
-                return srv6Context.Dies.Where(x => x.WaferId == waferId).ToList();
+                var diesList = srv6Context.Dies.Where(x => x.WaferId == waferId).ToList();
+                return diesList;
             }
         }
+
     }
 }

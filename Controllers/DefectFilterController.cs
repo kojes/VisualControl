@@ -15,10 +15,14 @@ namespace VueExample.Controllers
     public class DefectFilterController : Controller
     {
         private StageProvider _stageProvider = new StageProvider();
-        private DieProvider _dieProvider = new DieProvider();
+        private IDieProvider _dieProvider;
         private DefectTypeProvider _defectTypeProvider = new DefectTypeProvider();
         private DangerLevelProvider _dangerLevelProvider = new DangerLevelProvider();
         
+        public DefectFilterController(IDieProvider dieProvider)
+        {
+            _dieProvider = dieProvider;
+        }
 
         [HttpGet]
         public IActionResult GetDefectFilter([FromQuery] string defects)

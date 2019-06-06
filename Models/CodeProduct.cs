@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using VueExample.Models.SRV6;
 
 namespace VueExample.Models
 {
@@ -17,5 +18,6 @@ namespace VueExample.Models
         public int ProcessId { get; set; }
         [Column("Cp_Name")]
         public string CodeProductName { get; set; }
+        public List<DieTypeCodeProduct> DieTypeCodeProducts { get; set; }
     }
 }

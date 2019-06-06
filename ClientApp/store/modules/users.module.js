@@ -1,4 +1,4 @@
-import { userService } from "../../services";
+import { userService } from '../../services'
 
 export const users = {
   namespaced: true,
@@ -6,25 +6,26 @@ export const users = {
     all: {}
   },
   actions: {
-    getAll({ commit }) {
-      commit("getAllRequest");
+    getAll ({ commit }) {
+      commit('getAllRequest')
 
       userService.getAll()
         .then(
-          users => commit("getAllSuccess", users),
-          error => commit("getAllFailure", error)
-        );
+          users => commit('getAllSuccess', users),
+          error => commit('getAllFailure', error)
+        )
     }
   },
   mutations: {
-    getAllRequest(state) {
-      state.all = { loading: true };
+    getAllRequest (state) {
+      state.all = { loading: true }
     },
-    getAllSuccess(state, users) {
-      state.all = { items: users };
+    getAllSuccess (state, users) {
+      state.all = { items: users }
     },
-    getAllFailure(state, error) {
-      state.all = { error };
+    getAllFailure (state, error) {
+      state.all = { error }
     }
   }
 }
+

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Providers;
@@ -21,7 +23,7 @@ namespace VueExample.Controllers
         [HttpPost]
         public IActionResult GetFormedWaferMap([FromBody] WaferMapFieldViewModel waferMapFieldViewModel)
         {
-            var diesList = _dieProvider.GetDiesByWaferId(waferMapFieldViewModel.WaferId);
+            var diesList = _dieProvider.GetDiesByWaferId(waferMapFieldViewModel.WaferId).ToList();
             if (diesList.Count == 0)
             {
                 return BadRequest();

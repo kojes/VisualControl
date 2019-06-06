@@ -16,6 +16,14 @@ namespace VueExample.Repository
             }
         }
 
+        public virtual T GetById(long id)
+        {
+            using (var context = new Srv6Context())
+            {
+                return context.Set<T>().Find(id);
+            }
+        }
+
         public virtual async Task<T> GetByIdAsync(int id)
         {
             using (var context = new Srv6Context())

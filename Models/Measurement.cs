@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VueExample.Models
 {
-    [Table("Meas")]
+    [Table("Measurement")]
     public class Measurement
     {
         [Column("id_measurement")]

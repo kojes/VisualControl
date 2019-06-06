@@ -23,6 +23,7 @@ namespace VueExample.Providers
         }
 
        
+
         public void DeleteById(int defectId)
         {
             using (VisualControlContext visualControlContext = new VisualControlContext())

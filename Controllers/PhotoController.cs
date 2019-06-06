@@ -10,7 +10,7 @@ namespace VueExample.Controllers
     [Route("api/[controller]/[action]")]
     public class PhotoController : Controller
     {
-        private IPhotoProvider _photoProvider;
+        private readonly IPhotoProvider _photoProvider;
 
         public PhotoController(IPhotoProvider photoProvider)
         {

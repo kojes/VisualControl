@@ -1,5 +1,5 @@
-const path = require("path");
-const webpack = require("webpack");
+const path = require('path');
+const webpack = require('webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const OptimizeCSSPlugin = require("optimize-css-assets-webpack-plugin");
 const bundleOutputDir = "./wwwroot/dist";

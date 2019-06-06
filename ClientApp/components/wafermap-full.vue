@@ -5,68 +5,99 @@
         <wafermap-trtd @show-footer="showDefects" :defectiveDiesSearchProps="defectiveDiesSearchProps" :waferId="waferId" :streetSize="streetSize" :fieldHeight="fieldHeight" :fieldWidth="fieldWidth">
         </wafermap-trtd>
       </v-flex>
-      <v-flex d-flex lg3>
+      <v-flex d-flex lg5>
         <v-layout justify-center column>
 
+       
           <v-flex d-flex>
-            <v-layout column>
-              <v-flex d-flex>
+            <v-tabs color="indigo"
+                    dark
+                    slider-color="primary"
+                    icons-and-text>
+
+
+              <v-tab href="#wafer">
+                Выбор пластины
+                <v-icon>table_chart</v-icon>
+              </v-tab>
+
+              <v-tab href="#parameters">
+                Выбор параметров
+                <v-icon>opacity</v-icon>
+              </v-tab>
+
+              <v-tab href="#statistics">
+                Статистика по пластине
+                <v-icon>watch_later</v-icon>
+              </v-tab>
+
+              <v-tab-item value="wafer">
                 <v-card color="#303030" dark>
                   <v-card-text>
                     <v-autocomplete v-model="selectedWafer"
                                     :items="wafers"
+                                    no-data-text="Нет данных"
                                     box
                                     outline
-                                    label="Выберите пластину">
+                                    label="Номер пластины">
                     </v-autocomplete>
                   </v-card-text>
                 </v-card>
-              </v-flex>
-              <v-flex d-flex>
-                <v-card color="#303030" dark>
-                  <v-card-text>
-                    <v-select v-model="selectedDefectType"
-                              :items="availableDefectTypes"
-                              no-data-text="Нет данных"
-                              item-text="Description"
-                              item-value="DefectTypeId"
-                              outline
-                              :disabled="checkboxAllTypes"
-                              :label="selectedDefectTypeLabel">
-                    </v-select>
-                    <v-checkbox label="Показать все типы дефектов"
-                                v-model="checkboxAllTypes">
-                    </v-checkbox>
-                  </v-card-text>
-                </v-card>
-              </v-flex>
-              <v-flex d-flex>
-                <v-card color="#303030" dark>
-                  <v-card-text>
-                    <v-select v-model="selectedDangerLevel"
-                              :items="availableDangerLevels"
-                              no-data-text="Нет данных"
-                              item-text="Specification"
-                              item-value="DangerLevelId"
-                              outline
-                              :disabled="checkboxOnlyBad"
-                              :label="selectedDangerLevelLabel">
-                    </v-select>
-                    <v-checkbox label="Показать только бракованные"
-                                v-model="checkboxOnlyBad">
-                    </v-checkbox>
-                  </v-card-text>
-                </v-card>
-              </v-flex>
-            </v-layout>
+              </v-tab-item>
+              <v-tab-item value="parameters">
+              <v-layout>
+                <v-flex d-flex>
+                  <v-card color="#303030" dark>
+                    <v-card-text>
+                      <v-select v-model="selectedDefectType"
+                                :items="availableDefectTypes"
+                                no-data-text="Нет данных"
+                                item-text="Description"
+                                item-value="DefectTypeId"
+                                outline
+                                :disabled="checkboxAllTypes"
+                                :label="selectedDefectTypeLabel">
+                      </v-select>
+                      <v-checkbox color="primary" label="Показать все типы дефектов"
+                                  v-model="checkboxAllTypes">
+                      </v-checkbox>
+                    </v-card-text>
+                  </v-card>
+                </v-flex>
+                <v-flex d-flex>
+                  <v-card color="#303030" dark>
+                    <v-card-text>
+                      <v-select v-model="selectedDangerLevel"
+                                :items="availableDangerLevels"
+                                no-data-text="Нет данных"
+                                item-text="Specification"
+                                item-value="DangerLevelId"
+                                outline
+                                :disabled="checkboxOnlyBad"
+                                :label="selectedDangerLevelLabel">
+                      </v-select>
+                      <v-checkbox color="primary" label="Показать только бракованные"
+                                  v-model="checkboxOnlyBad">
+                      </v-checkbox>
+                    </v-card-text>
+                  </v-card>
+                  </v-flex>
+                 </v-layout>
+             </v-tab-item>
+              <v-tab-item value="statistics">
+                
+                  
+                    <v-card  color="#303030" dark>
+                      <v-card-text>
+                        <donut-bg :routeApi="badgood3DChartApi" :parametersApi="badgood3DChartParameters" :waferId="selectedWafer"></donut-bg>
+                      </v-card-text>
+                     </v-card>
+                  
+</v-tab-item>
 
+            </v-tabs>
           </v-flex>
-          <v-flex d-flex>
-
-          </v-flex>
-          <v-flex d-flex>
-
-          </v-flex>
+         
         </v-layout>
       </v-flex>
     </v-layout>
@@ -101,6 +132,7 @@
 <script>
   import WaferMap from './wafermap-trtd.vue'
   import DefectCard from './defect-card.vue'
+  import BadGoodDonutChart from './donut-amcharts.vue';
   export default {
 
     data() {
@@ -120,14 +152,14 @@
         availableDefectTypes: [],
         availableDangerLevels: [],
         checkboxAllTypes: true,
-        checkboxOnlyBad: true,
+        checkboxOnlyBad: true
         
 
       }
     },
 
     components: {
-      'wafermap-trtd': WaferMap, 'defect-card': DefectCard
+      'wafermap-trtd': WaferMap, 'defect-card': DefectCard, 'donut-bg': BadGoodDonutChart
     },
 
     methods:
@@ -157,7 +189,18 @@
 
       selectedDefectTypeLabel() {
         return this.checkboxAllTypes ? "Все типы дефектов" : "Выберите тип дефекта";
+      },
+
+      badgood3DChartApi()
+      {
+        return '/api/chart/getbadgood';
+      },
+
+      badgood3DChartParameters()
+      {
+          return { type: "amcharts" };
       }
+
     },
 
     watch:
