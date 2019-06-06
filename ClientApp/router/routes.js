@@ -23,7 +23,7 @@ export const routes = [
   { name: 'wafermap', path: '/wafermap', component: WaferMap, display: 'WaferMap', nav: true, icon: 'blur_circular' },
   { name: 'defecttypeCRUD', path: '/defecttype', component: DefectType, display: 'DefectType', nav: true, icon: 'category' },
   { name: 'dangerlevelCRUD', path: '/dangerlevel', component: DangerLevel, display: 'DangerLevel', nav: true, icon: 'report_problem' },
-  { name: 'basic', path: '/select-basic', component: SelectBasic, display: 'Просмотр иcрытаний', nav: true },
+  { name: 'basic', path: '/select-basic', component: SelectBasic, display: 'Просмотр иcпытаний', nav: true },
   { path: '/defect/:defectid', component: DefectCard },
   { name: 'adddefect', path: '/adddefect', component: DefectSingle, display: 'Добавление дефекта', nav: true },
   { name: 'defects', path: '/defects', component: DefectVue, display: 'Просмотр дефектов', nav: true },

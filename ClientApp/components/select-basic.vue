@@ -1,59 +1,125 @@
 <template>
-  <div class="cascading-dropdown">
-    
-    <div class="form-group">
-      <label for="processSelect">Название процесса:</label>
-      <select v-model="selectedProcess" class="form-control customSelect" id="processSelect">
-        <option v-for="(option,index) in processes" v-bind:value="option.processId" >{{ option.processName }}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="codeProductSelect">Название шаблона:</label>
-      <select v-model="selectedCodeProduct" class="form-control customSelect" id="codeProductSelect">
-        <option v-for="(option,index) in codeproducts.filter(x => x.processId === selectedProcess)" v-bind:value="option.idCp" >{{ option.codeProductName }}</option>
-      </select>
-    </div>
 
-    <div class="form-group">
-      <label for="mdSelect">Название измеряемого устройства:</label>
-      <select v-model="selectedMeasuredDevice" class="form-control customSelect" id="mdSelect">
-        <option v-for="(option,index) in measureddevices.filter(x => x.codeProductId === selectedCodeProduct)" v-bind:value="option.measuredDeviceId">{{ option.name }}</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="measurementSelect">Название измерения:</label>
-      <select v-model="selectedMeasurement" class="form-control customSelect" id="measurementSelect">
-        <option v-for="(option,index) in measurements.filter(x => x.measuredDeviceId === selectedMeasuredDevice)" v-bind:value="option.measurementId">{{ option.name }}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="deviceSelect">Прибор:</label>
-      <select v-model="selectedDevice" class="form-control customSelect" id="deviceSelect">
-        <option v-for="(option,index) in devices"  v-bind:value="option.deviceId">{{ option.model + " IP:" + option.address.split("::")[1] }}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="portSelect">Порт:</label>
-      <select v-model="selectedPort" class="form-control customSelect" id="portSelect">
-        <option v-for="(option,index) in ports" v-bind:value="option">{{ option }}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="graphicSelect">Характеристика:</label>
-      <select v-model="selectedGraphicId" class="form-control customSelect" id="graphicSelect">
-        <option v-for="(option,index) in graphics" v-bind:value="option.graphicId">{{ option.russianName}}</option>
-      </select>
-     </div>
-      <div class="form-group">
-        <button id="newgraphicButton" class="btn btn-primary" v-on:click="getPoints">Построить график</button> <button id="addgraphicButton" class="btn btn-success" v-on:click="getPoints">Добавить измерение к графику</button>
-      </div>
-    <div class="form-group">
-      <component :is="currentChart" :points="points" :graphic ="selectedGraphic" :devices ="devices"></component>
-    </div>
-    
-    </div>
+ <v-container grid-list-lg>
+    <v-layout row>
+      <v-flex lg6>
+                        <v-select
+                        v-model="selectedProcess"
+                        :items="processes"
+                        no-data-text="Нет данных"
+                        item-text="processName"
+                        item-value="processId"
+                        box
+                        outline
+                        label="Название процесса:"
+                      ></v-select>
+
+
+     
+      </v-flex>
+       <v-flex lg6>
+           <v-select
+                        v-model="selectedCodeProduct"
+                        :items="codeproducts.filter(x => x.processId === selectedProcess)"
+                        no-data-text="Нет данных"
+                        item-text="codeProductName"
+                        item-value="idCp"
+                        box
+                        outline
+                        label="Название шаблона:"
+                      ></v-select>
  
+       </v-flex>
+
+   </v-layout>
+
+   <v-layout row>
+     <v-flex lg6>
+        <v-select
+                        v-model="selectedMeasuredDevice"
+                        :items="measureddevices.filter(x => x.codeProductId === selectedCodeProduct)"
+                        no-data-text="Нет данных"
+                        item-text="name"
+                        item-value="measuredDeviceId"
+                        box
+                        outline
+                        label="Название измеряемого устройства:"
+                      ></v-select>
+        
+     </v-flex>
+     <v-flex lg6>
+        <v-select
+                        v-model="selectedMeasurement"
+                        :items="measurements.filter(x => x.measuredDeviceId === selectedMeasuredDevice)"
+                        no-data-text="Нет данных"
+                        item-text="name"
+                        item-value="measurementId"
+                        box
+                        outline
+                        label="Название измерения:"
+                      ></v-select>
+      
+     </v-flex>
+   </v-layout>
+
+     <v-layout row>
+     <v-flex lg6>
+          <v-select
+                        v-model="selectedDevice"
+                        :items="devices"
+                        no-data-text="Нет данных"
+                        item-text="address"
+                        item-value="deviceId"
+                        box
+                        outline
+                        label="Прибор:"
+                      ></v-select>
+       
+     </v-flex>
+     <v-flex lg6>
+        <v-select
+                        v-model="selectedPort"
+                        :items="ports"
+                        no-data-text="Нет данных"
+                        box
+                        outline
+                        label="Порт:"
+                      ></v-select>
+      
+     </v-flex>
+   </v-layout>
+
+     <v-layout row>
+     <v-flex lg6>
+        <v-select
+                        v-model="selectedGraphicId"
+                        :items="graphics"
+                        no-data-text="Нет данных"
+                        item-text="russianName"
+                        item-value="graphicId"
+                        box
+                        outline
+                        label="Характеристика:"
+                      ></v-select>
+      
+            <label for="graphicSelect"></label>
+     
+     </v-flex>
+     <v-flex lg6>
+       <v-btn outline id="newgraphicButton" class="btn btn-primary" v-on:click="getPoints">Построить график</v-btn> 
+       <v-btn outline id="addgraphicButton" class="btn btn-success" v-on:click="getPoints">Добавить измерение к графику</v-btn>
+     </v-flex>
+   </v-layout>
+
+    <v-layout row>
+    
+     <v-flex lg12>
+         <component :is="currentChart" :points="points" :graphic ="selectedGraphic" :devices ="devices"></component>
+     </v-flex>
+   </v-layout>
+
+ </v-container>
+
 </template>
 <script>
   import chart from './time-chart.vue';

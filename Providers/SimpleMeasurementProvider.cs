@@ -19,7 +19,7 @@ namespace VueExample.Providers
             var processIdList = new List<int>();
             using (ApplicationContext db = new ApplicationContext())
             {
-                foreach (var deviceId in db.Measurement.ToList().Select(x => x.MeasuredDeviceId).Distinct().ToList())
+                foreach (var deviceId in db.Measurement.ToList().Select(x => x.MeasuredDeviceId).Distinct().Where(x => x != null).ToList())
                 {
                     codeProductIdList.Add(db.MeasuredDevice.FirstOrDefault(x => x.MeasuredDeviceId == deviceId).CodeProductId);
                     measuredDeviceList.Add(db.MeasuredDevice.FirstOrDefault(x=>x.MeasuredDeviceId == deviceId));
