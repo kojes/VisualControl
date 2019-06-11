@@ -76,5 +76,13 @@ namespace VueExample.Providers
             }
             
         }
+
+        public Measurement GetById(int measurementId)
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                return db.Measurement.Find(measurementId);
+            }
+        }
     }
 }

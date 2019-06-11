@@ -8,14 +8,36 @@
   import * as am4charts from "@amcharts/amcharts4/charts";
   import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 
-  am4core.useTheme(am4themes_animated);
+  
   export default {
+     
     props: ['points', 'graphic', 'devices'],
    
     mounted() {
       let chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart);
+      this.tempPoints = JSON.parse(JSON.stringify(this.points));
+      function am4themes_myTheme(target) {
+      if (target instanceof am4core.InterfaceColorSet) {
+        target.setFor("grid", am4core.color("#fc0"));
+        target.setFor("text", am4core.color("#fff"));
+       
+      }
 
-      
+      if (target instanceof am4core.ColorSet) {
+    target.list = [
+      am4core.color("#E64A39"),
+      am4core.color("#E97439"),
+      am4core.color("#EDD157"),
+      am4core.color("#65ED99"),
+      am4core.color("#ce978d"),
+      am4core.color("#bbbb9a"),
+      am4core.color("#C15D85"),
+      am4core.color("#94D869")
+    ];
+  }
+    }
+
+    am4core.useTheme(am4themes_myTheme);
 
      
       let dateAxis = chart.xAxes.push(new am4charts.DurationAxis());
@@ -31,25 +53,26 @@
 
 
       let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-      valueAxis.title.text = this.graphic.russianName + " (" + this.graphic.unit + ") ";  
-
+      valueAxis.title.text = this.graphic.russianName;  
+      // valueAxis.strictMinMax  = true;
+      // valueAxis.max = 0.1;
       for (var prop in this.points) {
 
         let data = [];
         let durationSpaces = [];
         
-        var entryDatepoint = Date.parse(this.points[prop][1].time);
+        var entryDatepoint = Date.parse(this.points[prop].pointsList[1].time);
         var max = 0;
-        for (let i = 1; i < this.points[prop].length; i++) {
+        for (let i = 1; i < this.points[prop].pointsList.length; i++) {
 
-          if (Date.parse(this.points[prop][i].time) - Date.parse(this.points[prop][i - 1].time) > 60000 * 10) {
-            var spaceduration = Date.parse(this.points[prop][i].time) - Date.parse(this.points[prop][i - 1].time);
-            for (let j = i; j < this.points[prop].length; j++) {
-              this.points[prop][j].time = new Date(Date.parse(this.points[prop][j].time) - spaceduration);
+        /*  if (Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time) > 60000 * 10) {
+            var spaceduration = Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time);
+            for (let j = i; j < this.points[prop].pointsList.length; j++) {
+              this.points[prop].pointsList[j].time = new Date(Date.parse(this.points[prop].pointsList[j].time) - spaceduration);
             }
-          }
-          data.push({ "duration": Date.parse(this.points[prop][i].time) - entryDatepoint, "value": this.points[prop][i].value });
-          max = Date.parse(this.points[prop][this.points[prop].length - 1].time) - entryDatepoint;
+          }*/
+          data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": this.points[prop].pointsList[i].value });
+          max = Date.parse(this.points[prop].pointsList[this.points[prop].pointsList.length - 1].time) - entryDatepoint;
         }
         let series = chart.series.push(new am4charts.LineSeries());
         series.data = data;
@@ -58,8 +81,8 @@
         series.strokeWidth = 2;
         series.tensionX = 0.7;
         series.tensionY = 0.7;
-        let device = this.devices.find(x => x.deviceId === this.points[prop][0].deviceId);
-        series.name = "Порт:" + this.points[prop][0].portNumber + " Устройство:" + device.address;
+        let device = this.devices.find(x => x.deviceId === this.points[prop].pointsList[0].deviceId);
+        series.name =  "Измерение: " + this.points[prop].measurementName + " Устройство: " + device.name + " Порт: " + this.points[prop].pointsList[0].portNumber;
       }
 
       chart.legend = new am4charts.Legend();

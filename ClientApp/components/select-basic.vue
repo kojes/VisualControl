@@ -114,7 +114,7 @@
     <v-layout row>
     
      <v-flex lg12>
-         <component :is="currentChart" :points="points" :graphic ="selectedGraphic" :devices ="devices"></component>
+         <component :is="currentChart" :points="points" :graphic ="selectedGraphic" :devices ="avDevices"></component>
      </v-flex>
    </v-layout>
 
@@ -123,8 +123,7 @@
 </template>
 <script>
   import chart from './time-chart.vue';
-  props: ['points', 'graphic', 'devices']
- 
+   
   export default {
     data() {
       return {
@@ -144,6 +143,7 @@
         graphics: [],
         ports: [],
         points: {},
+        avDevices: "",
         currentChart: ""
         
        
@@ -158,12 +158,12 @@
       getPoints: async function (event)
       {
 
-        
+          this.currentChart = "";
           var graphicId = this.selectedGraphicId;
           var deviceId = this.selectedDevice;
           var port = this.selectedPort;
           var measurementId = this.selectedMeasurement;
-          if (event.target.id == "newgraphicButton")
+          if (event.currentTarget.id == "newgraphicButton")
           {
             this.points = {};
             this.selectedGraphic = this.graphics.find(x => x.graphicId === graphicId);
@@ -171,11 +171,12 @@
 
         
                  
-          this.currentChart = "";
+          
           let response = await this.$http.get(`/api/measurement/getpoints?measurementid=${measurementId}&deviceid=${deviceId}&graphicid=${graphicId}&port=${port}`);
           if (!this.points.hasOwnProperty(Object.getOwnPropertyNames(response.data)[0]))
           {
               Object.assign(this.points, response.data);
+             
           }
           else
           {
@@ -246,7 +247,7 @@
     {
       selectedMeasurement: async function ()
       {
-        this.currentChart = "";
+        
         var measurementId = this.selectedMeasurement;
         let response = await this.$http.get(`/api/measurement/getextrainfo?measurementid=${measurementId}`);
         this.devices = response.data.devices;
@@ -284,6 +285,8 @@
         this.measureddevices = data.item3;
         this.measurements = data.item4;
         this.selectedProcess = this.processes[0].processId;
+        response = await this.$http.get(`/api/device/getall`);
+        this.avDevices = response.data;
       
       } catch (err) {
         window.alert(err);
