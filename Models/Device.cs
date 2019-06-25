@@ -14,5 +14,7 @@ namespace VueExample.Models
         public string Address { get; set; }
         public string Model { get; set; }
         public string Name { get; set; }
+
+        public IEnumerable<AtomicMeasurement> AtomicMeasurement { get; set; }
     }
 }

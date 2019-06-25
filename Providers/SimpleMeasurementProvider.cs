@@ -84,5 +84,14 @@ namespace VueExample.Providers
                 return db.Measurement.Find(measurementId);
             }
         }
+
+        public Material GetMaterial(int measurementId)
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                var materialId = db.Measurement.Find(measurementId).MaterialId;
+                return db.Material.Find(materialId);
+            }
+        }
     }
 }

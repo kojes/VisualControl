@@ -14,5 +14,6 @@ namespace VueExample.Models
         public string Specification { get; set; }
         public string Unit { get; set; }
         public string RussianName { get; set; }
+        public IEnumerable<AtomicMeasurement> AtomicMeasurement { get; set; }
     }
 }

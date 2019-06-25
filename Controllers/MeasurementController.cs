@@ -15,10 +15,12 @@ namespace VueExample.Controllers
     public class MeasurementController : Controller
     {
         private readonly IMeasurementProvider measurementProvider;
+        private readonly IMaterialProvider materialProvider;
 
-        public MeasurementController(IMeasurementProvider measurementProvider)
+        public MeasurementController(IMeasurementProvider measurementProvider, IMaterialProvider materialProvider)
         {
             this.measurementProvider = measurementProvider;
+            this.materialProvider = materialProvider;
         }
 
         [HttpGet("[action]")]
@@ -26,6 +28,20 @@ namespace VueExample.Controllers
         {
             var measurementInfo = measurementProvider.GetAllMeasurementInfo();
             return Ok(measurementInfo);
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetMaterial([FromQuery(Name = "measurementid")] int measurementId)
+        {
+           
+            return Ok(measurementProvider.GetMaterial(measurementId));
+        }
+
+        [HttpPost("[action]")]
+        public IActionResult ChangeMaterial([FromBody] ChangeMaterialViewModel changeMaterialViewModel)
+        {
+            var newMaterial = materialProvider.ChangeMaterialOnMeasurement(changeMaterialViewModel.MeasurementId, changeMaterialViewModel.MaterialId);
+            return Ok(newMaterial);
         }
 
         [HttpGet("[action]")]

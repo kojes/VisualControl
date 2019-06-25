@@ -16,5 +16,11 @@ namespace VueExample.Models
         public string Name { get; set; }
         [Column("id_measureddevice")]
         public int? MeasuredDeviceId { get; set; }
+        [Column("id_material")]
+        public int? MaterialId { get; set; }
+
+        public IEnumerable<AtomicMeasurement> AtomicMeasurement { get; set; }
+
+
     }
 }

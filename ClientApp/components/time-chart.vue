@@ -47,7 +47,7 @@
 
       chart.cursor = new am4charts.XYCursor();
 
-      
+      chart.cursor.behavior = "zoomXY";
 
       chart.durationFormatter.durationFormat = "hh':'mm':'ss";
 
@@ -72,7 +72,7 @@
             }
           }*/
           data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": this.points[prop].pointsList[i].value });
-          max = Date.parse(this.points[prop].pointsList[this.points[prop].pointsList.length - 1].time) - entryDatepoint;
+          //max = Date.parse(this.points[prop].pointsList[this.points[prop].pointsList.length - 1].time) - entryDatepoint;
         }
         let series = chart.series.push(new am4charts.LineSeries());
         series.data = data;
@@ -94,7 +94,7 @@
             
       dateAxis.strictMinMax = true;
       dateAxis.min = 0;
-      dateAxis.max = max;
+     
 
       chart.colors.step = 2;
       this.chart = chart;
