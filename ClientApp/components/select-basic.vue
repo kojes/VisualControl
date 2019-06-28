@@ -138,7 +138,7 @@
             ></v-select>
           </v-toolbar>
 
-          <v-list two-line>
+          <v-list style="max-height: 500px" class="scroll-y" two-line>
             <template v-for="item in selectedAtomics">
               <v-list-tile :key="item.atomicMeasurementId" ripple>
                 <v-list-tile-content>
@@ -247,12 +247,15 @@
     </v-layout>
     <v-layout row>
       <v-flex lg12>
-        <component
-          :is="currentChart"
-          :points="points"
-          :graphic="selectedGraphic"
-          :devices="avDevices"
-        ></component>
+        <div id="chart">
+          <component
+            :is="currentChart"
+            :points="points"
+            :graphic="selectedGraphic"
+            :devices="avDevices"
+          ></component>
+        </div>
+       
       </v-flex>
     </v-layout>
 
@@ -535,6 +538,7 @@ export default {
         Object.assign(this.points, response.data);
       }
       this.currentChart = "chart";
+      this.$vuetify.goTo('#chart')
     },
 
     getPoints: async function(event) {
@@ -588,6 +592,7 @@ export default {
       }
       if (Object.keys(this.points).length > 0) {
         this.currentChart = "chart";
+        this.$vuetify.goTo('#chart', { offset: 300 })
         if (response.status === 204) {
           this.$swal({
             type: "warning",

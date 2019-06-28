@@ -7,11 +7,12 @@
   import * as am4core from "@amcharts/amcharts4/core";
   import * as am4charts from "@amcharts/amcharts4/charts";
   import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-
+  import smooth from 'array-smooth'
   
   export default {
      
     props: ['points', 'graphic', 'devices'],
+
    
     mounted() {
       let chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart);
@@ -59,23 +60,29 @@
       for (var prop in this.points) {
 
         let data = [];
+        let getter = (item) => item.value;
+        let setter = (item, itemSmoothed) => ({ duration: item.duration, value: itemSmoothed })
         let durationSpaces = [];
         
         var entryDatepoint = Date.parse(this.points[prop].pointsList[1].time);
         var max = 0;
+        var adequateSpace = Date.parse(this.points[prop].pointsList[1].time) - Date.parse(this.points[prop].pointsList[0].time);
         for (let i = 1; i < this.points[prop].pointsList.length; i++) {
 
-        /*  if (Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time) > 60000 * 10) {
+           if (Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time) > 2*adequateSpace) {
             var spaceduration = Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time);
             for (let j = i; j < this.points[prop].pointsList.length; j++) {
               this.points[prop].pointsList[j].time = new Date(Date.parse(this.points[prop].pointsList[j].time) - spaceduration);
             }
-          }*/
-          data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": this.points[prop].pointsList[i].value });
+          }
+          data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": +this.points[prop].pointsList[i].value});
+        
+          
           //max = Date.parse(this.points[prop].pointsList[this.points[prop].pointsList.length - 1].time) - entryDatepoint;
         }
         let series = chart.series.push(new am4charts.LineSeries());
-        series.data = data;
+      
+        series.data = smooth(data, 8, getter, setter);;
         series.dataFields.valueX = "duration";
         series.dataFields.valueY = "value";
         series.strokeWidth = 2;
@@ -113,6 +120,6 @@
 <style scoped>
   .hello {
     width: 90%;
-    height: 500px;
-  }
+    height: 700px;
+}
 </style>
