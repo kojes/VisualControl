@@ -44,6 +44,14 @@ namespace VueExample.Contexts {
                 .HasMany (c => c.AtomicMeasurement)
                 .WithOne (e => e.Measurement);
 
+            modelBuilder.Entity<Measurement> ()
+                .HasMany (c => c.Points)
+                .WithOne (e => e.Measurement);
+
+            modelBuilder.Entity<Material> ()
+                .HasMany (c => c.Measurements)
+                .WithOne (e => e.Material);
+
             modelBuilder.Entity<Graphic> ()
                 .HasMany (c => c.AtomicMeasurement)
                 .WithOne (e => e.Graphic);

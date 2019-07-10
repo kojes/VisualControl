@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using VueExample.Contexts;
 using VueExample.Models;
@@ -7,7 +8,7 @@ namespace VueExample.Providers {
     public class AtomicMeasurementProvider : IAtomicMeasurementProvider {
         public int AddToMeasurementSet (AtomicMeasurementViewModel atomicMeasurementViewModel) {
             var measurementSetId = atomicMeasurementViewModel.MeasurementSetId;
-            int atomicMeasurementId = FindOrCreate (atomicMeasurementViewModel.MeasurementId,
+            int atomicMeasurementId = FindOrCreate(atomicMeasurementViewModel.MeasurementId,
                 atomicMeasurementViewModel.DeviceId, atomicMeasurementViewModel.PortNumber,
                 atomicMeasurementViewModel.GraphicId);
                 
@@ -17,19 +18,18 @@ namespace VueExample.Providers {
 
             using (ApplicationContext applicationContext = new ApplicationContext ()) {
 
-                var measurementSetAtomicMeasurement = new MeasurementSetAtomicMeasurement {
-                MeasurementSetId = measurementSetId,
-                AtomicMeasurementId = atomicMeasurementId
-                };
-                applicationContext.MeasurementSetAtomicMeasurement.Add (measurementSetAtomicMeasurement);
-                applicationContext.SaveChanges ();
+                var measurementSetAtomicMeasurement = new MeasurementSetAtomicMeasurement
+                                                         {MeasurementSetId = measurementSetId,
+                                                          AtomicMeasurementId = atomicMeasurementId};
+                applicationContext.MeasurementSetAtomicMeasurement.Add(measurementSetAtomicMeasurement);
+                applicationContext.SaveChanges();
                 return measurementSetAtomicMeasurement.Id;
 
             }
 
         }
 
-        public void DeleteFromMeasurementSet (int measurementSetId, int atomicId) {
+        public void DeleteFromMeasurementSet (Guid measurementSetId, int atomicId) {
             using (ApplicationContext applicationContext = new ApplicationContext ()) {
                 var measurementSetAtomicMeasurement = new MeasurementSetAtomicMeasurement {
                 MeasurementSetId = measurementSetId,
@@ -41,7 +41,7 @@ namespace VueExample.Providers {
             }
         }
 
-        private bool FindDuplicateMeasurementSetAtomicMeasurement (int measurementSetId, int atomicId) {
+        private bool FindDuplicateMeasurementSetAtomicMeasurement (Guid measurementSetId, int atomicId) {
             var isDuplicateExist = false;
             using (ApplicationContext applicationContext = new ApplicationContext ()) {
                 if (applicationContext.MeasurementSetAtomicMeasurement.Count (_ => _.AtomicMeasurementId == atomicId && _.MeasurementSetId == measurementSetId) > 0) {

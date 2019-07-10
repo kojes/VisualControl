@@ -1,9 +1,93 @@
 <template>
   <v-container grid-list-lg>
     <v-layout wrap row>
+        <v-btn
+              fixed
+              dark
+              fab
+              bottom
+              right
+              @click.stop="drawer = !drawer"
+              color="indigo"
+            >
+              <v-icon>settings</v-icon>
+            </v-btn>
       <v-flex lg8>
         <v-layout row>
           <v-flex lg6>
+           
+            <v-navigation-drawer
+      v-model="drawer"
+      fixed
+      right
+      temporary
+    >
+      <v-list>
+        <v-chip>Сглаживание</v-chip>
+        <v-divider></v-divider>
+      </v-list>
+
+      <v-list>
+        <v-layout>
+          <v-flex lg10 offset-lg1>
+        <v-checkbox v-model="settings.smoothing.require" label="Сглаживание"></v-checkbox>
+        <v-slider
+          v-model="settings.smoothing.power"
+          :disabled="!settings.smoothing.require"
+          thumb-color="indigo"
+          thumb-label="always"
+          :max="8"
+          :min="2"
+          :step="2"
+        ></v-slider>
+        </v-flex>
+        </v-layout>
+      </v-list>
+      <v-list>
+        <v-chip>Настройки оси Y</v-chip>
+        <v-divider></v-divider>
+      </v-list>
+
+       <v-list>
+       
+        <v-layout>
+          <v-flex lg10 offset-lg1>
+            <v-checkbox v-model="settings.axisY.strictMinMax" label="Ручная установка границ оси Y"></v-checkbox>
+            
+                   
+           
+            <v-text-field
+            label="Максимум:"
+            :disabled="!settings.axisY.strictMinMax"
+            class="numberinput"
+            v-on:keypress="isNumber(event)"
+            v-model.number="settings.axisY.max"
+            outline
+          ></v-text-field>
+
+           <v-text-field
+            label="Минимум:"
+            :disabled="!settings.axisY.strictMinMax"
+            v-on:keypress="isNumber(event)"
+            v-model.number="settings.axisY.min"
+            class="numberinput"
+            outline
+          ></v-text-field>
+
+          </v-flex>
+        </v-layout>
+    
+      </v-list>
+      <v-list class="pa-1">
+        <v-divider></v-divider>
+         <v-btn
+              outline
+              class="btn btn-primary"
+              v-on:click="saveSettings"
+            >Сохранить настройки</v-btn>
+       </v-list>
+   
+    </v-navigation-drawer>
             <v-select
               v-model="selectedProcess"
               :items="processes"
@@ -116,13 +200,32 @@
               v-on:click="getPoints"
             >Добавить измерение к графику</v-btn>
 
-            <v-btn
-              v-if="measurementSets.length > 0"
+            <v-btn 
+               
+              v-if="measurementSets.filter(x => !x.isGenerated).length > 0"
               class="btn btn-primary"
               outline
               @click="dialogAddToMeasurementSet=true"
             >Добавить к серии</v-btn>
           </v-flex>
+           <v-flex lg6>
+             <v-tooltip right>
+              <template v-slot:activator="{ on }">
+               
+                 <v-chip :color="onlineStatusColor" text-color="white" width="200px" dark v-on="on">
+                    {{selectedOnlineStatus.isOnline ? "Онлайн" : "Измерение окончено"}}
+                    <v-icon right>{{selectedOnlineStatus.isOnline ? "live_tv" : "close"}}</v-icon>
+                  </v-chip>
+
+              </template>
+              <span>{{"Начало измерений: " + selectedOnlineStatus.startTime }}</span>
+              <v-divider></v-divider>
+              <span v-if="!selectedOnlineStatus.isOnline">{{"Конец измерений: " + selectedOnlineStatus.lastTime}}</span>
+              <v-divider></v-divider>
+              <span>{{"Время испытания в часах: " + Math.floor(selectedOnlineStatus.fullTimeInSeconds / 3600)}}</span>
+            </v-tooltip>
+           
+           </v-flex>
         </v-layout>
       </v-flex>
       <v-flex lg4>
@@ -141,6 +244,16 @@
           <v-list style="max-height: 500px" class="scroll-y" two-line>
             <template v-for="item in selectedAtomics">
               <v-list-tile :key="item.atomicMeasurementId" ripple>
+              <v-list-tile-action>
+              <div v-if="item.isOnline">
+                  <span class="ringringOnline"></span>
+                  <span class="circleOnline"></span>
+              </div>
+              <div v-else>
+                  <span class="circleDead"></span>
+              </div>
+              </v-list-tile-action>
+            
                 <v-list-tile-content>
                   <v-list-tile-title>Измерение:{{ item.measurementName }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">Прибор:{{ item.deviceName }}</v-list-tile-sub-title>
@@ -148,8 +261,8 @@
                 </v-list-tile-content>
 
                 <v-list-tile-action>
-                  <v-icon
-                    color="yellow darken-2"
+                  <v-icon v-if="!measurementSets.find(x => x.measurementSetId === selectedMeasurementSet).isGenerated"
+                    color="primary"
                     @click="deleteFromSet(item.atomicMeasurementId)"
                   >delete_outline</v-icon>
                 </v-list-tile-action>
@@ -172,7 +285,7 @@
 
         <v-btn
           outline
-          v-if="measurementSets.length > 0"
+          v-if="!measurementSets.find(x => x.measurementSetId == selectedMeasurementSet).isGenerated"
           class="btn btn-primary"
           v-on:click="deleteThisMeasurementSet"
         >Удалить текущую серию</v-btn>
@@ -183,8 +296,8 @@
             <v-card-text>
               <v-select
                 v-model="selectedMeasurementSetInDialog"
-                :items="measurementSets"
-                no-data-text="Нет данных"
+                :items="measurementSets.filter(x => !x.isGenerated)"
+                no-data-text="Нет серий для добавления"
                 item-text="name"
                 item-value="measurementSetId"
                 label="Название серии измерений:"
@@ -193,7 +306,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn class="btn btn-primary" outline @click="addToMeasurementSet">Добавить</v-btn>
+                <v-btn v-if="selectedMeasurementSetInDialog.length > 0" class="btn btn-primary" outline @click="addToMeasurementSet">Добавить</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -228,7 +341,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary" outline @click="addNewMeasurementSet">Добавить</v-btn>
+              <v-btn  color="primary" outline @click="addNewMeasurementSet">Добавить</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -253,6 +366,7 @@
             :points="points"
             :graphic="selectedGraphic"
             :devices="avDevices"
+            :settings="savedSettings"
           ></component>
         </div>
        
@@ -266,11 +380,18 @@
   </v-container>
 </template>
 <script>
-import chart from "./time-chart.vue";
 
+import chart from "./time-chart.vue";
+import date from 'date-and-time';
+date.locale('ru')
 export default {
   data() {
     return {
+      drawer: null,
+        items: [
+          { title: 'Home', icon: 'dashboard' },
+          { title: 'About', icon: 'question_answer' }
+        ],
       fab: false,
       dialogAddToMeasurementSet: false,
       dialogAddMeasurementSet: false,
@@ -288,6 +409,7 @@ export default {
       selectedDevice: "",
       selectedMaterialInDialog:"",
       selectedPort: "",
+      selectedOnlineStatus: {},
       selectedGraphic: "",
       selectedGraphicId: "",
       selectedProcess: "",
@@ -295,6 +417,21 @@ export default {
       selectedMeasuredDevice: "",
       measurements: [],
       processes: [],
+      settings: {
+           smoothing:
+           {
+               require: true,
+               power: 8
+           },
+           axisY:
+           {
+               strictMinMax: false,
+               min: 0,
+               max: 0
+              
+           }
+      },
+      savedSettings: {},
       codeproducts: [],
       measureddevices: [],
       measurementSets: [],
@@ -311,7 +448,40 @@ export default {
   components: {
     chart
   },
+
+  computed:
+  {
+     onlineStatusColor: function()
+     {
+         if(this.selectedOnlineStatus.isOnline)
+         {
+            return "green";
+         }
+         else
+         {
+            return "pink";
+         }
+     }
+
+  },
   methods: {
+
+    saveSettings()
+    {
+       this.savedSettings = JSON.parse(JSON.stringify(this.settings));
+       this.drawer = false;
+       
+    },
+
+     isNumber: function(evt) {
+      evt = (evt) ? evt : window.event;
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+        evt.preventDefault();;
+      } else {
+        return true;
+      }
+    },
 
     editMaterial()
     {
@@ -378,19 +548,14 @@ export default {
                 this.newMeasurementSetName
               } успешно добавлена`;
               this.measurementSets.push(response.data);
-
               this.selectedMeasurementSet = this.measurementSets[
                 this.measurementSets.length - 1
               ].measurementSetId;
-              this.selectedMeasurementSetInDialog = this.measurementSets[
-                this.measurementSets.length - 1
-              ].measurementSetId;
+             
             }
 
             if (response.status === 200) {
-              this.snackbarText = `Серия ${
-                this.newMeasurementSetName
-              } уже существует`;
+              this.snackbarText = response.data;
             }
 
             this.dialogAddMeasurementSet = false;
@@ -405,7 +570,7 @@ export default {
 
     deleteThisMeasurementSet() {
       if (this.dialogDeleteMeasurementSet === false) {
-        if (this.measurementSets.length === 0) {
+        if (this.measurementSets.filter(x => !x.isGenerated).length === 0) {
           this.snackbar = true;
           this.snackbarText = "Нет серий для удаления";
         } else {
@@ -425,16 +590,11 @@ export default {
           .then(response => {
             if (response.status === 200) {
               this.snackbarText = `Серия ${
-                this.measurementSets.find(
-                  _ => _.measurementSetId === this.selectedMeasurementSet
-                ).name
-              } успешно удалена`;
-              this.measurementSets = this.measurementSets.filter(
-                _ => _.measurementSetId !== this.selectedMeasurementSet
-              );
+                this.measurementSets.find(_ => _.measurementSetId === this.selectedMeasurementSet).name} успешно удалена`;
+              this.measurementSets = this.measurementSets.filter(_ => _.measurementSetId !== this.selectedMeasurementSet);
               if (this.measurementSets.length > 0) {
                 this.selectedMeasurementSet = this.measurementSets[0].measurementSetId;
-                this.selectedMeasurementSetInDialog = this.measurementSets[0].measurementSetId;
+              
               } else {
                 this.selectedAtomics = [];
               }
@@ -509,8 +669,8 @@ export default {
 
           if (response.status === 201) {
             this.snackbarText = "Успешно добавлено";
-            var selectedMeasurementSetId = this.selectedMeasurementSet;
-            this.$http.get(`/api/measurementset/getatomicsbyid?measurementsetid=${selectedMeasurementSetId}`).then(response => this.selectedAtomics = response.data);
+            var route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet)[0].route;
+            this.$http.get(`/api/measurementset/getatomics/${route}`).then(response => this.selectedAtomics = response.data);
             
           }
 
@@ -615,7 +775,25 @@ export default {
       }
     }
   },
+
+  
+
   watch: {
+
+    'settings.axisY': 
+    {
+            handler: function() {
+
+                     
+              if(this.settings.axisY.min > this.settings.axisY.max)
+              {
+                   this.settings.axisY.min = this.settings.axisY.max;
+              }
+                
+            },
+            deep: true
+    },
+
     selectedMeasurement: async function() {
       var measurementId = this.selectedMeasurement;
       let response = await this.$http.get(
@@ -627,10 +805,16 @@ export default {
       this.selectedPort = this.ports[0];
       this.graphics = response.data.graphic;
       this.selectedGraphicId = this.graphics[0].graphicId;
-      response = await this.$http.get(
+      let material = await this.$http.get(
         `/api/measurement/getmaterial?measurementid=${measurementId}`
       );
-      this.selectedMaterial = response.data;
+      this.selectedMaterial = material.data;
+      let onlinestatus = await this.$http.get(
+        `/api/measurement/getonlinestatus?measurementid=${measurementId}`
+      );
+      this.selectedOnlineStatus = onlinestatus.data;
+      this.selectedOnlineStatus.startTime = date.format(date.parse(this.selectedOnlineStatus.startTime.split('T')[0], 'YYYY-MM-DD'), 'DD MMM YYYY');
+      this.selectedOnlineStatus.lastTime = date.format(date.parse(this.selectedOnlineStatus.lastTime.split('T')[0], 'YYYY-MM-DD'), 'DD MMM YYYY');
     },
 
     selectedProcess: function() {
@@ -648,12 +832,12 @@ export default {
     },
 
     selectedMeasurementSet: async function() {
-      var selectedMeasurementSetId = this.selectedMeasurementSet;
+      var route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet)[0].route;
       let response = await this.$http.get(
-        `/api/measurementset/getatomicsbyid?measurementsetid=${selectedMeasurementSetId}`
+        `/api/measurementset/getatomics/${route}`
       );
       this.selectedAtomics = response.data;
-      this.selectedMeasurementSetInDialog = selectedMeasurementSetId;
+     
      
     },
 
@@ -680,8 +864,10 @@ export default {
 
       if (this.measurementSets.length > 0) {
         this.selectedMeasurementSet = this.measurementSets[0].measurementSetId;
-        this.selectedMeasurementSetInDialog = this.measurementSets[0].measurementSetId;
+        
       }
+
+      this.savedSettings = JSON.parse(JSON.stringify(this.settings));
     } catch (err) {
       window.alert(err);
       console.log(err);
@@ -690,6 +876,48 @@ export default {
 };
 </script>
 <style>
+
+
+.circleOnline {
+    width: 15px;
+    height: 15px;
+    background-color: #62bd19;
+    border-radius: 50%;
+    position: absolute;
+    top: 23px;
+    left: 23px;
+}
+
+.ringringOnline {
+    border: 3px solid #62bd19;
+    -webkit-border-radius: 30px;
+    height: 25px;
+    width: 25px;
+    position: absolute;
+    left: 17.5px;
+    top: 17.5px;
+    -webkit-animation: pulsate 2s ease-out;
+    -webkit-animation-iteration-count: infinite; 
+    opacity: 0.0
+}
+
+.circleDead {
+    width: 15px;
+    height: 15px;
+    background-color: #E91E63;
+    border-radius: 50%;
+    position: absolute;
+    top: 23px;
+    left: 23px;
+}
+
+
+@-webkit-keyframes pulsate {
+    0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.0;}
+    50% {opacity: 1.0;}
+    100% {-webkit-transform: scale(1.2, 1.2); opacity: 0.0;}
+}
+
 .v-speed-dial {
   position: absolute;
 }
@@ -699,5 +927,13 @@ export default {
 }
 .customSelect {
   width: 30%;
+}
+
+.numberinput input[type='number'] {
+    -moz-appearance:textfield;
+}
+.numberinput input::-webkit-outer-spin-button,
+.numberinput input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
 }
 </style>

@@ -2,8 +2,8 @@ namespace VueExample.ViewModels
 {
     public class MaterialViewModel
     {
-       
-        public string OldName { get; set; }
-        public string NewName { get; set; }
+        public int MaterialId { get; set; }
+        
+        public string Name { get; set; }        
     }
 }

@@ -11,8 +11,11 @@ namespace VueExample.ResponseObjects
             Code = code;
         }
 
-       
-
-
+        public Error()
+        {
+            Message = "No Errors";
+            Code = "AAA";
+        }
+    
     }
 }

@@ -1,17 +1,14 @@
-using System.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using VueExample.Providers;
 using VueExample.Extensions;
 using VueExample.ViewModels;
 
 namespace VueExample.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class MeasurementController : Controller
     {
         private readonly IMeasurementProvider measurementProvider;
@@ -23,34 +20,41 @@ namespace VueExample.Controllers
             this.materialProvider = materialProvider;
         }
 
-        [HttpGet("[action]")]
+        [HttpGet]
         public IActionResult FullInfo()
         {
             var measurementInfo = measurementProvider.GetAllMeasurementInfo();
             return Ok(measurementInfo);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet]
+        public IActionResult GetOnlineStatus([FromQuery(Name = "measurementid")] int measurementId)
+        {
+            var onlineStatus = measurementProvider.GetMeasurementOnlineStatus(measurementId);
+            return Ok(onlineStatus);
+        }
+
+        [HttpGet]
         public IActionResult GetMaterial([FromQuery(Name = "measurementid")] int measurementId)
         {
            
             return Ok(measurementProvider.GetMaterial(measurementId));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost]
         public IActionResult ChangeMaterial([FromBody] ChangeMaterialViewModel changeMaterialViewModel)
         {
             var newMaterial = materialProvider.ChangeMaterialOnMeasurement(changeMaterialViewModel.MeasurementId, changeMaterialViewModel.MaterialId);
             return Ok(newMaterial);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet]
         public IActionResult GetExtraInfo([FromQuery(Name = "measurementid")] int measurementId)
         {
             return Ok(measurementProvider.GetPointsByMeasurementId(measurementId));
         }
 
-        [HttpGet("[action]")]
+        [HttpGet]
         public IActionResult GetPoints([FromQuery(Name = "measurementid")] int measurementId, [FromQuery(Name = "deviceid")] int deviceId, [FromQuery(Name = "graphicid")] int graphicId, [FromQuery(Name = "port")] int port)
         {
             var pointsDictionary = new Dictionary<string, PointsViewModel>();

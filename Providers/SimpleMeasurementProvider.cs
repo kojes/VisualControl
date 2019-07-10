@@ -2,13 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using VueExample.Contexts;
 using VueExample.Models;
+using VueExample.ViewModels;
 
 namespace VueExample.Providers
 {
     public class SimpleMeasurementProvider : IMeasurementProvider
     {
+        private IMapper _mapper;
+        public SimpleMeasurementProvider(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
         public (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo()
         {
             var codeProductIdList = new List<int>();
@@ -43,7 +51,7 @@ namespace VueExample.Providers
             }
 
             measurementList.Reverse();
-            return (processList.Distinct().ToList(), codeProductList.Distinct().ToList(), measuredDeviceList.Distinct().ToList(), measurementList);
+            return (processList.Distinct().ToList(), codeProductList.Distinct().ToList(), measuredDeviceList.Distinct().OrderBy(_ => _.Name).ToList(), measurementList);
         }
 
         public Object GetPointsByMeasurementId(int measurementId)
@@ -85,13 +93,39 @@ namespace VueExample.Providers
             }
         }
 
-        public Material GetMaterial(int measurementId)
+        public MaterialViewModel GetMaterial(int measurementId)
         {
             using (ApplicationContext db = new ApplicationContext())
             {
-                var materialId = db.Measurement.Find(measurementId).MaterialId;
-                return db.Material.Find(materialId);
+               return _mapper.Map<MaterialViewModel>(db.Measurement.Include(_ => _.Material).FirstOrDefault(_ => _.MeasurementId == measurementId).Material);
             }
         }
+
+        public MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId)
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                var pointsList = db.Point.Where(x => x.MeasurementId == measurementId).OrderBy(_ => _.PointId).ToList();
+                var measurement = db.Measurement.Find(measurementId);
+                var measurementOnlineStatus = new MeasurementOnlineStatus(measurement.IntervalInSeconds, pointsList.First().Time, pointsList.Last().Time);
+                return measurementOnlineStatus;
+            }
+        }
+
+        public bool IsMeasurementOnline(int measurementId)
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                var measurement = db.Measurement.Find(measurementId);
+                if (measurement.IntervalInSeconds != null)
+                {                   
+                    return db.Point.Where(_ => _.MeasurementId == measurementId).OrderByDescending(_ => _.PointId).FirstOrDefault().Time.AddSeconds((double)2 * measurement.IntervalInSeconds.GetValueOrDefault()) > DateTime.Now; 
+                }
+                return false;
+               
+            }
+        }
+
+        
     }
 }

@@ -11,7 +11,7 @@
   
   export default {
      
-    props: ['points', 'graphic', 'devices'],
+    props: ['points', 'graphic', 'devices', 'settings'],
 
    
     mounted() {
@@ -55,8 +55,7 @@
 
       let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
       valueAxis.title.text = this.graphic.russianName;  
-      // valueAxis.strictMinMax  = true;
-      // valueAxis.max = 0.1;
+     
       for (var prop in this.points) {
 
         let data = [];
@@ -82,7 +81,16 @@
         }
         let series = chart.series.push(new am4charts.LineSeries());
       
-        series.data = smooth(data, 8, getter, setter);;
+        if(this.settings.smoothing.require)
+        { 
+           series.data = smooth(data, this.settings.smoothing.power, getter, setter);
+        }
+        else
+        {
+           series.data = data;
+        }
+
+        
         series.dataFields.valueX = "duration";
         series.dataFields.valueY = "value";
         series.strokeWidth = 2;
@@ -98,7 +106,14 @@
       markerTemplate.width = 40;
       markerTemplate.height = 40;
 
-            
+      valueAxis.strictMinMax = false;      
+      if(this.settings.axisY.strictMinMax)
+      {
+          valueAxis.strictMinMax = true;
+          valueAxis.min = this.settings.axisY.min;
+          valueAxis.max = this.settings.axisY.max;
+      }
+       
       dateAxis.strictMinMax = true;
       dateAxis.min = 0;
      

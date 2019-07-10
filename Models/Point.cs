@@ -20,5 +20,7 @@ namespace VueExample.Models
         public int MeasurementId { get; set; }
         public DateTime Time { get; set; }
         public string Value { get; set; }
+        public Measurement Measurement { get; set; }
+        
     }
 }

@@ -1,7 +1,9 @@
+using System;
+
 namespace VueExample.ViewModels {
     public class AtomicMeasurementViewModel 
     {
-        public int MeasurementSetId { get; set; }
+        public Guid MeasurementSetId { get; set; }
         public int MeasurementId { get; set; }
 
         public int GraphicId { get; set; }

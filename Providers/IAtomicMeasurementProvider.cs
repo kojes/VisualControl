@@ -1,3 +1,4 @@
+using System;
 using VueExample.ViewModels;
 
 namespace VueExample.Providers
@@ -5,7 +6,7 @@ namespace VueExample.Providers
     public interface IAtomicMeasurementProvider
     {
         int AddToMeasurementSet(AtomicMeasurementViewModel atomicMeasurementViewModel);
-        void DeleteFromMeasurementSet(int measurementSetId, int atomicId);
+        void DeleteFromMeasurementSet(Guid measurementSetId, int atomicId);
 
 
     }

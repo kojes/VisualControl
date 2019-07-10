@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VueExample.Models
@@ -11,8 +12,7 @@ namespace VueExample.Models
         [Column("id_am")]
         public int AtomicMeasurementId { get; set; }
         [Column("id_ms")]
-        public int MeasurementSetId { get; set; }
-
+        public Guid MeasurementSetId { get; set; }
         public AtomicMeasurement AtomicMeasurement {get; set;}
         public MeasurementSet MeasurementSet { get; set; }
     }

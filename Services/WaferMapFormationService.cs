@@ -25,7 +25,6 @@ namespace VueExample.Services
             FieldWidth = fieldWidth;
             StreetSize = streetSize;
             _dieList = dieList;
-
             XCoordinateMax = _dieList.Select(x => x.XCoordinate).Max();
             YCoordinateMax = _dieList.Select(x => x.YCoordinate).Max();
             XCoordinateMin = _dieList.Select(x => x.XCoordinate).Min();

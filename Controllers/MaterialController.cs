@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Providers;
@@ -16,17 +18,17 @@ namespace VueExample.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult ChangeMaterialName([FromBody] MaterialViewModel materialViewModel)
+
+        public IActionResult ChangeMaterialName([FromBody] MaterialChangeViewModel materialViewModel)
         {
             return Ok();
-        }
-        
+        }        
         
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            return Ok(_materialProvider.GetAll());
+             return Ok(_materialProvider.GetAll());
         }
 
     }

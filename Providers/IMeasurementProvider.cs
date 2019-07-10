@@ -9,7 +9,9 @@ namespace VueExample.Providers
         (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo();
         Object GetPointsByMeasurementId(int measurementId);
         Measurement GetById(int measurementId);
-        Material GetMaterial(int measurementId);
+        ViewModels.MaterialViewModel GetMaterial(int measurementId);
+        MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId);
+        bool IsMeasurementOnline(int measurementId);
         List<Point> GetPoints(int measurementId, int deviceId, int graphicId, int port);
     }
 }
