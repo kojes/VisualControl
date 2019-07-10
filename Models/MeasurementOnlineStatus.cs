@@ -13,7 +13,7 @@ namespace VueExample.Models
             this.StartTime = StartTime;
             this.LastTime = LastTime;
             this.FullTimeInSeconds = (LastTime - StartTime).TotalSeconds;
-            this.IsOnline = (DateTime.Now - LastTime).TotalSeconds < 2 * measurementInterval;
+            this.IsOnline = (DateTime.Now.AddHours(-1.0) - LastTime).TotalSeconds < 2 * measurementInterval;
           
         }
     }
