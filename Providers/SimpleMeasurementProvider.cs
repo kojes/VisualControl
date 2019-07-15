@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using VueExample.Contexts;
 using VueExample.Models;
@@ -12,11 +13,8 @@ namespace VueExample.Providers
 {
     public class SimpleMeasurementProvider : IMeasurementProvider
     {
-        private IMapper _mapper;
-        public SimpleMeasurementProvider(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
+        private readonly IMapper _mapper;
+        public SimpleMeasurementProvider(IMapper mapper) => _mapper = mapper;      
         public (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo()
         {
             var codeProductIdList = new List<int>();
@@ -74,13 +72,18 @@ namespace VueExample.Providers
             }
         }
 
-        public List<Point> GetPoints(int measurementId, int deviceId, int graphicId, int port)
+        public List<PointViewModel> GetPoints(int measurementId, int deviceId, int graphicId, int port)
         {
-            using (ApplicationContext db = new ApplicationContext())
+            using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                var points = db.Point.Where(x => x.MeasurementId == measurementId).ToList();
-                return points.Where(x => x.DeviceId == deviceId && x.GraphicId == graphicId && x.PortNumber == port)
-                    .OrderBy(x => x.Time).ToList();
+                return applicationContext.Point.Where(x => x.MeasurementId == measurementId 
+                                               && x.DeviceId == deviceId 
+                                               && x.GraphicId == graphicId 
+                                               && x.PortNumber == port).
+                                               OrderBy(x => x.PointId).
+                                               AsNoTracking().
+                                               ProjectTo<PointViewModel>(_mapper.ConfigurationProvider).
+                                               ToList();
             }
             
         }

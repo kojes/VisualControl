@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using VueExample.Models;
+using VueExample.ViewModels;
 
 namespace VueExample.Providers
 {
@@ -12,6 +13,6 @@ namespace VueExample.Providers
         ViewModels.MaterialViewModel GetMaterial(int measurementId);
         MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId);
         bool IsMeasurementOnline(int measurementId);
-        List<Point> GetPoints(int measurementId, int deviceId, int graphicId, int port);
+        List<PointViewModel> GetPoints(int measurementId, int deviceId, int graphicId, int port);
     }
 }

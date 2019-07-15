@@ -57,19 +57,16 @@ namespace VueExample.Controllers
         [HttpGet]
         public IActionResult GetPoints([FromQuery(Name = "measurementid")] int measurementId, [FromQuery(Name = "deviceid")] int deviceId, [FromQuery(Name = "graphicid")] int graphicId, [FromQuery(Name = "port")] int port)
         {
-            var pointsDictionary = new Dictionary<string, PointsViewModel>();
-            var pointViewModel = new PointsViewModel();
-            var pointsList = new List<object>(measurementProvider.GetPoints(measurementId, deviceId, graphicId, port)
-                .Select(x => new
-                {
-                    Value = x.Value, Time = x.Time.Trim(TimeSpan.TicksPerMinute), DeviceId = x.DeviceId,
-                    PortNumber = x.PortNumber
-                }));
+            var pointsDictionary = new Dictionary<string, PointsInMeasurementViewModel>();
+            var pointViewModel = new PointsInMeasurementViewModel();
+            var pointsList = new List<PointViewModel>(measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
+
             var k = Math.Ceiling((double)pointsList.Count / 500);
-            var filteredPointsList = pointsList.GetNth(Convert.ToInt32(k));
-            pointViewModel.PointsList.AddRange(filteredPointsList.ToList());
-            pointViewModel.MeasurementName = measurementProvider.GetById(measurementId).Name;
-            pointsDictionary.Add($"M{measurementId}D{deviceId}PN{port}", pointViewModel);
+            var filteredPointsList = pointsList.GetNth<PointViewModel>(Convert.ToInt32(k));
+            
+            pointsDictionary.Add($"M{measurementId}D{deviceId}PN{port}", new PointsInMeasurementViewModel{
+                                                                         PointsList = filteredPointsList.ToList(),
+                                                                         MeasurementName = measurementProvider.GetById(measurementId).Name});
             if (pointsList.Count == 0)
             {
                 return NoContent();

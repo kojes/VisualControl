@@ -687,16 +687,20 @@ export default {
     getPointsFromMeasurementSet: async function() {
       this.currentChart = "";
       this.points = {};
+      let queries = [];
       for (let index = 0; index < this.selectedAtomics.length; index++) {
-        let response = await this.$http.get(
+        let query = this.$http.get(
           `/api/measurement/getpoints?measurementid=${
             this.selectedAtomics[index].measurementId
           }&deviceid=${this.selectedAtomics[index].deviceId}&graphicid=${
             this.selectedAtomics[index].graphicId
           }&port=${this.selectedAtomics[index].portNumber}`
         );
-        Object.assign(this.points, response.data);
+        queries.push(query);
+        
       }
+      let response = await this.$http.all(queries);
+      response.forEach(_ => Object.assign(this.points, _.data))
       this.currentChart = "chart";
       this.$vuetify.goTo('#chart')
     },
