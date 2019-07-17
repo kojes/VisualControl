@@ -255,10 +255,28 @@
               </v-list-tile-action>
             
                 <v-list-tile-content>
-                  <v-list-tile-title>Измерение:{{ item.measurementName }}</v-list-tile-title>
-                  <v-list-tile-sub-title class="text--primary">Прибор:{{ item.deviceName }}</v-list-tile-sub-title>
-                  <v-list-tile-sub-title class="text--primary">Порт:{{ item.portNumber }}</v-list-tile-sub-title>
+                  <v-list-tile-title>Измерение: {{ item.measurementName }}</v-list-tile-title>
+                  <v-list-tile-sub-title class="text--primary">Прибор: {{ item.deviceName }} Порт: {{ item.portNumber }}</v-list-tile-sub-title>
+                 
                 </v-list-tile-content>
+
+                <v-list-tile-content>
+                
+                  <div v-if="item.isOnline">
+
+                   
+                       <v-progress-circular  v-if="item.live == '0'"
+                        indeterminate
+                        color="light-green accent-3"
+                      ></v-progress-circular>
+                      <strong class="yellow--text text--darken-2" v-else>{{item.live}} {{item.graphicUnit}}</strong>
+                    
+                    
+                  </div>
+              
+  
+            
+              </v-list-tile-content>
 
                 <v-list-tile-action>
                   <v-icon v-if="!measurementSets.find(x => x.measurementSetId === selectedMeasurementSet).isGenerated"
@@ -383,6 +401,7 @@
 
 import chart from "./time-chart.vue";
 import date from 'date-and-time';
+import * as signalR from '@aspnet/signalr';
 date.locale('ru')
 export default {
   data() {
@@ -440,6 +459,9 @@ export default {
       devices: [],
       graphics: [],
       ports: [],
+      polling: null,
+      connection: null,
+      livepoints: [],
       points: {},
       avDevices: "",
       currentChart: ""
@@ -465,6 +487,24 @@ export default {
 
   },
   methods: {
+
+    pollData () {
+        this.polling = setInterval(() => {
+            
+            this.connection.send("getLastValues", this.selectedAtomics);
+             
+        }, 10000)
+   },
+   
+   livePointsRedraw(liveArray)
+   {
+       for (let index = 0; index < liveArray.length; index++) {
+         
+          this.selectedAtomics.find(x => x.measurementId == liveArray[index].measurementId)["live"] = liveArray[index].value;
+         
+       }      
+
+   },
 
     saveSettings()
     {
@@ -783,6 +823,7 @@ export default {
   
 
   watch: {
+    
 
     'settings.axisY': 
     {
@@ -871,7 +912,16 @@ export default {
         
       }
 
+      this.connection = new signalR.HubConnectionBuilder()
+                                      .withUrl("/livepoint")
+                                      .build();
+
+      this.connection.start().catch(err => console.log(err));
+      this.connection.on("lastValues", value => this.livePointsRedraw(value));     
       this.savedSettings = JSON.parse(JSON.stringify(this.settings));
+
+      this.pollData()
+
     } catch (err) {
       window.alert(err);
       console.log(err);
@@ -885,7 +935,7 @@ export default {
 .circleOnline {
     width: 15px;
     height: 15px;
-    background-color: #62bd19;
+    background-color: #76FF03;
     border-radius: 50%;
     position: absolute;
     top: 23px;
@@ -893,7 +943,7 @@ export default {
 }
 
 .ringringOnline {
-    border: 3px solid #62bd19;
+    border: 3px solid #76FF03;
     -webkit-border-radius: 30px;
     border-radius: 30px;
     height: 25px;

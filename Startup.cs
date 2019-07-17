@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using VueExample.Color;
 using VueExample.Helpers;
+using VueExample.Hubs;
 using VueExample.Providers;
 using VueExample.Providers.Srv6.Interfaces;
 using VueExample.Services;
@@ -31,6 +32,7 @@ namespace VueExample
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddAutoMapper();
             services.AddLazyCache();
+            services.AddSignalR();
             services.AddOptions();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -55,6 +57,8 @@ namespace VueExample
                         ValidateAudience = false
                     };
                 });
+
+         
                 
             
 
@@ -91,6 +95,11 @@ namespace VueExample
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseSignalR(options =>
+            {
+                options.MapHub<LivePointHub>("/livepoint");
+            });
 
 
             app.UseAuthentication();

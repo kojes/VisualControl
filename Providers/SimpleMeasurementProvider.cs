@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,26 +91,28 @@ namespace VueExample.Providers
 
         public Measurement GetById(int measurementId)
         {
-            using (ApplicationContext db = new ApplicationContext())
+            using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                return db.Measurement.Find(measurementId);
+                return applicationContext.Measurement.Find(measurementId);
             }
         }
 
         public MaterialViewModel GetMaterial(int measurementId)
         {
-            using (ApplicationContext db = new ApplicationContext())
+            using (ApplicationContext applicationContext = new ApplicationContext())
             {
-               return _mapper.Map<MaterialViewModel>(db.Measurement.Include(_ => _.Material).FirstOrDefault(_ => _.MeasurementId == measurementId).Material);
+               return _mapper.Map<MaterialViewModel>(applicationContext.Measurement.
+                                                                        Include(_ => _.Material).
+                                                                        FirstOrDefault(_ => _.MeasurementId == measurementId).Material);
             }
         }
 
         public MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId)
         {
-            using (ApplicationContext db = new ApplicationContext())
+            using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                var pointsList = db.Point.Where(x => x.MeasurementId == measurementId).OrderBy(_ => _.PointId).ToList();
-                var measurement = db.Measurement.Find(measurementId);
+                var pointsList = applicationContext.Point.Where(x => x.MeasurementId == measurementId).OrderBy(_ => _.PointId).ToList();
+                var measurement = applicationContext.Measurement.Find(measurementId);
                 var measurementOnlineStatus = new MeasurementOnlineStatus(measurement.IntervalInSeconds, pointsList.First().Time, pointsList.Last().Time);
                 return measurementOnlineStatus;
             }
@@ -117,18 +120,39 @@ namespace VueExample.Providers
 
         public bool IsMeasurementOnline(int measurementId)
         {
-            using (ApplicationContext db = new ApplicationContext())
+            using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                var measurement = db.Measurement.Find(measurementId);
+                var measurement = applicationContext.Measurement.Find(measurementId);
                 if (measurement.IntervalInSeconds != null)
                 {                   
-                    return db.Point.Where(_ => _.MeasurementId == measurementId).OrderByDescending(_ => _.PointId).FirstOrDefault().Time.AddSeconds((double)2 * measurement.IntervalInSeconds.GetValueOrDefault()) > DateTime.Now; 
+                    return applicationContext.Point.Where(_ => _.MeasurementId == measurementId).
+                                                    OrderByDescending(_ => _.PointId).
+                                                    FirstOrDefault().Time.
+                                                    AddSeconds((double)2 * measurement.IntervalInSeconds.GetValueOrDefault()) > DateTime.Now; 
                 }
                 return false;
                
             }
         }
 
-        
+        public List<LivePointViewModel> GetLivePoints(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
+        {
+            using (ApplicationContext applicationContext = new ApplicationContext())
+            {
+
+                return (from _ in atomicMeasurementViewModelList
+                                     select new LivePointViewModel
+                                     {
+                                         Value = applicationContext.Point.
+                                         OrderByDescending(x => x.PointId).
+                                         FirstOrDefault(x => 
+                                         x.MeasurementId == _.MeasurementId &&
+                                         x.DeviceId == _.DeviceId &&
+                                         x.GraphicId == _.GraphicId &&
+                                         x.PortNumber == _.PortNumber).Value,
+                                         MeasurementId = _.MeasurementId
+                                     }).ToList();
+            }
+        }
     }
 }

@@ -102,7 +102,7 @@ namespace VueExample.Providers
                                              select new AtomicMeasurementExtendedViewModel 
                                              { AtomicMeasurementId = atomic.Id, DeviceId = atomic.DeviceId, DeviceName = atomic.Device.Name,
                                              MeasurementId = atomic.MeasurementId, MeasurementName = atomic.Measurement.Name, 
-                                             GraphicId = atomic.GraphicId, GraphicName = atomic.Graphic.RussianName,
+                                             GraphicId = atomic.GraphicId, GraphicUnit = atomic.Graphic.Unit,
                                              PortNumber = atomic.PortNumber, MeasurementSetId = measurementSetId, 
                                              IsOnline = measurementProvider.IsMeasurementOnline(atomic.MeasurementId)});
                 
@@ -128,7 +128,7 @@ namespace VueExample.Providers
                                                                     select new AtomicMeasurementExtendedViewModel 
                                                                     { AtomicMeasurementId = atomic.Id, DeviceId = atomic.DeviceId, DeviceName = atomic.Device.Name,
                                                                     MeasurementId = atomic.MeasurementId, MeasurementName = atomic.Measurement.Name, 
-                                                                    GraphicId = atomic.GraphicId, GraphicName = atomic.Graphic.RussianName,
+                                                                    GraphicId = atomic.GraphicId, GraphicUnit = atomic.Graphic.Unit,
                                                                     PortNumber = atomic.PortNumber, 
                                                                     IsOnline = measurementProvider.IsMeasurementOnline(atomic.MeasurementId)});
 
@@ -154,7 +154,7 @@ namespace VueExample.Providers
                                              { AtomicMeasurementId = atomic.Id, DeviceId = atomic.DeviceId, 
                                              DeviceName = atomic.Device.Name,
                                              MeasurementId = atomic.MeasurementId, MeasurementName = atomic.Measurement.Name, 
-                                             GraphicId = atomic.GraphicId, GraphicName = atomic.Graphic.RussianName,
+                                             GraphicId = atomic.GraphicId, GraphicUnit = atomic.Graphic.Unit,
                                              PortNumber = atomic.PortNumber, IsOnline = true});
             }
             return atomicViewModelList;

@@ -8,11 +8,12 @@ namespace VueExample.ViewModels
         public int MeasurementId { get; set; }
         public string MeasurementName {get; set; }
         public int GraphicId { get; set; }
-        public string GraphicName {get; set; }
+        public string GraphicUnit {get; set; }
         public int DeviceId { get; set; }
         public string DeviceName {get; set; }         
         public int PortNumber { get; set; }
         public bool IsOnline { get; set; }
+        public string Live { get; set; } = "0";
       
     }
 }
