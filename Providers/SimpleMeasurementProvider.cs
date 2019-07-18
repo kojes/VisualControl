@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,12 @@ namespace VueExample.Providers
     public class SimpleMeasurementProvider : IMeasurementProvider
     {
         private readonly IMapper _mapper;
-        public SimpleMeasurementProvider(IMapper mapper) => _mapper = mapper;      
+        private readonly ApplicationContext _applicationContext;
+        public SimpleMeasurementProvider(IMapper mapper, ApplicationContext applicationContext) 
+        {
+            _mapper = mapper;  
+            _applicationContext = applicationContext;
+        }    
         public (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo()
         {
             var codeProductIdList = new List<int>();
@@ -24,16 +30,15 @@ namespace VueExample.Providers
             var measuredDeviceList = new List<MeasuredDevice>();
             var measurementList = new List<Measurement>();
             var processIdList = new List<int>();
-            using (ApplicationContext db = new ApplicationContext())
+           
+            foreach (var deviceId in _applicationContext.Measurement.ToList().Select(x => x.MeasuredDeviceId).Distinct().Where(x => x != null).ToList())
             {
-                foreach (var deviceId in db.Measurement.ToList().Select(x => x.MeasuredDeviceId).Distinct().Where(x => x != null).ToList())
-                {
-                    codeProductIdList.Add(db.MeasuredDevice.FirstOrDefault(x => x.MeasuredDeviceId == deviceId).CodeProductId);
-                    measuredDeviceList.Add(db.MeasuredDevice.FirstOrDefault(x=>x.MeasuredDeviceId == deviceId));
-                }
-
-                measurementList = db.Measurement.ToList();
+                codeProductIdList.Add(_applicationContext.MeasuredDevice.FirstOrDefault(x => x.MeasuredDeviceId == deviceId).CodeProductId);
+                measuredDeviceList.Add(_applicationContext.MeasuredDevice.FirstOrDefault(x=>x.MeasuredDeviceId == deviceId));
             }
+
+            measurementList = _applicationContext.Measurement.ToList();
+            
 
             using (Srv6Context db = new Srv6Context())
             {
@@ -54,105 +59,95 @@ namespace VueExample.Providers
         }
 
         public Object GetPointsByMeasurementId(int measurementId)
-        {
-            using (ApplicationContext db = new ApplicationContext())
+        {          
+            var points = _applicationContext.Point.Where(x => x.MeasurementId == measurementId).ToList();
+            var availableDevices = points.Select(x => x.DeviceId).Distinct();
+            var portsArray = points.Select(x => x.PortNumber).Distinct().ToArray().OrderBy(x=>x);
+            var availableGraphics = points.Select(x => x.GraphicId).Distinct();
+            var devicesArray = _applicationContext.Device.Where(x => availableDevices.Contains(x.DeviceId)).ToArray();
+            var graphicsArray = _applicationContext.Graphic.Where(x => availableGraphics.Contains(x.GraphicId)).ToArray();
+            var result = new
             {
-                var points = db.Point.Where(x => x.MeasurementId == measurementId).ToList();
-                var availableDevices = points.Select(x => x.DeviceId).Distinct();
-                var portsArray = points.Select(x => x.PortNumber).Distinct().ToArray().OrderBy(x=>x);
-                var availableGraphics = points.Select(x => x.GraphicId).Distinct();
-                var devicesArray = db.Device.Where(x => availableDevices.Contains(x.DeviceId)).ToArray();
-                var graphicsArray = db.Graphic.Where(x => availableGraphics.Contains(x.GraphicId)).ToArray();
-                var result = new
-                {
-                    Ports = portsArray,
-                    Devices = devicesArray,
-                    Graphic = graphicsArray
-                };
-                return result;
-            }
+                Ports = portsArray,
+                Devices = devicesArray,
+                Graphic = graphicsArray
+            };
+            return result;            
         }
 
         public List<PointViewModel> GetPoints(int measurementId, int deviceId, int graphicId, int port)
-        {
-            using (ApplicationContext applicationContext = new ApplicationContext())
-            {
-                return applicationContext.Point.Where(x => x.MeasurementId == measurementId 
+        {            
+            return _applicationContext.Point.Where(x => x.MeasurementId == measurementId 
                                                && x.DeviceId == deviceId 
                                                && x.GraphicId == graphicId 
                                                && x.PortNumber == port).
                                                OrderBy(x => x.PointId).
                                                AsNoTracking().
                                                ProjectTo<PointViewModel>(_mapper.ConfigurationProvider).
-                                               ToList();
-            }
+                                               ToList();           
             
         }
 
         public Measurement GetById(int measurementId)
-        {
-            using (ApplicationContext applicationContext = new ApplicationContext())
-            {
-                return applicationContext.Measurement.Find(measurementId);
-            }
+        {           
+            return _applicationContext.Measurement.Find(measurementId);            
         }
 
         public MaterialViewModel GetMaterial(int measurementId)
-        {
-            using (ApplicationContext applicationContext = new ApplicationContext())
-            {
-               return _mapper.Map<MaterialViewModel>(applicationContext.Measurement.
+        {           
+            return _mapper.Map<MaterialViewModel>(_applicationContext.Measurement.
                                                                         Include(_ => _.Material).
-                                                                        FirstOrDefault(_ => _.MeasurementId == measurementId).Material);
-            }
+                                                                        FirstOrDefault(_ => _.MeasurementId == measurementId).Material);           
         }
 
         public MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId)
-        {
-            using (ApplicationContext applicationContext = new ApplicationContext())
-            {
-                var pointsList = applicationContext.Point.Where(x => x.MeasurementId == measurementId).OrderBy(_ => _.PointId).ToList();
-                var measurement = applicationContext.Measurement.Find(measurementId);
-                var measurementOnlineStatus = new MeasurementOnlineStatus(measurement.IntervalInSeconds, pointsList.First().Time, pointsList.Last().Time);
-                return measurementOnlineStatus;
-            }
+        {         
+            var pointsList = _applicationContext.Point.Where(x => x.MeasurementId == measurementId).OrderBy(_ => _.PointId).ToList();
+            var measurement = _applicationContext.Measurement.Find(measurementId);
+            var measurementOnlineStatus = new MeasurementOnlineStatus(measurement.IntervalInSeconds, pointsList.First().Time, pointsList.Last().Time);
+            return measurementOnlineStatus;            
         }
 
         public bool IsMeasurementOnline(int measurementId)
-        {
-            using (ApplicationContext applicationContext = new ApplicationContext())
-            {
-                var measurement = applicationContext.Measurement.Find(measurementId);
-                if (measurement.IntervalInSeconds != null)
-                {                   
-                    return applicationContext.Point.Where(_ => _.MeasurementId == measurementId).
+        {         
+            var measurement = _applicationContext.Measurement.Find(measurementId);
+            if (measurement.IntervalInSeconds != null)
+            {                   
+                return _applicationContext.Point.Where(_ => _.MeasurementId == measurementId).
                                                     OrderByDescending(_ => _.PointId).
                                                     FirstOrDefault().Time.
                                                     AddSeconds((double)2 * measurement.IntervalInSeconds.GetValueOrDefault()) > DateTime.Now; 
-                }
-                return false;
-               
             }
+            return false;              
+            
         }
 
         public List<LivePointViewModel> GetLivePoints(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
-        {
-            using (ApplicationContext applicationContext = new ApplicationContext())
-            {
+        {         
 
-                return (from _ in atomicMeasurementViewModelList
-                                     select new LivePointViewModel
-                                     {
-                                         Value = applicationContext.Point.
-                                         OrderByDescending(x => x.PointId).
-                                         FirstOrDefault(x => 
-                                         x.MeasurementId == _.MeasurementId &&
-                                         x.DeviceId == _.DeviceId &&
-                                         x.GraphicId == _.GraphicId &&
-                                         x.PortNumber == _.PortNumber).Value,
-                                         MeasurementId = _.MeasurementId
-                                     }).ToList();
-            }
+            return (from _ in atomicMeasurementViewModelList
+                                select new LivePointViewModel
+                                {
+                                    Value = _applicationContext.Point.
+                                    OrderByDescending(x => x.PointId).
+                                    FirstOrDefault(x => 
+                                    x.MeasurementId == _.MeasurementId &&
+                                    x.DeviceId == _.DeviceId &&
+                                    x.GraphicId == _.GraphicId &&
+                                    x.PortNumber == _.PortNumber).Value,
+                                    MeasurementId = _.MeasurementId
+                                }).ToList();
+            
+        }
+
+        public List<MeasurementStatisticsViewModel> GetMeasurementStatistics(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
+        {
+            var measurementStatisticsViewModelList = new List<MeasurementStatisticsViewModel>();            
+            var measurementStatisticsList = _applicationContext.Point.GroupBy(x => new {MeasurementId = x.MeasurementId, DeviceId = x.DeviceId, GraphicId = x.GraphicId, PortNumber = x.PortNumber})
+                                                        .Select(x => new MeasurementStatisticsViewModel{CommonDifference = Convert.ToString(Math.Abs(Convert.ToDouble(x.OrderByDescending(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture) - Convert.ToDouble(x.OrderBy(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture))), MeasurementId = x.Key.MeasurementId, DeviceId = x.Key.DeviceId, GraphicId = x.Key.GraphicId, PortNumber = x.Key.PortNumber, Maximum = Convert.ToString(x.Max(_ => _.Value)), Minimum = Convert.ToString(x.Min(_ => _.Value))});
+            measurementStatisticsViewModelList.AddRange(from atomic in atomicMeasurementViewModelList
+                                                            select measurementStatisticsList.FirstOrDefault(x => x.MeasurementId == atomic.MeasurementId && x.DeviceId == atomic.DeviceId && x.GraphicId == atomic.GraphicId && x.PortNumber == atomic.PortNumber));
+            return new List<MeasurementStatisticsViewModel>();
         }
     }
 }

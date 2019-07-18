@@ -16,6 +16,7 @@ namespace VueExample.Providers
         bool IsMeasurementOnline(int measurementId);
         List<PointViewModel> GetPoints(int measurementId, int deviceId, int graphicId, int port);
         List<LivePointViewModel> GetLivePoints(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList);
+        List<MeasurementStatisticsViewModel> GetMeasurementStatistics(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList);
 
     }
 }

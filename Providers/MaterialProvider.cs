@@ -9,56 +9,50 @@ namespace VueExample.Providers
 {
     public class MaterialProvider : IMaterialProvider
     {
-        private IMapper _mapper;
-        public MaterialProvider(IMapper mapper)
+        private readonly IMapper _mapper;
+        private readonly ApplicationContext _applicationContext;
+        public MaterialProvider(IMapper mapper, ApplicationContext applicationContext)
         {
             _mapper = mapper;
+            _applicationContext = applicationContext;
         }
-        public Material ChangeName(string oldName, string newName)
-        {
-            using(ApplicationContext applicationContext = new ApplicationContext())
-            {
-                var edited = applicationContext.Material.FirstOrDefault(_ => _.Name == oldName);
-                if(edited != null)
-                {
-                    edited.Name = newName;
-                }
-                applicationContext.SaveChanges();
 
-                return edited;
+        public Material ChangeName(string oldName, string newName)
+        {           
+            var edited = _applicationContext.Material.FirstOrDefault(_ => _.Name == oldName);
+
+            if(edited != null)
+            {
+                edited.Name = newName;
             }
+
+            _applicationContext.SaveChanges();
+            return edited;           
             
         }
          
         public Material ChangeMaterialOnMeasurement(int measurementId, int materialId)
-        {
-            using(ApplicationContext applicationContext = new ApplicationContext())
+        {           
+            var measurement = _applicationContext.Measurement.Find(measurementId);
+            var material = _applicationContext.Material.Find(materialId);
+            if(measurement != null && material != null)
             {
-                var measurement = applicationContext.Measurement.Find(measurementId);
-                var material = applicationContext.Material.Find(materialId);
-                if(measurement != null && material != null)
-                {
-                     applicationContext.Measurement.Find(measurementId).MaterialId = materialId;
-                     applicationContext.SaveChanges();
-                     return material;
-                }
-                else
-                {
-                    return null;
-                }                
-                
+                 _applicationContext.Measurement.Find(measurementId).MaterialId = materialId;
+                 _applicationContext.SaveChanges();
+                 return material;
             }
+            else
+            {
+                 return null;
+            }                                        
 
         }
 
-
         public List<MaterialViewModel> GetAll()
-        {
-              using(ApplicationContext applicationContext = new ApplicationContext())
-              {
-                  return (from material in applicationContext.Material.ToList()
-                                               select _mapper.Map<MaterialViewModel>(material)).ToList();
-            }
+        {              
+            return (from material in _applicationContext.Material.ToList()
+                    select _mapper.Map<MaterialViewModel>(material)).ToList();
+            
         }
     }
 }

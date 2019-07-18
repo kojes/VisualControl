@@ -9,12 +9,16 @@ namespace VueExample.Providers
 {
     public class DeviceProvider : IDeviceProvider
     {
+        private readonly ApplicationContext _applicationContext;
+        public DeviceProvider(ApplicationContext applicationContext)
+        {
+            _applicationContext = applicationContext;
+        }
         public List<Device> GetAll()
         {
-            using(ApplicationContext applicationContext = new ApplicationContext())
-            {
-                return applicationContext.Device.ToList();
-            }
+          
+           return _applicationContext.Device.ToList();
+            
         }
     }
 }
