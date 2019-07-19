@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using VueExample.Providers;
 using VueExample.Extensions;
 using VueExample.ViewModels;
+using Newtonsoft.Json;
 
 namespace VueExample.Controllers
 {
@@ -52,6 +53,12 @@ namespace VueExample.Controllers
         public IActionResult GetExtraInfo([FromQuery(Name = "measurementid")] int measurementId)
         {
             return Ok(measurementProvider.GetPointsByMeasurementId(measurementId));
+        }
+
+        [HttpGet]
+        public IActionResult GetMeasurementStatistics([FromQuery(Name = "atomiclist")] string atomicListJSON)
+        {
+            return Ok(measurementProvider.GetMeasurementStatistics(JsonConvert.DeserializeObject<List<AtomicMeasurementExtendedViewModel>>(atomicListJSON)));
         }
 
         [HttpGet]

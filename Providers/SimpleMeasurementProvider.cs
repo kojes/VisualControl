@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -140,14 +139,26 @@ namespace VueExample.Providers
             
         }
 
+
         public List<MeasurementStatisticsViewModel> GetMeasurementStatistics(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
         {
             var measurementStatisticsViewModelList = new List<MeasurementStatisticsViewModel>();            
             var measurementStatisticsList = _applicationContext.Point.GroupBy(x => new {MeasurementId = x.MeasurementId, DeviceId = x.DeviceId, GraphicId = x.GraphicId, PortNumber = x.PortNumber})
-                                                        .Select(x => new MeasurementStatisticsViewModel{CommonDifference = Convert.ToString(Math.Abs(Convert.ToDouble(x.OrderByDescending(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture) - Convert.ToDouble(x.OrderBy(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture))), MeasurementId = x.Key.MeasurementId, DeviceId = x.Key.DeviceId, GraphicId = x.Key.GraphicId, PortNumber = x.Key.PortNumber, Maximum = Convert.ToString(x.Max(_ => _.Value)), Minimum = Convert.ToString(x.Min(_ => _.Value))});
-            measurementStatisticsViewModelList.AddRange(from atomic in atomicMeasurementViewModelList
-                                                            select measurementStatisticsList.FirstOrDefault(x => x.MeasurementId == atomic.MeasurementId && x.DeviceId == atomic.DeviceId && x.GraphicId == atomic.GraphicId && x.PortNumber == atomic.PortNumber));
-            return new List<MeasurementStatisticsViewModel>();
+                                                        .Select(x => new MeasurementStatisticsViewModel{Maximum = Convert.ToString(x.Max(_ => _.Value)), Minimum = Convert.ToString(x.Min(_ => _.Value)), CommonDifference = Convert.ToString(Math.Abs(Convert.ToDouble(x.OrderByDescending(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture) 
+                                                        - Convert.ToDouble(x.OrderBy(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture)), CultureInfo.InvariantCulture), MeasurementId = x.Key.MeasurementId, GraphicId = x.Key.GraphicId, PortNumber = x.Key.PortNumber, DeviceId = x.Key.DeviceId, LastValue = x.OrderByDescending(_ => _.PointId).FirstOrDefault().Value, FirstValue = x.OrderBy(_ => _.PointId).FirstOrDefault().Value }).ToList();
+         
+            foreach (var atomic in atomicMeasurementViewModelList)
+            {
+                var atomicStatistics = measurementStatisticsList.FirstOrDefault(x => x.MeasurementId == atomic.MeasurementId && x.DeviceId == atomic.DeviceId && x.GraphicId == atomic.GraphicId && x.PortNumber == atomic.PortNumber);
+                atomicStatistics.MeasurementName = atomic.MeasurementName;
+                atomicStatistics.DeviceName = atomic.DeviceName;
+                atomicStatistics.GraphicUnit = atomic.GraphicUnit;
+                measurementStatisticsViewModelList.Add(atomicStatistics);
+            }                                                
+            return measurementStatisticsViewModelList;
         }
+
+
+
     }
 }

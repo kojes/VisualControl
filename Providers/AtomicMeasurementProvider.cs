@@ -4,22 +4,23 @@ using VueExample.Contexts;
 using VueExample.Models;
 using VueExample.ViewModels;
 
-namespace VueExample.Providers {
+namespace VueExample.Providers 
+{
     public class AtomicMeasurementProvider : IAtomicMeasurementProvider 
     {
         private readonly ApplicationContext _applicationContext;
         public AtomicMeasurementProvider(ApplicationContext applicationContext)
         {
-            
+            _applicationContext = applicationContext;
         }
-        public int AddToMeasurementSet (AtomicMeasurementViewModel atomicMeasurementViewModel) 
+        public int AddToMeasurementSet(AtomicMeasurementViewModel atomicMeasurementViewModel) 
         {
             var measurementSetId = atomicMeasurementViewModel.MeasurementSetId;
             int atomicMeasurementId = FindOrCreate(atomicMeasurementViewModel.MeasurementId,
                 atomicMeasurementViewModel.DeviceId, atomicMeasurementViewModel.PortNumber,
                 atomicMeasurementViewModel.GraphicId);
                 
-            if (FindDuplicateMeasurementSetAtomicMeasurement (measurementSetId, atomicMeasurementId)) 
+            if (FindDuplicateMeasurementSetAtomicMeasurement(measurementSetId, atomicMeasurementId)) 
             {
                 return 0;
             }
@@ -34,15 +35,14 @@ namespace VueExample.Providers {
 
         }
 
-        public void DeleteFromMeasurementSet (Guid measurementSetId, int atomicId) 
+        public void DeleteFromMeasurementSet(Guid measurementSetId, int atomicId) 
         {
            
-                var measurementSetAtomicMeasurement = new MeasurementSetAtomicMeasurement {
-                MeasurementSetId = measurementSetId,
-                AtomicMeasurementId = atomicId
-                };
-                _applicationContext.MeasurementSetAtomicMeasurement.Remove (measurementSetAtomicMeasurement);
-                _applicationContext.SaveChanges ();
+            var measurementSetAtomicMeasurement = new MeasurementSetAtomicMeasurement {
+                                                MeasurementSetId = measurementSetId,
+                                                AtomicMeasurementId = atomicId};
+            _applicationContext.MeasurementSetAtomicMeasurement.Remove(measurementSetAtomicMeasurement);
+            _applicationContext.SaveChanges();
 
             
         }
@@ -52,7 +52,7 @@ namespace VueExample.Providers {
             return _applicationContext.MeasurementSetAtomicMeasurement.Count(_ => _.AtomicMeasurementId == atomicId && _.MeasurementSetId == measurementSetId) > 0;
         }
 
-        private int FindOrCreate (int measurementId, int deviceId, int portNumber, int graphicId) 
+        private int FindOrCreate(int measurementId, int deviceId, int portNumber, int graphicId) 
         {
           
             var atomic = _applicationContext.AtomicMeasurement.FirstOrDefault(_ => _.DeviceId == deviceId &&
@@ -67,7 +67,7 @@ namespace VueExample.Providers {
            
         }
 
-        private int Create (int measurementId, int deviceId, int portNumber, int graphicId) 
+        private int Create(int measurementId, int deviceId, int portNumber, int graphicId) 
         {
             var atomicMeasurement = new AtomicMeasurement { MeasurementId = measurementId, DeviceId = deviceId, PortNumber = portNumber, GraphicId = graphicId };
             _applicationContext.AtomicMeasurement.Add(atomicMeasurement);

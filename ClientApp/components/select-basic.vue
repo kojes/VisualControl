@@ -200,15 +200,18 @@
               v-on:click="getPoints"
             >Добавить измерение к графику</v-btn>
 
-            <v-btn 
+          
+          </v-flex>
+           <v-flex lg3>
+               <v-btn 
                
               v-if="measurementSets.filter(x => !x.isGenerated).length > 0"
               class="btn btn-primary"
               outline
               @click="dialogAddToMeasurementSet=true"
             >Добавить к серии</v-btn>
-          </v-flex>
-           <v-flex lg6>
+                </v-flex>
+                   <v-flex lg3>
              <v-tooltip right>
               <template v-slot:activator="{ on }">
                
@@ -232,7 +235,7 @@
         <v-card>
           <v-toolbar color="indigo" dark>
             <v-select
-              v-model="selectedMeasurementSet"
+              v-model="selectedMeasurementSet.id"
               :items="measurementSets"
               no-data-text="Нет данных"
               item-text="name"
@@ -279,7 +282,7 @@
               </v-list-tile-content>
 
                 <v-list-tile-action>
-                  <v-icon v-if="!measurementSets.find(x => x.measurementSetId === selectedMeasurementSet).isGenerated"
+                  <v-icon v-if="!measurementSets.find(x => x.measurementSetId === selectedMeasurementSet.id).isGenerated"
                     color="primary"
                     @click="deleteFromSet(item.atomicMeasurementId)"
                   >delete_outline</v-icon>
@@ -293,7 +296,13 @@
           outline
           class="btn btn-primary"
           v-on:click="getPointsFromMeasurementSet"
-        >Построить серию графиков</v-btn>
+        >Построить серию</v-btn>
+
+          <v-btn
+          outline
+          class="btn btn-primary"
+          v-on:click="getMeasurementStatistics"
+        >Статистика по серии</v-btn>
 
         <v-btn
           outline
@@ -301,9 +310,12 @@
           v-on:click="addNewMeasurementSet"
         >Добавить новую серию</v-btn>
 
+        
+      
+
         <v-btn
           outline
-          v-if="!measurementSets.find(x => x.measurementSetId == selectedMeasurementSet).isGenerated"
+          v-if="!measurementSets.find(x => x.measurementSetId == selectedMeasurementSet.id).isGenerated"
           class="btn btn-primary"
           v-on:click="deleteThisMeasurementSet"
         >Удалить текущую серию</v-btn>
@@ -351,6 +363,27 @@
           </v-card>
         </v-dialog>
 
+      <v-dialog
+      v-model=" dialogStatistics"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="indigo"
+        dark
+      >
+        <v-card-text>
+          Расчет статистики...
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
         <v-dialog v-model="dialogAddMeasurementSet" max-width="500px">
           <v-card>
             <v-card-title>Добавление новой серии</v-card-title>
@@ -391,10 +424,73 @@
       </v-flex>
     </v-layout>
 
+    <v-layout row>
+      <v-flex lg12>
+       <v-data-iterator
+       v-if="selectedMeasurementSet.statistics.length > 0"
+      :items="selectedMeasurementSet.statistics"
+      content-tag="v-layout"
+      hide-actions
+      row
+      wrap
+    >
+     <template v-slot:header>
+        <v-toolbar
+          class="mb-2"
+          color="indigo"
+          dark
+          flat
+        >
+        <v-toolbar-title>Подробная статистика</v-toolbar-title>
+        </v-toolbar>
+      </template>
+      <template v-slot:item="props">
+        <v-flex lg3> 
+          
+          <v-card>
+            <v-card-title><h4>Испытание: {{ props.item.measurementName }}</h4></v-card-title>
+            <v-divider></v-divider>
+            <v-list dense>
+              <v-list-tile>
+                <v-list-tile-content>Прибор:</v-list-tile-content>
+                <v-list-tile-content class="align-end">Название: {{ props.item.deviceName }} Порт:{{ props.item.portNumber }}</v-list-tile-content>
+              </v-list-tile>
+             
+               <v-list-tile>
+                <v-list-tile-content>Минимальное значение:</v-list-tile-content>
+                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.minimum).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
+              </v-list-tile>
+
+               <v-list-tile>
+                <v-list-tile-content>Максимальное значение:</v-list-tile-content>
+                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.maximum).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
+              </v-list-tile>
+
+              <v-list-tile>
+                <v-list-tile-content>Значение в начале испытания:</v-list-tile-content>
+                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.firstValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
+              </v-list-tile>
+
+               <v-list-tile>
+                <v-list-tile-content>Падение за время испытания:</v-list-tile-content>
+                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ parseFloat(props.item.commonDifference).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
+              </v-list-tile>
+           
+            </v-list>
+          </v-card>
+        </v-flex>
+      </template>
+    </v-data-iterator>
+    </v-flex>
+    </v-layout>
+
     <v-snackbar v-model="snackbar" top>
       {{ snackbarText }}
       <v-btn color="pink" flat @click="snackbar = false">Закрыть</v-btn>
     </v-snackbar>
+
+ 
+
   </v-container>
 </template>
 <script>
@@ -413,6 +509,7 @@ export default {
         ],
       fab: false,
       dialogAddToMeasurementSet: false,
+      dialogStatistics: false,
       dialogAddMeasurementSet: false,
       dialogDeleteMeasurementSet: false,
       dialogSelectMaterial: false,
@@ -423,7 +520,10 @@ export default {
       selectedMeasurement: "",
       selectedMaterial: "",
       newMeasurementSetName: "",
-      selectedMeasurementSet: "",
+      selectedMeasurementSet: {
+         id: '',
+         statistics: []
+      },
       selectedMeasurementSetInDialog: "",
       selectedDevice: "",
       selectedMaterialInDialog:"",
@@ -523,6 +623,13 @@ export default {
       }
     },
 
+    getMeasurementStatistics()
+    {
+         this.dialogStatistics= true;
+         let atomicList = JSON.stringify(this.selectedAtomics);
+         this.$http.get(`/api/measurement/getmeasurementstatistics?atomiclist=${atomicList}`).then(response => {this.selectedMeasurementSet.statistics = response.data; this.dialogStatistics = false});
+    },
+
     editMaterial()
     {
        if (this.dialogSelectMaterial === false) {
@@ -588,7 +695,7 @@ export default {
                 this.newMeasurementSetName
               } успешно добавлена`;
               this.measurementSets.push(response.data);
-              this.selectedMeasurementSet = this.measurementSets[
+              this.selectedMeasurementSet.id = this.measurementSets[
                 this.measurementSets.length - 1
               ].measurementSetId;
              
@@ -620,7 +727,7 @@ export default {
         this.$http({
           method: "delete",
           url: `/api/measurementset/DeleteSet`,
-          params: { measurementsetid: this.selectedMeasurementSet },
+          params: { measurementsetid: this.selectedMeasurementSet.id },
           config: {
             headers: {
               "Content-Type": "text/plain"
@@ -630,10 +737,10 @@ export default {
           .then(response => {
             if (response.status === 200) {
               this.snackbarText = `Серия ${
-                this.measurementSets.find(_ => _.measurementSetId === this.selectedMeasurementSet).name} успешно удалена`;
-              this.measurementSets = this.measurementSets.filter(_ => _.measurementSetId !== this.selectedMeasurementSet);
+                this.measurementSets.find(_ => _.measurementSetId === this.selectedMeasurementSet.id).name} успешно удалена`;
+              this.measurementSets = this.measurementSets.filter(_ => _.measurementSetId !== this.selectedMeasurementSet.id);
               if (this.measurementSets.length > 0) {
-                this.selectedMeasurementSet = this.measurementSets[0].measurementSetId;
+                this.selectedMeasurementSet.id = this.measurementSets[0].measurementSetId;
               
               } else {
                 this.selectedAtomics = [];
@@ -653,7 +760,7 @@ export default {
     deleteFromSet(key) {
       var atomicsetViewModel = {
         atomicid: key,
-        measurementsetid: this.selectedMeasurementSet
+        measurementsetid: this.selectedMeasurementSet.id
       };
       this.$http({
         method: "post",
@@ -709,7 +816,7 @@ export default {
 
           if (response.status === 201) {
             this.snackbarText = "Успешно добавлено";
-            var route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet)[0].route;
+            var route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet.id)[0].route;
             this.$http.get(`/api/measurementset/getatomics/${route}`).then(response => this.selectedAtomics = response.data);
             
           }
@@ -876,8 +983,9 @@ export default {
       )[0].measuredDeviceId;
     },
 
-    selectedMeasurementSet: async function() {
-      var route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet)[0].route;
+    'selectedMeasurementSet.id': async function() {
+      this.selectedMeasurementSet.statistics = [];
+      let route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet.id)[0].route;
       let response = await this.$http.get(
         `/api/measurementset/getatomics/${route}`
       );
@@ -908,7 +1016,7 @@ export default {
       this.measurementSets = response.data;
 
       if (this.measurementSets.length > 0) {
-        this.selectedMeasurementSet = this.measurementSets[0].measurementSetId;
+        this.selectedMeasurementSet.id = this.measurementSets[0].measurementSetId;
         
       }
 
