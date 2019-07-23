@@ -8,12 +8,12 @@ namespace VueExample.Models
         public bool IsOnline { get; }
         public double FullTimeInSeconds { get; }
 
-        public MeasurementOnlineStatus(int? measurementInterval, DateTime StartTime, DateTime LastTime)
+        public MeasurementOnlineStatus(int? measurementInterval, int pointsCount, DateTime StartTime, DateTime LastTime)
         {
             this.StartTime = StartTime;
             this.LastTime = LastTime;
-            this.FullTimeInSeconds = (LastTime - StartTime).TotalSeconds;
-            this.IsOnline = (DateTime.Now.AddHours(-1.0) - LastTime).TotalSeconds < 2 * measurementInterval;
+            this.FullTimeInSeconds =  measurementInterval.HasValue ? pointsCount * Convert.ToInt32(measurementInterval) : 0.0;            
+            this.IsOnline = (DateTime.Now.AddMinutes(-5.0) - LastTime).TotalSeconds < 2 * measurementInterval;
           
         }
     }

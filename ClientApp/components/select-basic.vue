@@ -225,7 +225,7 @@
               <v-divider></v-divider>
               <span v-if="!selectedOnlineStatus.isOnline">{{"Конец измерений: " + selectedOnlineStatus.lastTime}}</span>
               <v-divider></v-divider>
-              <span>{{"Время испытания в часах: " + Math.floor(selectedOnlineStatus.fullTimeInSeconds / 3600)}}</span>
+              <span>{{"Время испытания в часах: " + Math.ceil(selectedOnlineStatus.fullTimeInSeconds / 3600)}}</span>
             </v-tooltip>
            
            </v-flex>
@@ -454,26 +454,27 @@
               <v-list-tile>
                 <v-list-tile-content>Прибор:</v-list-tile-content>
                 <v-list-tile-content class="align-end">Название: {{ props.item.deviceName }} Порт:{{ props.item.portNumber }}</v-list-tile-content>
-              </v-list-tile>
-             
-               <v-list-tile>
-                <v-list-tile-content>Минимальное значение:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.minimum).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
-
-               <v-list-tile>
-                <v-list-tile-content>Максимальное значение:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.maximum).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
-
+              </v-list-tile>           
+              
               <v-list-tile>
                 <v-list-tile-content>Значение в начале испытания:</v-list-tile-content>
                 <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.firstValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
               </v-list-tile>
 
+              <v-list-tile>
+                <v-list-tile-content>Текущее значение:</v-list-tile-content>
+                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.lastValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
+              </v-list-tile>
+
+
                <v-list-tile>
                 <v-list-tile-content>Падение за время испытания:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ parseFloat(props.item.commonDifference).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
+                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ parseFloat(props.item.commonDifference).toFixed(6) * -1 }} {{ props.item.graphicUnit }}</v-list-tile-content>
+              </v-list-tile>
+
+                <v-list-tile>
+                <v-list-tile-content>Изменение в процентах:</v-list-tile-content>
+                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ ((parseFloat(props.item.commonDifference) / parseFloat(props.item.firstValue)) * 100).toFixed(2) }} %</v-list-tile-content>
               </v-list-tile>
            
             </v-list>

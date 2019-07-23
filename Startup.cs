@@ -60,8 +60,12 @@ namespace VueExample
                     };
                 });
 
+        
+
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ApplicationContext")));
-                
+            
+
+            
             
 
             services.AddScoped<IUserProvider, UserProvider>();

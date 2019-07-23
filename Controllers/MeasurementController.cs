@@ -69,10 +69,10 @@ namespace VueExample.Controllers
             var pointsList = new List<PointViewModel>(measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
 
             var k = Math.Ceiling((double)pointsList.Count / 500);
-            var filteredPointsList = pointsList.GetNth<PointViewModel>(Convert.ToInt32(k));
-            
+            var filteredPointsList = pointsList.GetNth<PointViewModel>(Convert.ToInt32(k)).ToList();
+            filteredPointsList.Add(pointsList.LastOrDefault());
             pointsDictionary.Add($"M{measurementId}D{deviceId}PN{port}", new PointsInMeasurementViewModel{
-                                                                         PointsList = filteredPointsList.ToList(),
+                                                                         PointsList = filteredPointsList,
                                                                          MeasurementName = measurementProvider.GetById(measurementId).Name});
             if (pointsList.Count == 0)
             {

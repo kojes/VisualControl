@@ -63,12 +63,12 @@
         let setter = (item, itemSmoothed) => ({ duration: item.duration, value: itemSmoothed })
         let durationSpaces = [];
         
-        var entryDatepoint = Date.parse(this.points[prop].pointsList[1].time);
+        var entryDatepoint = Date.parse(this.points[prop].pointsList[0].time);
         var max = 0;
         var adequateSpace = Date.parse(this.points[prop].pointsList[1].time) - Date.parse(this.points[prop].pointsList[0].time);
-        for (let i = 1; i < this.points[prop].pointsList.length; i++) {
+        for (let i = 0; i < this.points[prop].pointsList.length; i++) {
 
-           if (Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time) > 2*adequateSpace) {
+           if (i > 0 && Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time) > 2*adequateSpace) {
             var spaceduration = Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time);
             for (let j = i; j < this.points[prop].pointsList.length; j++) {
               this.points[prop].pointsList[j].time = new Date(Date.parse(this.points[prop].pointsList[j].time) - spaceduration);

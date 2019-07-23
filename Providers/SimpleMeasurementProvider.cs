@@ -103,7 +103,7 @@ namespace VueExample.Providers
         {         
             var pointsList = _applicationContext.Point.Where(x => x.MeasurementId == measurementId).OrderBy(_ => _.PointId).ToList();
             var measurement = _applicationContext.Measurement.Find(measurementId);
-            var measurementOnlineStatus = new MeasurementOnlineStatus(measurement.IntervalInSeconds, pointsList.First().Time, pointsList.Last().Time);
+            var measurementOnlineStatus = new MeasurementOnlineStatus(measurement.IntervalInSeconds, pointsList.Count(), pointsList.First().Time, pointsList.Last().Time);
             return measurementOnlineStatus;            
         }
 
@@ -144,8 +144,10 @@ namespace VueExample.Providers
         {
             var measurementStatisticsViewModelList = new List<MeasurementStatisticsViewModel>();            
             var measurementStatisticsList = _applicationContext.Point.GroupBy(x => new {MeasurementId = x.MeasurementId, DeviceId = x.DeviceId, GraphicId = x.GraphicId, PortNumber = x.PortNumber})
-                                                        .Select(x => new MeasurementStatisticsViewModel{Maximum = Convert.ToString(x.Max(_ => _.Value)), Minimum = Convert.ToString(x.Min(_ => _.Value)), CommonDifference = Convert.ToString(Math.Abs(Convert.ToDouble(x.OrderByDescending(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture) 
-                                                        - Convert.ToDouble(x.OrderBy(_ => _.PointId).FirstOrDefault().Value, CultureInfo.InvariantCulture)), CultureInfo.InvariantCulture), MeasurementId = x.Key.MeasurementId, GraphicId = x.Key.GraphicId, PortNumber = x.Key.PortNumber, DeviceId = x.Key.DeviceId, LastValue = x.OrderByDescending(_ => _.PointId).FirstOrDefault().Value, FirstValue = x.OrderBy(_ => _.PointId).FirstOrDefault().Value }).ToList();
+                                                        .Select(x => new MeasurementStatisticsViewModel{Maximum = Convert.ToString(x.Max(_ => _.Value)), Minimum = Convert.ToString(x.Min(_ => _.Value)), 
+                                                         MeasurementId = x.Key.MeasurementId, GraphicId = x.Key.GraphicId, PortNumber = x.Key.PortNumber, DeviceId = x.Key.DeviceId, 
+                                                         LastValue = x.OrderByDescending(_ => _.PointId).FirstOrDefault().Value, After300Value = x.OrderBy(_ => _.PointId).Skip(300).FirstOrDefault().Value,
+                                                         FirstPointValue = x.OrderBy(_ => _.PointId).FirstOrDefault().Value }).ToList();
          
             foreach (var atomic in atomicMeasurementViewModelList)
             {
