@@ -68,13 +68,7 @@
         var adequateSpace = Date.parse(this.points[prop].pointsList[1].time) - Date.parse(this.points[prop].pointsList[0].time);
         for (let i = 0; i < this.points[prop].pointsList.length; i++) {
 
-           if (i > 0 && Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time) > 2*adequateSpace) {
-            var spaceduration = Date.parse(this.points[prop].pointsList[i].time) - Date.parse(this.points[prop].pointsList[i - 1].time);
-            for (let j = i; j < this.points[prop].pointsList.length; j++) {
-              this.points[prop].pointsList[j].time = new Date(Date.parse(this.points[prop].pointsList[j].time) - spaceduration);
-            }
-          }
-          data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": +this.points[prop].pointsList[i].value});
+           data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": +this.points[prop].pointsList[i].value});
         
           
           //max = Date.parse(this.points[prop].pointsList[this.points[prop].pointsList.length - 1].time) - entryDatepoint;

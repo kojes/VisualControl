@@ -838,7 +838,7 @@ export default {
       let queries = [];
       for (let index = 0; index < this.selectedAtomics.length; index++) {
         let query = this.$http.get(
-          `/api/measurement/getpoints?measurementid=${
+          `/api/measurement/getpoints/withoutspaces?measurementid=${
             this.selectedAtomics[index].measurementId
           }&deviceid=${this.selectedAtomics[index].deviceId}&graphicid=${
             this.selectedAtomics[index].graphicId
@@ -867,7 +867,7 @@ export default {
       }
 
       let response = await this.$http.get(
-        `/api/measurement/getpoints?measurementid=${measurementId}&deviceid=${deviceId}&graphicid=${graphicId}&port=${port}`
+        `/api/measurement/getpoints/withoutspaces?measurementid=${measurementId}&deviceid=${deviceId}&graphicid=${graphicId}&port=${port}`
       );
       if (
         !this.points.hasOwnProperty(
