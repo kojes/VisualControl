@@ -16,6 +16,11 @@ namespace VueExample.ResponseObjects
             Message = "No Errors";
             Code = "AAA";
         }
+
+        public bool IsEmpty()
+        {
+            return Code == "AAA";
+        }
     
     }
 }

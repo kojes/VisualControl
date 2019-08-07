@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using VueExample.Providers;
+using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.ViewModels;
 
 namespace VueExample.Controllers
@@ -18,10 +18,10 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        [Route("getall")]
-        public IActionResult GetAll()
+        [Route("getall/{facilityId:int}")]
+        public IActionResult GetAll([FromRoute] int facilityId)
         {
-            return Ok(_measurementSetProvider.GetAllSets());
+            return Ok(_measurementSetProvider.GetAllSets(facilityId));
         }
         
 
@@ -50,25 +50,25 @@ namespace VueExample.Controllers
            
         }
 
-        [Route("getatomics/{measurementSetId:guid}")]
+        [Route("getatomics/{measurementSetId:guid}/{facilityId}")]
         [HttpGet]
         public IActionResult GetAtomicsById([FromRoute] Guid measurementSetId, [FromServices] IMeasurementProvider measurementProvider)
         {
             return Ok(_measurementSetProvider.GetAtomicsById(measurementSetId, measurementProvider));
         }
         
-        [Route("getatomics/online")]
+        [Route("getatomics/online/{facilityId}")]
         [HttpGet]
-        public IActionResult GetAtomicsOnline([FromServices] IMeasurementProvider measurementProvider)
+        public IActionResult GetAtomicsOnline([FromServices] IMeasurementProvider measurementProvider, [FromRoute] int facilityId)
         {
-            return Ok(_measurementSetProvider.GetAtomicsOnline(measurementProvider));
+            return Ok(_measurementSetProvider.GetAtomicsOnline(measurementProvider, facilityId));
         }
 
-        [Route("getatomics/material/{materialId}")]
+        [Route("getatomics/material/{materialId}/{facilityId}")]
         [HttpGet]
-        public IActionResult GetAtomicsByMaterial([FromRoute] int materialId, [FromServices] IMeasurementProvider measurementProvider)
+        public IActionResult GetAtomicsByMaterial([FromRoute] int materialId, [FromServices] IMeasurementProvider measurementProvider, [FromRoute] int facilityId)
         {
-            return Ok(_measurementSetProvider.GetAtomicsByMaterial(materialId, measurementProvider));
+            return Ok(_measurementSetProvider.GetAtomicsByMaterial(materialId, measurementProvider, facilityId));
         }
 
         [HttpPost]

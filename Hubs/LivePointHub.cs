@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using VueExample.Providers;
 using VueExample.ViewModels;
+using VueExample.Providers.ChipVerification.Abstract;
 
 namespace VueExample.Hubs
 {

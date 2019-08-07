@@ -13,10 +13,7 @@
               <v-icon>settings</v-icon>
             </v-btn>
       <v-flex lg8>
-        <v-layout row>
-          <v-flex lg6>
-           
-            <v-navigation-drawer
+           <v-navigation-drawer
       v-model="drawer"
       fixed
       right
@@ -88,6 +85,22 @@
        </v-list>
    
     </v-navigation-drawer>
+        <v-layout row>
+           <v-flex lg4>          
+         
+            <v-select
+              v-model="selectedFacility"
+              :items="facilities"
+              no-data-text="Нет данных"
+              item-text="name"
+              item-value="facilityId"
+              box
+              outline
+              label="Название установки:"
+            ></v-select>
+          </v-flex>
+          <v-flex lg4>          
+         
             <v-select
               v-model="selectedProcess"
               :items="processes"
@@ -99,7 +112,7 @@
               label="Название процесса:"
             ></v-select>
           </v-flex>
-          <v-flex lg6>
+          <v-flex lg4>
             <v-select
               v-model="selectedCodeProduct"
               :items="codeproducts.filter(x => x.processId === selectedProcess)"
@@ -114,7 +127,7 @@
         </v-layout>
 
         <v-layout row>
-          <v-flex lg6>
+          <v-flex lg4>
             <v-select
               v-model="selectedMeasuredDevice"
               :items="measureddevices.filter(x => x.codeProductId === selectedCodeProduct)"
@@ -126,7 +139,7 @@
               label="Название измеряемого устройства:"
             ></v-select>
           </v-flex>
-          <v-flex lg6>
+          <v-flex lg4>
             <v-select
               v-model="selectedMeasurement"
               :items="measurements.filter(x => x.measuredDeviceId === selectedMeasuredDevice)"
@@ -137,6 +150,21 @@
               outline
               label="Название измерения:"
             ></v-select>
+          </v-flex>
+          <v-flex class="justify-center" lg4>
+              <v-tooltip right>
+              <template v-slot:activator="{ on }">               
+                 <v-chip label :color="onlineStatusColor" text-color="white" dark v-on="on">
+                    {{selectedOnlineStatus.isOnline ? "Онлайн" : "Остановлено"}}
+                    <v-icon right>{{selectedOnlineStatus.isOnline ? "live_tv" : "stop_screen_share"}}</v-icon>
+                  </v-chip>
+              </template>
+              <span>{{"Начало измерений: " + selectedOnlineStatus.startTime }}</span>
+              <v-divider></v-divider>
+              <span v-if="!selectedOnlineStatus.isOnline">{{"Конец измерений: " + selectedOnlineStatus.lastTime}}</span>
+              <v-divider></v-divider>
+              <span>{{"Время испытания в часах: " + Math.ceil(selectedOnlineStatus.fullTimeInSeconds / 3600)}}</span>
+            </v-tooltip>
           </v-flex>
         </v-layout>
 
@@ -168,7 +196,7 @@
         <v-layout row>
           <v-flex lg6>
             <v-select
-              v-model="selectedGraphicId"
+              v-model="selectedGraphic"
               :items="graphics"
               no-data-text="Нет данных"
               item-text="russianName"
@@ -212,21 +240,7 @@
             >Добавить к серии</v-btn>
                 </v-flex>
                    <v-flex lg3>
-             <v-tooltip right>
-              <template v-slot:activator="{ on }">
-               
-                 <v-chip :color="onlineStatusColor" text-color="white" width="200px" dark v-on="on">
-                    {{selectedOnlineStatus.isOnline ? "Онлайн" : "Измерение окончено"}}
-                    <v-icon right>{{selectedOnlineStatus.isOnline ? "live_tv" : "close"}}</v-icon>
-                  </v-chip>
-
-              </template>
-              <span>{{"Начало измерений: " + selectedOnlineStatus.startTime }}</span>
-              <v-divider></v-divider>
-              <span v-if="!selectedOnlineStatus.isOnline">{{"Конец измерений: " + selectedOnlineStatus.lastTime}}</span>
-              <v-divider></v-divider>
-              <span>{{"Время испытания в часах: " + Math.ceil(selectedOnlineStatus.fullTimeInSeconds / 3600)}}</span>
-            </v-tooltip>
+            
            
            </v-flex>
         </v-layout>
@@ -282,7 +296,7 @@
               </v-list-tile-content>
 
                 <v-list-tile-action>
-                  <v-icon v-if="!measurementSets.find(x => x.measurementSetId === selectedMeasurementSet.id).isGenerated"
+                  <v-icon v-if="measurementSets.length > 0 && !measurementSets.find(x => x.measurementSetId === selectedMeasurementSet.id).isGenerated"
                     color="primary"
                     @click="deleteFromSet(item.atomicMeasurementId)"
                   >delete_outline</v-icon>
@@ -315,7 +329,7 @@
 
         <v-btn
           outline
-          v-if="!measurementSets.find(x => x.measurementSetId == selectedMeasurementSet.id).isGenerated"
+          v-if="measurementSets.length > 0 && !measurementSets.find(x => x.measurementSetId == selectedMeasurementSet.id).isGenerated"
           class="btn btn-primary"
           v-on:click="deleteThisMeasurementSet"
         >Удалить текущую серию</v-btn>
@@ -526,12 +540,9 @@ export default {
          statistics: []
       },
       selectedMeasurementSetInDialog: "",
-      selectedDevice: "",
       selectedMaterialInDialog:"",
-      selectedPort: "",
       selectedOnlineStatus: {},
-      selectedGraphic: "",
-      selectedGraphicId: "",
+      selectedFacility: 0,
       selectedProcess: "",
       selectedCodeProduct: "",
       selectedMeasuredDevice: "",
@@ -554,6 +565,7 @@ export default {
       savedSettings: {},
       codeproducts: [],
       measureddevices: [],
+      facilities: [],
       measurementSets: [],
       selectedAtomics: [],
       avialiableMaterials: [],
@@ -584,6 +596,21 @@ export default {
          {
             return "pink";
          }
+     },
+
+     selectedDevice : function()
+     {
+         return this.devices === undefined || this.devices.length === 0  ? 0 : this.devices[0].deviceId
+     },
+     
+     selectedGraphic: function()
+     {
+        return this.graphics === undefined || this.graphics.length === 0 ? 0 : this.graphics[0].graphicId
+     },
+
+     selectedPort: function()
+     {
+         return this.ports === undefined || this.ports.length === 0 ? 0 : this.ports[0]
      }
 
   },
@@ -795,7 +822,7 @@ export default {
         measurementSetId: this.selectedMeasurementSetInDialog,
         measurementId: this.selectedMeasurement,
         portNumber: this.selectedPort,
-        graphicId: this.selectedGraphicId,
+        graphicId: this.selectedGraphic,
         deviceId: this.selectedDevice
       };
 
@@ -817,7 +844,7 @@ export default {
 
           if (response.status === 201) {
             this.snackbarText = "Успешно добавлено";
-            var route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet.id)[0].route;
+            var route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet.id)[0].route + "/" + this.selectedFacility;
             this.$http.get(`/api/measurementset/getatomics/${route}`).then(response => this.selectedAtomics = response.data);
             
           }
@@ -855,7 +882,7 @@ export default {
 
     getPoints: async function(event) {
       this.currentChart = "";
-      var graphicId = this.selectedGraphicId;
+      var graphicId = this.selectedGraphic;
       var deviceId = this.selectedDevice;
       var port = this.selectedPort;
       var measurementId = this.selectedMeasurement;
@@ -876,7 +903,7 @@ export default {
       ) {
         Object.assign(this.points, response.data);
       } else {
-        if (this.selectedGraphic.graphicId === this.selectedGraphicId) {
+        if (this.selectedGraphic.graphicId === this.selectedGraphic) {
           this.$swal({
             type: "warning",
             text: "Идентичный график, невозможно добавить",
@@ -947,21 +974,44 @@ export default {
             deep: true
     },
 
+    selectedFacility: async function(val, oldVal)
+    {
+      let response = await this.$http.get(`/api/measurement/fullinfo/${val}`);
+      let data = response.data;
+      this.processes = data.item1;
+      this.codeproducts = data.item2;
+      this.measureddevices = data.item3;
+      this.measurements = data.item4;
+      this.selectedProcess = this.processes[0].processId;
+      response = await this.$http.get(`/api/device/getall`);
+      this.avDevices = response.data;
+      response = await this.$http.get(`/api/measurementset/getall/${val}`);
+      this.measurementSets = response.data;
+      this.selectedMeasuredDevice = this.measureddevices.filter(
+        x => x.codeProductId === this.selectedCodeProduct
+      )[0].measuredDeviceId
+      if (this.measurementSets.length > 0) {
+        this.selectedMeasurementSet.id = this.measurementSets[0].measurementSetId;
+        
+      }
+
+    },
+
     selectedMeasurement: async function() {
+
       var measurementId = this.selectedMeasurement;
-      let response = await this.$http.get(
-        `/api/measurement/getextrainfo?measurementid=${measurementId}`
-      );
-      this.devices = response.data.devices;
-      this.selectedDevice = this.devices[0].deviceId;
-      this.ports = response.data.ports;
-      this.selectedPort = this.ports[0];
-      this.graphics = response.data.graphic;
-      this.selectedGraphicId = this.graphics[0].graphicId;
+      let self = this;
+      await this.$http.get(`/api/device/av/measurementid/${measurementId}`).then(function (response) {self.devices = response.data});
+      await this.$http.get(`/api/graphic/av/measurementid/${measurementId}`).then(response => this.graphics = response.data); 
+      await this.$http.get(`/api/measurement/getports/av/${measurementId}`).then(function (response) {this.ports = response.data}.bind(this)); 
+    
+          
+
       let material = await this.$http.get(
         `/api/measurement/getmaterial?measurementid=${measurementId}`
       );
       this.selectedMaterial = material.data;
+
       let onlinestatus = await this.$http.get(
         `/api/measurement/getonlinestatus?measurementid=${measurementId}`
       );
@@ -986,7 +1036,7 @@ export default {
 
     'selectedMeasurementSet.id': async function() {
       this.selectedMeasurementSet.statistics = [];
-      let route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet.id)[0].route;
+      let route = this.measurementSets.filter(x => x.measurementSetId == this.selectedMeasurementSet.id)[0].route + "/" + this.selectedFacility;
       let response = await this.$http.get(
         `/api/measurementset/getatomics/${route}`
       );
@@ -1004,36 +1054,36 @@ export default {
   },
   async created() {
     try {
-      let response = await this.$http.get(`/api/measurement/fullinfo`);
-      let data = response.data;
-      this.processes = data.item1;
-      this.codeproducts = data.item2;
-      this.measureddevices = data.item3;
-      this.measurements = data.item4;
-      this.selectedProcess = this.processes[0].processId;
-      response = await this.$http.get(`/api/device/getall`);
-      this.avDevices = response.data;
-      response = await this.$http.get(`/api/measurementset/getall`);
-      this.measurementSets = response.data;
+      
+      let response = await this.$http.get(`/api/facility/getall`);
+     
+      if(response.status == 200)
+      {
+          let data = response.data;
+          this.facilities = data;
+          this.selectedFacility = this.facilities[0].facilityId;      
+          this.connection = new signalR.HubConnectionBuilder()
+                                            .withUrl("/livepoint")
+                                            .build();
 
-      if (this.measurementSets.length > 0) {
-        this.selectedMeasurementSet.id = this.measurementSets[0].measurementSetId;
-        
+          this.connection.start().catch(err => console.log(err));
+          this.connection.on("lastValues", value => this.livePointsRedraw(value));     
+          this.savedSettings = JSON.parse(JSON.stringify(this.settings));
       }
-
-      this.connection = new signalR.HubConnectionBuilder()
-                                      .withUrl("/livepoint")
-                                      .build();
-
-      this.connection.start().catch(err => console.log(err));
-      this.connection.on("lastValues", value => this.livePointsRedraw(value));     
-      this.savedSettings = JSON.parse(JSON.stringify(this.settings));
+      else
+      {
+         
+          this.snackbar = true;
+          this.snackbarText = response.statusText;
+          
+      }
+    
 
       this.pollData()
 
-    } catch (err) {
-      window.alert(err);
-      console.log(err);
+    } catch (error) {
+        this.snackbar = true;
+        this.snackbarText = error;
     }
   }
 };

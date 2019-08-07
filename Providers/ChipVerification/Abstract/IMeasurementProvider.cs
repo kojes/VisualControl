@@ -1,15 +1,16 @@
+using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using VueExample.Models;
 using VueExample.ViewModels;
 
-namespace VueExample.Providers
+namespace VueExample.Providers.ChipVerification.Abstract
 {
     public interface IMeasurementProvider
     {
-        (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo();
-
+        (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo(int facilityId);
         Object GetPointsByMeasurementId(int measurementId);
+        Task<List<int>> GetAvailablePorts(int measurementId);
         Measurement GetById(int measurementId);
         ViewModels.MaterialViewModel GetMaterial(int measurementId);
         MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId);

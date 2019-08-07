@@ -14,6 +14,8 @@ using VueExample.Contexts;
 using VueExample.Helpers;
 using VueExample.Hubs;
 using VueExample.Providers;
+using VueExample.Providers.ChipVerification;
+using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.Providers.Srv6.Interfaces;
 using VueExample.Services;
 
@@ -39,7 +41,6 @@ namespace VueExample
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
-
             var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddAuthentication(x =>
@@ -67,7 +68,8 @@ namespace VueExample
 
             
             
-
+           // services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, BackgroundTasks.OnlineTestingService>();
+           
             services.AddScoped<IUserProvider, UserProvider>();
             services.AddTransient<IWaferMapProvider, WaferMapProvider>();
             services.AddTransient<IDieProvider, DieProvider>();
@@ -82,6 +84,7 @@ namespace VueExample
             services.AddTransient<IMeasurementSetProvider, MeasurementSetProvider>();
             services.AddTransient<IAtomicMeasurementProvider, AtomicMeasurementProvider>();
             services.AddTransient<IMaterialProvider, MaterialProvider>();
+            services.AddTransient<IFacilityProvider, FacilityProvider>();
         }
 
 

@@ -2,9 +2,10 @@ using System;
 using System.Linq;
 using VueExample.Contexts;
 using VueExample.Models;
+using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.ViewModels;
 
-namespace VueExample.Providers 
+namespace VueExample.Providers .ChipVerification
 {
     public class AtomicMeasurementProvider : IAtomicMeasurementProvider 
     {

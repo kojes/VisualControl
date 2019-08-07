@@ -1,25 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VueExample.Providers;
+using VueExample.Providers.ChipVerification.Abstract;
 
 namespace VueExample.Controllers
 {
+    [Route("api/[controller]")]
     public class GraphicController : Controller
     {
-        private readonly IGraphicProvider graphicProvider;
+        private readonly IGraphicProvider _graphicProvider;
 
         public GraphicController(IGraphicProvider graphicProvider)
         {
-            this.graphicProvider = graphicProvider;
+            _graphicProvider = graphicProvider;
         }
 
-        [HttpGet("[action]")]
-        public IActionResult GetById(int id)
+        [HttpGet("get/{id:int}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var graphic = graphicProvider.GetById(id);
+            var graphic = await _graphicProvider.GetGraphicById(id);
+            return Ok(graphic);
+        }
+
+        [HttpGet("av/measurementid/{measurementId:int}")]
+        public async Task<IActionResult> GetAvailiableByMeasurementId([FromRoute] int measurementId)
+        {
+            var graphic = await _graphicProvider.GetAvailiableByMeasurementId(measurementId);
             return Ok(graphic);
         }
     }

@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Providers;
+using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.ViewModels;
 
 namespace VueExample.Controllers

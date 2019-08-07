@@ -2,31 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using VueExample.Providers;
 using VueExample.Extensions;
 using VueExample.ViewModels;
 using Newtonsoft.Json;
+using VueExample.Providers.ChipVerification.Abstract;
+using System.Threading.Tasks;
 
 namespace VueExample.Controllers
 {
     [Route("api/[controller]")]
     public class MeasurementController : Controller
     {
-        private readonly IMeasurementProvider measurementProvider;
-        private readonly IMaterialProvider materialProvider;
+        private readonly IMeasurementProvider _measurementProvider;
+        private readonly IMaterialProvider _materialProvider;
+     
 
         public MeasurementController(IMeasurementProvider measurementProvider, IMaterialProvider materialProvider)
         {
-            this.measurementProvider = measurementProvider;
-            this.materialProvider = materialProvider;
+            _measurementProvider = measurementProvider;
+            _materialProvider = materialProvider;
+           
         }
 
        
         [HttpGet]
-        [Route("fullinfo")]
-        public IActionResult FullInfo()
+        [Route("fullinfo/{facilityId:int}")]
+        public IActionResult FullInfo([FromRoute] int facilityId)
         {
-            var measurementInfo = measurementProvider.GetAllMeasurementInfo();
+            var measurementInfo = _measurementProvider.GetAllMeasurementInfo(facilityId);
             return Ok(measurementInfo);
         }
 
@@ -34,7 +37,7 @@ namespace VueExample.Controllers
         [Route("getonlinestatus")]
         public IActionResult GetOnlineStatus([FromQuery(Name = "measurementid")] int measurementId)
         {
-            var onlineStatus = measurementProvider.GetMeasurementOnlineStatus(measurementId);
+            var onlineStatus = _measurementProvider.GetMeasurementOnlineStatus(measurementId);
             return Ok(onlineStatus);
         }
 
@@ -42,15 +45,15 @@ namespace VueExample.Controllers
         [Route("getmaterial")]
         public IActionResult GetMaterial([FromQuery(Name = "measurementid")] int measurementId)
         {
-           
-            return Ok(measurementProvider.GetMaterial(measurementId));
+            var material = _measurementProvider.GetMaterial(measurementId);           
+            return Ok(material);
         }
 
         [HttpPost]
         [Route("changematerial")]
         public IActionResult ChangeMaterial([FromBody] ChangeMaterialViewModel changeMaterialViewModel)
         {
-            var newMaterial = materialProvider.ChangeMaterialOnMeasurement(changeMaterialViewModel.MeasurementId, changeMaterialViewModel.MaterialId);
+            var newMaterial = _materialProvider.ChangeMaterialOnMeasurement(changeMaterialViewModel.MeasurementId, changeMaterialViewModel.MaterialId);
             return Ok(newMaterial);
         }
 
@@ -58,14 +61,22 @@ namespace VueExample.Controllers
         [Route("getextrainfo")]
         public IActionResult GetExtraInfo([FromQuery(Name = "measurementid")] int measurementId)
         {
-            return Ok(measurementProvider.GetPointsByMeasurementId(measurementId));
+            return Ok(_measurementProvider.GetPointsByMeasurementId(measurementId));
         }
 
         [HttpGet]
         [Route("getmeasurementstatistics")]
         public IActionResult GetMeasurementStatistics([FromQuery(Name = "atomiclist")] string atomicListJSON)
         {
-            return Ok(measurementProvider.GetMeasurementStatistics(JsonConvert.DeserializeObject<List<AtomicMeasurementExtendedViewModel>>(atomicListJSON)));
+            return Ok(_measurementProvider.GetMeasurementStatistics(JsonConvert.DeserializeObject<List<AtomicMeasurementExtendedViewModel>>(atomicListJSON)));
+        }
+
+        [HttpGet]
+        [Route("getports/av/{measurementId:int}")]
+        public async Task<IActionResult> GetAvailablePorts([FromRoute] int measurementId)
+        {
+           var ports = await _measurementProvider.GetAvailablePorts(measurementId);
+           return Ok(ports);
         }
 
         [HttpGet]
@@ -74,14 +85,14 @@ namespace VueExample.Controllers
         {
             var pointsDictionary = new Dictionary<string, PointsInMeasurementViewModel>();
             var pointViewModel = new PointsInMeasurementViewModel();
-            var pointsList = new List<PointViewModel>(measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
+            var pointsList = new List<PointViewModel>(_measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
 
             var k = Math.Ceiling((double)pointsList.Count / 500);
             var filteredPointsList = pointsList.GetNth<PointViewModel>(Convert.ToInt32(k)).ToList();
             filteredPointsList.Add(pointsList.LastOrDefault());
             pointsDictionary.Add($"M{measurementId}D{deviceId}PN{port}", new PointsInMeasurementViewModel{
                                                                          PointsList = filteredPointsList,
-                                                                         MeasurementName = measurementProvider.GetById(measurementId).Name});
+                                                                         MeasurementName = _measurementProvider.GetById(measurementId).Name});
             if (pointsList.Count == 0)
             {
                 return NoContent();
@@ -95,8 +106,8 @@ namespace VueExample.Controllers
         {
             var pointsDictionary = new Dictionary<string, PointsInMeasurementViewModel>();
             var pointViewModel = new PointsInMeasurementViewModel();
-            var pointsList = new List<PointViewModel>(measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
-            var measurement = measurementProvider.GetById(measurementId);
+            var pointsList = new List<PointViewModel>(_measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
+            var measurement = _measurementProvider.GetById(measurementId);
             
             for (var i = 0; i < pointsList.Count; i++)
             {

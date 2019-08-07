@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VueExample.Models;
 using VueExample.Configuration;
-using Microsoft.Extensions.Configuration;
 
 namespace VueExample.Contexts
 {
@@ -12,9 +11,11 @@ namespace VueExample.Contexts
         public DbSet<Material> Material { get; set; }
         public DbSet<Device> Device { get; set; }
         public DbSet<Measurement> Measurement { get; set; }
+        public DbSet<Facility> Facility { get; set; }
         public DbSet<MeasuredDevice> MeasuredDevice { get; set; }
         public DbSet<AtomicMeasurement> AtomicMeasurement { get; set; }
         public DbSet<MeasurementSet> MeasurementSet { get; set; }
+        public DbSet<MeasurementOnlineStatus> MeasurementOnlineStatus { get; set; }
         public DbSet<MeasurementSetAtomicMeasurement> MeasurementSetAtomicMeasurement { get; set; }
       
         public ApplicationContext(DbContextOptions<ApplicationContext> options): base(options)

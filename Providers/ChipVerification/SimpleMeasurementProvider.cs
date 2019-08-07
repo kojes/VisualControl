@@ -9,8 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using VueExample.Contexts;
 using VueExample.Models;
 using VueExample.ViewModels;
+using System.Data.SqlClient;
+using VueExample.Providers.ChipVerification.Abstract;
+using System.Threading.Tasks;
 
-namespace VueExample.Providers
+namespace VueExample.Providers.ChipVerification
 {
     public class SimpleMeasurementProvider : IMeasurementProvider
     {
@@ -21,8 +24,9 @@ namespace VueExample.Providers
             _mapper = mapper;  
             _applicationContext = applicationContext;
         }    
-        public (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo()
+        public (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo(int facilityId)
         {
+          
             var codeProductIdList = new List<int>();
             var codeProductList = new List<CodeProduct>();
             var processList = new List<Process>();
@@ -30,7 +34,7 @@ namespace VueExample.Providers
             var measurementList = new List<Measurement>();
             var processIdList = new List<int>();
            
-            foreach (var deviceId in _applicationContext.Measurement.ToList().Select(x => x.MeasuredDeviceId).Distinct().Where(x => x != null).ToList())
+            foreach (var deviceId in _applicationContext.Measurement.Where(x => x.FacilityId == facilityId).ToList().Select(x => x.MeasuredDeviceId).Distinct().Where(x => x != null).ToList())
             {
                 codeProductIdList.Add(_applicationContext.MeasuredDevice.FirstOrDefault(x => x.MeasuredDeviceId == deviceId).CodeProductId);
                 measuredDeviceList.Add(_applicationContext.MeasuredDevice.FirstOrDefault(x=>x.MeasuredDeviceId == deviceId));
@@ -101,27 +105,14 @@ namespace VueExample.Providers
 
         public MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId)
         {         
-            var pointsList = _applicationContext.Point.Where(x => x.MeasurementId == measurementId).OrderBy(_ => _.PointId).ToList();
-            var measurement = _applicationContext.Measurement.Find(measurementId);
-            var measurementOnlineStatus = new MeasurementOnlineStatus(measurement.IntervalInSeconds, pointsList.Count(), pointsList.First().Time, pointsList.Last().Time);
+            var measurementIdSqlParameter = new SqlParameter("measurementID", measurementId);
+            var measurementOnlineStatus = _applicationContext.MeasurementOnlineStatus.FromSql("EXECUTE GetMeasurementOnlineStatus @measurementID", measurementIdSqlParameter).FirstOrDefault();
             return measurementOnlineStatus;            
         }
 
-        public bool IsMeasurementOnline(int measurementId)
-        {         
-            var measurement = _applicationContext.Measurement.Find(measurementId);
-            if (measurement.IntervalInSeconds != null)
-            {                   
-                return _applicationContext.Point.Where(_ => _.MeasurementId == measurementId).
-                                                    OrderByDescending(_ => _.PointId).
-                                                    FirstOrDefault().Time.
-                                                    AddSeconds((double)2 * measurement.IntervalInSeconds.GetValueOrDefault()) > DateTime.Now; 
-            }
-            return false;              
-            
-        }
-
-        public List<LivePointViewModel> GetLivePoints(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
+        public bool IsMeasurementOnline(int measurementId) => GetMeasurementOnlineStatus(measurementId).IsOnline;
+        
+        public List<LivePointViewModel> GetLivePoints1(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
         {         
 
             return (from _ in atomicMeasurementViewModelList
@@ -136,6 +127,25 @@ namespace VueExample.Providers
                                     x.PortNumber == _.PortNumber).Value,
                                     MeasurementId = _.MeasurementId
                                 }).ToList();
+            
+        }
+
+        public List<LivePointViewModel> GetLivePoints(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
+        {         
+           var livePointViewModelList = new List<LivePointViewModel>();
+           for (int i = 0; i < atomicMeasurementViewModelList.Count(); i++)
+           {
+                var measurementIdSqlParameter = new SqlParameter("@MeasurementID", atomicMeasurementViewModelList[i].MeasurementId);
+                var deviceIdSqlParameter = new SqlParameter("@DeviceID", atomicMeasurementViewModelList[i].DeviceId);
+                var graphicIdSqlParameter = new SqlParameter("@GraphicID", atomicMeasurementViewModelList[i].GraphicId);
+                var portNumberSqlParameter = new SqlParameter("@PortNumber", atomicMeasurementViewModelList[i].PortNumber);
+                var lastPoint = _applicationContext.Point.FromSql("EXECUTE GetLastPoint @MeasurementID, @DeviceID, @GraphicID, @PortNumber", measurementIdSqlParameter, deviceIdSqlParameter, 
+                                                                                          graphicIdSqlParameter, portNumberSqlParameter).
+                                                                                          FirstOrDefault();
+                livePointViewModelList.Add(new LivePointViewModel{Value = lastPoint.Value, MeasurementId = atomicMeasurementViewModelList[i].MeasurementId});
+           }
+
+           return livePointViewModelList;
             
         }
 
@@ -160,7 +170,9 @@ namespace VueExample.Providers
             return measurementStatisticsViewModelList;
         }
 
-
-
+        public async Task<List<int>> GetAvailablePorts(int measurementId)
+        {
+            return await _applicationContext.Point.Where(_ => _.MeasurementId == measurementId).Select(x => x.PortNumber).Distinct().ToListAsync();
+        }
     }
 }

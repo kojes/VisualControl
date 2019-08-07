@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using VueExample.Contexts;
 using VueExample.Helpers;
 using VueExample.Models;
+using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.ResponseObjects;
 using VueExample.ViewModels;
 
-namespace VueExample.Providers
+namespace VueExample.Providers.ChipVerification
 {
     public class MeasurementSetProvider : IMeasurementSetProvider
     {
@@ -62,12 +64,13 @@ namespace VueExample.Providers
             
         }
 
-        public List<MeasurementSetViewModel> GetAllSets()
+        public List<MeasurementSetViewModel> GetAllSets(int facilityId)
         {
             var measurementSetsViewModelList = new List<MeasurementSetViewModel>{GenerateOnlineMeasurementSet()};
-            measurementSetsViewModelList.AddRange(GenerateMaterialBasedMeasurementSets());
-                           
-            var measurementSetsFromDb = _applicationContext.MeasurementSet.ToList();
+            if(facilityId == 1)
+                measurementSetsViewModelList.AddRange(GenerateMaterialBasedMeasurementSets());
+            var facilityIdSqlParameter = new SqlParameter("facilityID", facilityId);
+            var measurementSetsFromDb = _applicationContext.MeasurementSet.FromSql("EXECUTE dbo.MeasurementSetByFacilityID @facilityID", facilityIdSqlParameter).ToList();
             measurementSetsViewModelList.AddRange(from measurementSet in measurementSetsFromDb
                                                   select new MeasurementSetViewModel 
                                                   {MeasurementSetId = measurementSet.MeasurementSetId, 
@@ -106,18 +109,18 @@ namespace VueExample.Providers
             return atomicViewModelList;
         }
 
-        public List<AtomicMeasurementExtendedViewModel> GetAtomicsByMaterial(int materialId, IMeasurementProvider measurementProvider)
+        public List<AtomicMeasurementExtendedViewModel> GetAtomicsByMaterial(int materialId, IMeasurementProvider measurementProvider, int facilityId)
         {
             var atomicViewModelList = new List<AtomicMeasurementExtendedViewModel>();
            
 
-            var atomicList = _applicationContext.AtomicMeasurement.Include(_ => _.Device).
-                                                                      Include(_ => _.Graphic).
-                                                                      Include(_ => _.Measurement).
-                                                                      ThenInclude(_ => _.Material).
-                                                                      Where(_ => _.Measurement.Material.MaterialId == materialId).
-                                                                      AsNoTracking().
-                                                                      ToList();
+            var atomicList =  _applicationContext.AtomicMeasurement.Include(_ => _.Device).
+                                                                    Include(_ => _.Graphic).
+                                                                    Include(_ => _.Measurement).
+                                                                    ThenInclude(_ => _.Material).
+                                                                    Where(_ => _.Measurement.FacilityId == facilityId && _.Measurement.Material.MaterialId == materialId).
+                                                                    AsNoTracking().
+                                                                    ToList();
             atomicViewModelList.AddRange(from atomic in atomicList
                                                                     select new AtomicMeasurementExtendedViewModel 
                                                                     { AtomicMeasurementId = atomic.Id, DeviceId = atomic.DeviceId, DeviceName = atomic.Device.Name,
@@ -130,26 +133,26 @@ namespace VueExample.Providers
             return atomicViewModelList;
         }
 
-        public List<AtomicMeasurementExtendedViewModel> GetAtomicsOnline(IMeasurementProvider measurementProvider)
+        public List<AtomicMeasurementExtendedViewModel> GetAtomicsOnline(IMeasurementProvider measurementProvider, int facilityId)
         {
             var atomicViewModelList = new List<AtomicMeasurementExtendedViewModel>();
             
-            var atomicList = _applicationContext.AtomicMeasurement.Include(_ => _.Device).
+            var atomicList =  _applicationContext.AtomicMeasurement.Include(_ => _.Device).
                                                                     Include(_ => _.Graphic).
                                                                     Include(_ => _.Measurement).
-                                                                    Where(x => x.Measurement.Points.
+                                                                    Where(x => x.Measurement.FacilityId == facilityId && x.Measurement.Points.
                                                                     OrderByDescending(_ => _.PointId).
                                                                     FirstOrDefault().Time.AddSeconds((double) x.Measurement.IntervalInSeconds * 2) > 
                                                                                                      DateTime.Now.AddHours(-1.0)).
                                                                     AsNoTracking().
                                                                     ToList();
-             atomicViewModelList.AddRange(from atomic in atomicList
+            atomicViewModelList.AddRange(from atomic in atomicList
                                              select new AtomicMeasurementExtendedViewModel 
-                                             { AtomicMeasurementId = atomic.Id, DeviceId = atomic.DeviceId, 
-                                             DeviceName = atomic.Device.Name,
-                                             MeasurementId = atomic.MeasurementId, MeasurementName = atomic.Measurement.Name, 
-                                             GraphicId = atomic.GraphicId, GraphicUnit = atomic.Graphic.Unit,
-                                             PortNumber = atomic.PortNumber, IsOnline = true});
+                                               { AtomicMeasurementId = atomic.Id, DeviceId = atomic.DeviceId, 
+                                                 DeviceName = atomic.Device.Name,
+                                                 MeasurementId = atomic.MeasurementId, MeasurementName = atomic.Measurement.Name, 
+                                                 GraphicId = atomic.GraphicId, GraphicUnit = atomic.Graphic.Unit,
+                                                 PortNumber = atomic.PortNumber, IsOnline = true});
             
             return atomicViewModelList;
         }

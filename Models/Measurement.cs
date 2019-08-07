@@ -26,6 +26,9 @@ namespace VueExample.Models
 
         [Column("id_material")]
         public int? MaterialId { get; set; }
+        
+        [Column("id_facility")]
+        public int FacilityId  { get; set; }
 
         public IEnumerable<AtomicMeasurement> AtomicMeasurement { get; set; }
         public IEnumerable<Point> Points { get; set; }

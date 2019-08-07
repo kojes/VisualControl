@@ -4,8 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using AutoMapper;
 using VueExample.ViewModels;
+using VueExample.Providers.ChipVerification.Abstract;
 
-namespace VueExample.Providers
+namespace VueExample.Providers.ChipVerification
 {
     public class MaterialProvider : IMaterialProvider
     {

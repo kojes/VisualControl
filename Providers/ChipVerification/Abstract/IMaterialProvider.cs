@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using VueExample.Models;
 using VueExample.ViewModels;
 
-namespace VueExample.Providers
+namespace VueExample.Providers.ChipVerification.Abstract
 {
     public interface IMaterialProvider
     {

@@ -1,7 +1,7 @@
 using System;
 using VueExample.ViewModels;
 
-namespace VueExample.Providers
+namespace VueExample.Providers.ChipVerification.Abstract
 {
     public interface IAtomicMeasurementProvider
     {
