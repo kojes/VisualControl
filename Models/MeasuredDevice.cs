@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VueExample.Models
@@ -5,6 +6,7 @@ namespace VueExample.Models
     [Table("MeasuredDevice")]
     public class MeasuredDevice
     {
+        [Key]
         [Column("id_measureddevice")]
         public int MeasuredDeviceId { get; set; }
         [Column("id_cp")]

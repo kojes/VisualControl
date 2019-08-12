@@ -1,7 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Providers.ChipVerification.Abstract;
+using VueExample.ResponseObjects;
+using VueExample.ViewModels;
 
 namespace VueExample.Controllers
 {
@@ -14,11 +18,14 @@ namespace VueExample.Controllers
             _facilityProvider = facilityProvider;
         }
 
-        [HttpGet("getall")]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<FacilityViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Error>), StatusCodes.Status404NotFound)]
+        [Route("getall")]
         public async Task<IActionResult> GetAll()
         {
-            var facilityList = await _facilityProvider.GetAllAsync();
-            return facilityList.Count() > 0 ? (ActionResult)Ok(facilityList) : (ActionResult)NoContent();
+            var result = await _facilityProvider.GetAllAsync();
+            return result.HasErrors ? (ActionResult)NotFound(result.GetErrors()) : (ActionResult)Ok(result.TObject);
         }
     }
 }

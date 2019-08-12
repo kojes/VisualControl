@@ -675,7 +675,7 @@ export default {
 
         this.$http({
         method: "post",
-        url: `/api/measurement/changematerial`,
+        url: `/api/material/changematerial`,
         data: changematerialViewModel,
         config: {
           headers: {
@@ -865,7 +865,7 @@ export default {
       let queries = [];
       for (let index = 0; index < this.selectedAtomics.length; index++) {
         let query = this.$http.get(
-          `/api/measurement/getpoints/withoutspaces?measurementid=${
+          `/api/point/get/withoutspaces?measurementid=${
             this.selectedAtomics[index].measurementId
           }&deviceid=${this.selectedAtomics[index].deviceId}&graphicid=${
             this.selectedAtomics[index].graphicId
@@ -894,7 +894,7 @@ export default {
       }
 
       let response = await this.$http.get(
-        `/api/measurement/getpoints/withoutspaces?measurementid=${measurementId}&deviceid=${deviceId}&graphicid=${graphicId}&port=${port}`
+        `/api/point/get/withoutspaces?measurementid=${measurementId}&deviceid=${deviceId}&graphicid=${graphicId}&port=${port}`
       );
       if (
         !this.points.hasOwnProperty(
@@ -1008,7 +1008,7 @@ export default {
           
 
       let material = await this.$http.get(
-        `/api/measurement/getmaterial?measurementid=${measurementId}`
+        `/api/material/getbymeasurementid/${measurementId}`
       );
       this.selectedMaterial = material.data;
 

@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VueExample.Models;
+using VueExample.ResponseObjects;
+using VueExample.ViewModels;
 
 namespace VueExample.Providers.ChipVerification.Abstract
 {
     public interface IGraphicProvider
     {
-        Task<Graphic> GetGraphicById(int id);
-        Task<List<Graphic>> GetAvailiableByMeasurementId(int measurementId);
+        Task<AfterDbManipulationObject<GraphicViewModel>> GetGraphicById(int id);
+        Task<AfterDbManipulationObject<GraphicViewModel>> GetGraphicByNameAndType(string name, string type);
+        Task<List<GraphicViewModel>> GetAvailiableByMeasurementId(int measurementId);
     }
 }

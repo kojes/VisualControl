@@ -7,23 +7,49 @@ using VueExample.ViewModels;
 using Newtonsoft.Json;
 using VueExample.Providers.ChipVerification.Abstract;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using VueExample.Models;
+using VueExample.ResponseObjects;
 
 namespace VueExample.Controllers
 {
     [Route("api/[controller]")]
     public class MeasurementController : Controller
     {
-        private readonly IMeasurementProvider _measurementProvider;
-        private readonly IMaterialProvider _materialProvider;
-     
-
-        public MeasurementController(IMeasurementProvider measurementProvider, IMaterialProvider materialProvider)
+        private readonly IMeasurementProvider _measurementProvider;          
+        public MeasurementController(IMeasurementProvider measurementProvider)
         {
-            _measurementProvider = measurementProvider;
-            _materialProvider = materialProvider;
-           
+            _measurementProvider = measurementProvider;                   
         }
 
+        [HttpPut]
+        [ProducesResponseType(typeof(MeasurementViewModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(List<ResponseObjects.Error>), StatusCodes.Status409Conflict)]
+        [Route("create")]
+        public async Task<IActionResult> Create([FromBody] MeasurementViewModel measurementViewModel)
+        {
+            var result = await _measurementProvider.Create(measurementViewModel);
+            return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)CreatedAtAction("Create", result.TObject);         
+        }
+
+        [HttpDelete]     
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(List<ResponseObjects.Error>), StatusCodes.Status409Conflict)]
+        [Route("delete/{measurementId:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int measurementId)
+        {
+            var result = await _measurementProvider.Delete(measurementId);
+            return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)NoContent();
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(MeasurementViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Error>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByMeasuredDeviceIdAndName([FromQuery(Name = "measureddeviceid")] int measuredDeviceId, [FromQuery(Name = "name")] string name)
+        {
+             var result = await _measurementProvider.GetByMeasuredDeviceIdAndName(measuredDeviceId, name);
+             return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(result.TObject);
+        }        
        
         [HttpGet]
         [Route("fullinfo/{facilityId:int}")]
@@ -34,37 +60,16 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(MeasurementOnlineStatus), StatusCodes.Status200OK)]
         [Route("getonlinestatus")]
         public IActionResult GetOnlineStatus([FromQuery(Name = "measurementid")] int measurementId)
         {
             var onlineStatus = _measurementProvider.GetMeasurementOnlineStatus(measurementId);
             return Ok(onlineStatus);
-        }
-
+        }     
+     
         [HttpGet]
-        [Route("getmaterial")]
-        public IActionResult GetMaterial([FromQuery(Name = "measurementid")] int measurementId)
-        {
-            var material = _measurementProvider.GetMaterial(measurementId);           
-            return Ok(material);
-        }
-
-        [HttpPost]
-        [Route("changematerial")]
-        public IActionResult ChangeMaterial([FromBody] ChangeMaterialViewModel changeMaterialViewModel)
-        {
-            var newMaterial = _materialProvider.ChangeMaterialOnMeasurement(changeMaterialViewModel.MeasurementId, changeMaterialViewModel.MaterialId);
-            return Ok(newMaterial);
-        }
-
-        [HttpGet]
-        [Route("getextrainfo")]
-        public IActionResult GetExtraInfo([FromQuery(Name = "measurementid")] int measurementId)
-        {
-            return Ok(_measurementProvider.GetPointsByMeasurementId(measurementId));
-        }
-
-        [HttpGet]
+        [ProducesResponseType(typeof(List<MeasurementStatisticsViewModel>), StatusCodes.Status200OK)]
         [Route("getmeasurementstatistics")]
         public IActionResult GetMeasurementStatistics([FromQuery(Name = "atomiclist")] string atomicListJSON)
         {
@@ -72,6 +77,7 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<int>), StatusCodes.Status200OK)]
         [Route("getports/av/{measurementId:int}")]
         public async Task<IActionResult> GetAvailablePorts([FromRoute] int measurementId)
         {
@@ -79,61 +85,6 @@ namespace VueExample.Controllers
            return Ok(ports);
         }
 
-        [HttpGet]
-        [Route("getpoints/withspaces")]
-        public IActionResult GetPoints([FromQuery(Name = "measurementid")] int measurementId, [FromQuery(Name = "deviceid")] int deviceId, [FromQuery(Name = "graphicid")] int graphicId, [FromQuery(Name = "port")] int port)
-        {
-            var pointsDictionary = new Dictionary<string, PointsInMeasurementViewModel>();
-            var pointViewModel = new PointsInMeasurementViewModel();
-            var pointsList = new List<PointViewModel>(_measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
-
-            var k = Math.Ceiling((double)pointsList.Count / 500);
-            var filteredPointsList = pointsList.GetNth<PointViewModel>(Convert.ToInt32(k)).ToList();
-            filteredPointsList.Add(pointsList.LastOrDefault());
-            pointsDictionary.Add($"M{measurementId}D{deviceId}PN{port}", new PointsInMeasurementViewModel{
-                                                                         PointsList = filteredPointsList,
-                                                                         MeasurementName = _measurementProvider.GetById(measurementId).Name});
-            if (pointsList.Count == 0)
-            {
-                return NoContent();
-            }
-            return Ok(pointsDictionary);
-        }
-
-        [HttpGet]
-        [Route("getpoints/withoutspaces")]
-        public IActionResult GetPointsWithoutSpaces([FromQuery(Name = "measurementid")] int measurementId, [FromQuery(Name = "deviceid")] int deviceId, [FromQuery(Name = "graphicid")] int graphicId, [FromQuery(Name = "port")] int port)
-        {
-            var pointsDictionary = new Dictionary<string, PointsInMeasurementViewModel>();
-            var pointViewModel = new PointsInMeasurementViewModel();
-            var pointsList = new List<PointViewModel>(_measurementProvider.GetPoints(measurementId, deviceId, graphicId, port));
-            var measurement = _measurementProvider.GetById(measurementId);
-            
-            for (var i = 0; i < pointsList.Count; i++)
-            {
-
-                if (i > 0 && (pointsList[i].Time - pointsList[i - 1].Time).TotalSeconds > 2*measurement.IntervalInSeconds)
-                {
-                    var spaceduration = pointsList[i].Time  - pointsList[i - 1].Time;
-                    for (var j = i; j < pointsList.Count; j++) 
-                    {
-                        pointsList[j].Time = pointsList[j].Time - spaceduration;
-                    }
-                }                                   
-            }
-
-
-            var k = Math.Ceiling((double)pointsList.Count / 500);
-            var filteredPointsList = pointsList.GetNth<PointViewModel>(Convert.ToInt32(k)).ToList();
-            filteredPointsList.Add(pointsList.LastOrDefault());
-            pointsDictionary.Add($"M{measurementId}D{deviceId}PN{port}", new PointsInMeasurementViewModel{
-                                                                         PointsList = filteredPointsList,
-                                                                         MeasurementName = measurement.Name});
-            if (pointsList.Count == 0)
-            {
-                return NoContent();
-            }
-            return Ok(pointsDictionary);
-        }
+        
     }
 }

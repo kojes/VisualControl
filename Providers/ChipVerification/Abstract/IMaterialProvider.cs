@@ -1,14 +1,15 @@
 using System.Collections.Generic;
-using VueExample.Models;
+using System.Threading.Tasks;
+using VueExample.ResponseObjects;
 using VueExample.ViewModels;
 
 namespace VueExample.Providers.ChipVerification.Abstract
 {
     public interface IMaterialProvider
-    {
-        Material ChangeName(string oldName, string newName);
-        List<MaterialViewModel> GetAll();
-        Material ChangeMaterialOnMeasurement(int measurementId, int materialId);
+    {    
+        Task<AfterDbManipulationObject<List<MaterialViewModel>>> GetAll();
+        Task<AfterDbManipulationObject<MaterialViewModel>> ChangeMaterialOnMeasurement(int measurementId, int materialId);
+        Task<AfterDbManipulationObject<MaterialViewModel>> GetMaterialByMeasurementId(int measurementId);
     } 
     
 }

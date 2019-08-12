@@ -12,12 +12,14 @@ using VueExample.ViewModels;
 using System.Data.SqlClient;
 using VueExample.Providers.ChipVerification.Abstract;
 using System.Threading.Tasks;
+using VueExample.ResponseObjects;
 
 namespace VueExample.Providers.ChipVerification
 {
     public class SimpleMeasurementProvider : IMeasurementProvider
     {
         private readonly IMapper _mapper;
+
         private readonly ApplicationContext _applicationContext;
         public SimpleMeasurementProvider(IMapper mapper, ApplicationContext applicationContext) 
         {
@@ -61,35 +63,7 @@ namespace VueExample.Providers.ChipVerification
             return (processList.Distinct().ToList(), codeProductList.Distinct().ToList(), measuredDeviceList.Distinct().OrderBy(_ => _.Name).ToList(), measurementList);
         }
 
-        public Object GetPointsByMeasurementId(int measurementId)
-        {          
-            var points = _applicationContext.Point.Where(x => x.MeasurementId == measurementId).ToList();
-            var availableDevices = points.Select(x => x.DeviceId).Distinct();
-            var portsArray = points.Select(x => x.PortNumber).Distinct().ToArray().OrderBy(x=>x);
-            var availableGraphics = points.Select(x => x.GraphicId).Distinct();
-            var devicesArray = _applicationContext.Device.Where(x => availableDevices.Contains(x.DeviceId)).ToArray();
-            var graphicsArray = _applicationContext.Graphic.Where(x => availableGraphics.Contains(x.GraphicId)).ToArray();
-            var result = new
-            {
-                Ports = portsArray,
-                Devices = devicesArray,
-                Graphic = graphicsArray
-            };
-            return result;            
-        }
-
-        public List<PointViewModel> GetPoints(int measurementId, int deviceId, int graphicId, int port)
-        {            
-            return _applicationContext.Point.Where(x => x.MeasurementId == measurementId 
-                                               && x.DeviceId == deviceId 
-                                               && x.GraphicId == graphicId 
-                                               && x.PortNumber == port).
-                                               OrderBy(x => x.PointId).
-                                               AsNoTracking().
-                                               ProjectTo<PointViewModel>(_mapper.ConfigurationProvider).
-                                               ToList();           
-            
-        }
+       
 
         public Measurement GetById(int measurementId)
         {           
@@ -112,44 +86,6 @@ namespace VueExample.Providers.ChipVerification
 
         public bool IsMeasurementOnline(int measurementId) => GetMeasurementOnlineStatus(measurementId).IsOnline;
         
-        public List<LivePointViewModel> GetLivePoints1(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
-        {         
-
-            return (from _ in atomicMeasurementViewModelList
-                                select new LivePointViewModel
-                                {
-                                    Value = _applicationContext.Point.
-                                    OrderByDescending(x => x.PointId).
-                                    FirstOrDefault(x => 
-                                    x.MeasurementId == _.MeasurementId &&
-                                    x.DeviceId == _.DeviceId &&
-                                    x.GraphicId == _.GraphicId &&
-                                    x.PortNumber == _.PortNumber).Value,
-                                    MeasurementId = _.MeasurementId
-                                }).ToList();
-            
-        }
-
-        public List<LivePointViewModel> GetLivePoints(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
-        {         
-           var livePointViewModelList = new List<LivePointViewModel>();
-           for (int i = 0; i < atomicMeasurementViewModelList.Count(); i++)
-           {
-                var measurementIdSqlParameter = new SqlParameter("@MeasurementID", atomicMeasurementViewModelList[i].MeasurementId);
-                var deviceIdSqlParameter = new SqlParameter("@DeviceID", atomicMeasurementViewModelList[i].DeviceId);
-                var graphicIdSqlParameter = new SqlParameter("@GraphicID", atomicMeasurementViewModelList[i].GraphicId);
-                var portNumberSqlParameter = new SqlParameter("@PortNumber", atomicMeasurementViewModelList[i].PortNumber);
-                var lastPoint = _applicationContext.Point.FromSql("EXECUTE GetLastPoint @MeasurementID, @DeviceID, @GraphicID, @PortNumber", measurementIdSqlParameter, deviceIdSqlParameter, 
-                                                                                          graphicIdSqlParameter, portNumberSqlParameter).
-                                                                                          FirstOrDefault();
-                livePointViewModelList.Add(new LivePointViewModel{Value = lastPoint.Value, MeasurementId = atomicMeasurementViewModelList[i].MeasurementId});
-           }
-
-           return livePointViewModelList;
-            
-        }
-
-
         public List<MeasurementStatisticsViewModel> GetMeasurementStatistics(List<AtomicMeasurementExtendedViewModel> atomicMeasurementViewModelList)
         {
             var measurementStatisticsViewModelList = new List<MeasurementStatisticsViewModel>();            
@@ -173,6 +109,54 @@ namespace VueExample.Providers.ChipVerification
         public async Task<List<int>> GetAvailablePorts(int measurementId)
         {
             return await _applicationContext.Point.Where(_ => _.MeasurementId == measurementId).Select(x => x.PortNumber).Distinct().ToListAsync();
+        }
+
+        public async Task<AfterDbManipulationObject<MeasurementViewModel>> Create(MeasurementViewModel measurementViewModel)
+        {
+            if(await _applicationContext.Measurement.FirstOrDefaultAsync(_ => _.Name == measurementViewModel.Name) is null)
+            {
+                return new AfterDbManipulationObject<MeasurementViewModel>(new Error(@"Измерение с таким именем уже существует"));
+            }
+            else
+            {
+                 var measurement = _mapper.Map<Measurement>(measurementViewModel);
+                 _applicationContext.Measurement.Add(measurement);
+                 await _applicationContext.SaveChangesAsync();
+                 return new AfterDbManipulationObject<MeasurementViewModel>(_mapper.Map<MeasurementViewModel>(measurement));
+            }
+           
+        }
+
+        public async Task<AfterDbManipulationObject<MeasurementViewModel>> Delete(int measurementId)
+        {
+            if(!(await _applicationContext.Point.FirstOrDefaultAsync(x => x.MeasurementId == measurementId) is null))
+            {
+                return new AfterDbManipulationObject<MeasurementViewModel>(new Error(@"Невозможно удалить непустое измрение"));
+            }
+            try
+            {
+                var entry = _applicationContext.Entry( new Measurement { MeasurementId = measurementId });
+                entry.State = EntityState.Deleted;
+                await _applicationContext.SaveChangesAsync();
+                return new AfterDbManipulationObject<MeasurementViewModel>("DELETE");
+            }
+            catch(Exception)
+            {
+                 return new AfterDbManipulationObject<MeasurementViewModel>(new Error(@"Ошибка при удалении"));            
+            }
+        }
+
+        public async Task<AfterDbManipulationObject<MeasurementViewModel>> GetByMeasuredDeviceIdAndName(int measuredDeviceId, string name)
+        {
+            var measurement = await _applicationContext.Measurement.FirstOrDefaultAsync(x => x.MeasuredDeviceId == measuredDeviceId && x.Name == name);
+            var obj = new AfterDbManipulationObject<MeasurementViewModel>();
+            if(measurement is null)
+            {
+                obj.AddError(new Error(@"Измерение не найдено"));
+                return obj;
+            }
+            obj.SetObject(_mapper.Map<MeasurementViewModel>(measurement));
+            return obj;
         }
     }
 }

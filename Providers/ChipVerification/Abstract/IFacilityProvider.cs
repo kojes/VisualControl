@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using VueExample.Models;
+using VueExample.ResponseObjects;
+using VueExample.ViewModels;
 
 namespace VueExample.Providers.ChipVerification.Abstract
 {
-   public interface IFacilityProvider
+    public interface IFacilityProvider
    {
-       Task<List<Facility>> GetAllAsync();
+      Task<AfterDbManipulationObject<List<FacilityViewModel>>> GetAllAsync();
    }
 }

@@ -31,7 +31,7 @@ namespace VueExample.Providers
         public AfterDbManipulationObject<DefectType> AddDefectType(string description, string color)
         {
             var newDefectType = new DefectType { Description = description, Color = color };
-            var obj = new AfterDbManipulationObject<DefectType>();
+            var obj = new AfterDbManipulationObject<DefectType>(newDefectType);
             using (VisualControlContext applicationContext = new VisualControlContext())
             {
                
@@ -48,9 +48,7 @@ namespace VueExample.Providers
                 if (obj.HasErrors) return obj;
                 applicationContext.DefectTypes.Add(newDefectType);
                 applicationContext.SaveChanges();
-                obj.SetObject(newDefectType);
-
-            }
+           }
 
             return obj;
         }

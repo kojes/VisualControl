@@ -27,6 +27,7 @@ namespace VueExample.Models
         [Column("id_material")]
         public int? MaterialId { get; set; }
         
+        
         [Column("id_facility")]
         public int FacilityId  { get; set; }
 

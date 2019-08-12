@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Swagger;
 using VueExample.Color;
 using VueExample.Contexts;
 using VueExample.Helpers;
@@ -60,7 +61,15 @@ namespace VueExample
                         ValidateAudience = false
                     };
                 });
-
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v0.2.2", new Info
+                {
+                    Version = "v0.2.2",
+                    Title = "SVR_API",
+                    Description = "SVR_MES_19_API_0.2.2"
+                });
+            });
         
 
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ApplicationContext")));
@@ -85,6 +94,8 @@ namespace VueExample
             services.AddTransient<IAtomicMeasurementProvider, AtomicMeasurementProvider>();
             services.AddTransient<IMaterialProvider, MaterialProvider>();
             services.AddTransient<IFacilityProvider, FacilityProvider>();
+            services.AddTransient<IMeasuredDeviceProvider, MeasuredDeviceProvider>();
+            services.AddTransient<IPointProvider, PointProvider>();
         }
 
 
@@ -108,6 +119,12 @@ namespace VueExample
             app.UseSignalR(options =>
             {
                 options.MapHub<LivePointHub>("/livepoint");
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v0.2.2/swagger.json", "SVR_MES_19_API_0.2.2");
             });
 
 

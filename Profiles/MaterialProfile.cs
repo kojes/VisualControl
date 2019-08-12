@@ -8,7 +8,7 @@ namespace VueExample.Profiles
     {
         public MaterialProfile()
         {
-            CreateMap<MaterialViewModel, Material>();
+            CreateMap<MaterialViewModel, Material>().ReverseMap();
         }
     }
 }

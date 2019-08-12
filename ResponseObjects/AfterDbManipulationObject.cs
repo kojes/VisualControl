@@ -12,9 +12,25 @@ namespace VueExample.ResponseObjects
         private List<Error> ErrorsList { get; }
         public bool HasErrors { get; private set; }
         public string ManipulationType { get; }
-
+        
         public AfterDbManipulationObject(string manipulationType = "ADD")
         {
+            this.HasErrors = false;
+            this.ManipulationType = manipulationType;
+            this.ErrorsList = new List<Error>();
+        }
+
+
+        public AfterDbManipulationObject(Error error, string manipulationType = "ADD")
+        {
+            this.HasErrors = true;
+            this.ManipulationType = manipulationType;
+            this.ErrorsList = new List<Error>();
+        }
+
+        public AfterDbManipulationObject(T TObject, string manipulationType = "ADD")
+        {
+            this.TObject = TObject;
             this.HasErrors = false;
             this.ManipulationType = manipulationType;
             this.ErrorsList = new List<Error>();
@@ -30,6 +46,16 @@ namespace VueExample.ResponseObjects
 
         }
 
+        public AfterDbManipulationObject<T> CreateWithError(Error error)
+        {
+            this.ErrorsList.Add(error);
+            if (!HasErrors)
+            {
+                this.HasErrors = true;
+            }
+            return this;
+        }
+
         public void SetObject(T TObject)
         {
             this.TObject = TObject;
@@ -37,7 +63,7 @@ namespace VueExample.ResponseObjects
 
         public List<Error> GetErrors()
         {
-            return this.ErrorsList;
+            return this.ErrorsList.ToList();
         }
     }
 }

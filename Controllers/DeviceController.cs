@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Models;
 using VueExample.Providers.ChipVerification.Abstract;
+using VueExample.ResponseObjects;
 using VueExample.ViewModels;
 
 namespace VueExample.Controllers
@@ -21,13 +23,16 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<Device>), StatusCodes.Status200OK)]
         [Route("getall")]
+
         public IActionResult GetAll() 
         {
             return Ok(_deviceProvider.GetAll());
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<Device>), StatusCodes.Status200OK)]
         [Route("av/measurementid/{measurementId:int}")]
         public async Task<IActionResult> GetAvailableByMeasurementId([FromRoute] int measurementId)
         {
@@ -35,38 +40,45 @@ namespace VueExample.Controllers
             return Ok(deviceList);
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Error>), StatusCodes.Status404NotFound)]
+        [Route("getbyname/{name}")]
+        public async Task<IActionResult> GetByName([FromRoute] string name)
+        {
+            var result = await _deviceProvider.GetByName(name);
+            return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(_mapper.Map<DeviceViewModel>(result.TObject));
+        }
+
         [HttpPut]
         [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ResponseObjects.Error), StatusCodes.Status409Conflict)]
-        [Route("addnew")]
-        public IActionResult Add([FromBody] DeviceViewModel deviceViewModel)
+        [Route("create")]
+        public async Task<IActionResult> Create([FromBody] DeviceViewModel deviceViewModel)
         {
-            var response = _deviceProvider.Add(_mapper.Map<Device>(deviceViewModel));
-            if(response.Item2.IsEmpty())
-            {
-                return CreatedAtRoute("addnew", _mapper.Map<DeviceViewModel>(response.Item1));
-            }
-            else
-            {
-                return Conflict(response.Item2);
-            }
+            var result = await _deviceProvider.Create(deviceViewModel);
+            return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)CreatedAtRoute("Create", _mapper.Map<DeviceViewModel>(result.TObject));           
         }
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ResponseObjects.Error), StatusCodes.Status409Conflict)]
-        [Route("delete/{id}")]
-        public IActionResult Delete([FromRoute] int id)
+        [Route("delete/{deviceId:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int deviceId)
         {
-            var error = _deviceProvider.Delete(id);
-            if(error.IsEmpty())
-            {
-                return NoContent();
-            }
-            else
-            {
-                return Conflict(error);
-            }
+            var result = await _deviceProvider.Delete(deviceId);
+            return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)NoContent();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseObjects.Error), StatusCodes.Status409Conflict)]
+        [Route("edit")]
+        public async Task<IActionResult> Edit([FromBody] DeviceViewModel deviceViewModel)
+        {
+            var result = await _deviceProvider.Edit(deviceViewModel);
+            return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)Ok(_mapper.Map<DefectViewModel>(result.TObject));
+
         }
     }
 }
