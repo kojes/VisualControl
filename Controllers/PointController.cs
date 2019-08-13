@@ -48,8 +48,7 @@ namespace VueExample.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(Dictionary<string, PointsInMeasurementViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<ResponseObjects.Error>), StatusCodes.Status404NotFound)]
-        [Route("get/withoutspaces")]
-        
+        [Route("get/withoutspaces")]        
         public async Task<IActionResult> GetPointsWithoutSpaces([FromQuery(Name = "measurementid")] int measurementId, [FromQuery(Name = "deviceid")] int deviceId, [FromQuery(Name = "graphicid")] int graphicId, [FromQuery(Name = "port")] int port)
         {
             var pointsDictionary = new Dictionary<string, PointsInMeasurementViewModel>();

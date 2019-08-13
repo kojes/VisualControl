@@ -25,7 +25,6 @@ namespace VueExample.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<Device>), StatusCodes.Status200OK)]
         [Route("getall")]
-
         public IActionResult GetAll() 
         {
             return Ok(_deviceProvider.GetAll());

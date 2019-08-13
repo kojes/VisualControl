@@ -124,7 +124,7 @@ namespace VueExample
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v0.2.2/swagger.json", "SVR_MES_19_API_0.2.2");
+                c.SwaggerEndpoint("v0.2.2/swagger.json", "SVR_MES_19_API_0.2.2");
             });
 
 

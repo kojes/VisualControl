@@ -38,9 +38,9 @@ namespace VueExample.Controllers
             return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(result.TObject);
         }
 
-        [HttpGet("av/measurementid/{measurementId:int}")]
+        [HttpGet]
         [ProducesResponseType(typeof(List<GraphicViewModel>), StatusCodes.Status200OK)]
-        [Route(("get/{id:int}"))]
+        [Route("av/measurementid/{measurementId:int}")]
         public async Task<IActionResult> GetAvailiableByMeasurementId([FromRoute] int measurementId)
         {
             var graphic = await _graphicProvider.GetAvailiableByMeasurementId(measurementId);
