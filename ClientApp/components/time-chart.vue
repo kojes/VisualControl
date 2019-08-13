@@ -19,8 +19,8 @@
       this.tempPoints = JSON.parse(JSON.stringify(this.points));
       function am4themes_myTheme(target) {
       if (target instanceof am4core.InterfaceColorSet) {
-        target.setFor("grid", am4core.color("#fc0"));
-        target.setFor("text", am4core.color("#fff"));
+        target.setFor("grid", am4core.color("#7F6E7F"));
+        target.setFor("text", am4core.color("#7F6E7F"));
        
       }
 

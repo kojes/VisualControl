@@ -425,11 +425,11 @@
     </v-layout>
     <v-layout row>
       <v-flex lg12>
-        <div id="chart">
+        <div id="chart" class="chart">
           <component
             :is="currentChart"
             :points="points"
-            :graphic="selectedGraphic"
+            :graphic="graphics.find(x => x.graphicId === selectedGraphic)"
             :devices="avDevices"
             :settings="savedSettings"
           ></component>
@@ -1090,6 +1090,10 @@ export default {
 </script>
 <style>
 
+.chart
+{
+  background-color: #eee5e5;
+}
 
 .circleOnline {
     width: 15px;
