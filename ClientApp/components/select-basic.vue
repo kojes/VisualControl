@@ -53,7 +53,7 @@
             
                    
            
-            <v-text-field
+          <v-text-field
             label="Максимум:"
             :disabled="!settings.axisY.strictMinMax"
             class="numberinput"
@@ -75,6 +75,57 @@
         </v-layout>
     
       </v-list>
+
+       <v-list>
+        <v-chip>Настройки цвета на графике</v-chip>
+        <v-divider></v-divider>
+      </v-list>
+
+        <v-list>
+          <v-layout row>
+          <v-flex lg6 offset-lg1>
+           <v-text-field
+            label="Цвет фона:"
+            disabled
+            v-model="settings.colors.backgroundColor"
+            outline
+          ></v-text-field>
+          </v-flex>
+          <v-flex lg4 offset-lg1>
+          <input type="color" v-model="settings.colors.backgroundColor"/>
+          </v-flex>
+          </v-layout>
+
+        <v-layout row>
+          <v-flex lg6 offset-lg1>
+           <v-text-field
+            label="Цвет текста:"
+            disabled
+            v-model="settings.colors.textColor"
+            outline
+          ></v-text-field>
+          </v-flex>
+          <v-flex lg4 offset-lg1>
+          <input type="color" v-model="settings.colors.textColor"/>
+          </v-flex>
+          </v-layout>
+
+           <v-layout row>
+           <v-flex lg6 offset-lg1>
+           <v-text-field
+            label="Цвет сетки:"
+            disabled
+            v-model="settings.colors.gridColor"
+            outline
+          ></v-text-field>
+          </v-flex>
+          <v-flex lg4 offset-lg1>
+          <input type="color" v-model="settings.colors.gridColor"/>
+          </v-flex>     
+        </v-layout>
+
+        </v-list>
+
       <v-list class="pa-1">
         <v-divider></v-divider>
          <v-btn
@@ -425,7 +476,7 @@
     </v-layout>
     <v-layout row>
       <v-flex lg12>
-        <div id="chart" class="chart">
+        <div id="chart">
           <component
             :is="currentChart"
             :points="points"
@@ -551,7 +602,7 @@ export default {
       settings: {
            smoothing:
            {
-               require: true,
+               require: false,
                power: 8
            },
            axisY:
@@ -560,6 +611,12 @@ export default {
                min: 0,
                max: 0
               
+           },
+           colors:
+           {
+              backgroundColor: "#303030",
+              textColor: "#ffffff",
+              gridColor: "#ffcc00"
            }
       },
       savedSettings: {},
@@ -636,8 +693,11 @@ export default {
 
     saveSettings()
     {
+       
        this.savedSettings = JSON.parse(JSON.stringify(this.settings));
        this.drawer = false;
+        
+      
        
     },
 
@@ -1090,10 +1150,7 @@ export default {
 </script>
 <style>
 
-.chart
-{
-  background-color: #eee5e5;
-}
+
 
 .circleOnline {
     width: 15px;

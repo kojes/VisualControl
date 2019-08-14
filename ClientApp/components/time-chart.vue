@@ -1,5 +1,5 @@
 <template>
-  <div class="hello" ref="chartdiv">
+  <div class="hello" :style="{ backgroundColor: settings.colors.backgroundColor}" ref="chartdiv">
   </div>
 </template>
 
@@ -17,10 +17,12 @@
     mounted() {
       let chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart);
       this.tempPoints = JSON.parse(JSON.stringify(this.points));
+      var gridColor = this.settings.colors.gridColor;
+      var textColor = this.settings.colors.textColor;
       function am4themes_myTheme(target) {
       if (target instanceof am4core.InterfaceColorSet) {
-        target.setFor("grid", am4core.color("#7F6E7F"));
-        target.setFor("text", am4core.color("#7F6E7F"));
+        target.setFor("grid", am4core.color(gridColor));
+        target.setFor("text", am4core.color(textColor));
        
       }
 
@@ -68,8 +70,7 @@
         var adequateSpace = Date.parse(this.points[prop].pointsList[1].time) - Date.parse(this.points[prop].pointsList[0].time);
         for (let i = 0; i < this.points[prop].pointsList.length; i++) {
 
-           data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": +this.points[prop].pointsList[i].value});
-        
+           data.push({ "duration": Date.parse(this.points[prop].pointsList[i].time) - entryDatepoint, "value": +this.points[prop].pointsList[i].value});        
           
           //max = Date.parse(this.points[prop].pointsList[this.points[prop].pointsList.length - 1].time) - entryDatepoint;
         }
@@ -115,6 +116,15 @@
       chart.colors.step = 2;
       this.chart = chart;
      
+    },
+
+    watch: 
+    {
+       'settings.colors': function()
+       {
+          var gridColor = this.settings.colors.gridColor;
+          var textColor = this.settings.colors.textColor;
+       }
     },
 
     beforeDestroy() {

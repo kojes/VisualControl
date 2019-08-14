@@ -130,6 +130,7 @@ namespace VueExample
 
             app.UseAuthentication();
             app.UseStaticFiles();
+            app.UseCors();
 
             app.UseMvc(routes =>
             {

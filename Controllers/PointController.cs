@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Extensions;
@@ -84,6 +85,7 @@ namespace VueExample.Controllers
             return Ok(pointsDictionary);
         }
 
+        [EnableCors]
         [HttpPost]
         [ProducesResponseType(typeof(long), StatusCodes.Status201Created)]
         [Route("createsinglepoint")]
@@ -93,6 +95,7 @@ namespace VueExample.Controllers
             return CreatedAtAction("CreateSinglePoint", result.TObject.PointId);
         }
 
+        [EnableCors]
         [HttpPost]
         [ProducesResponseType(typeof(List<long>), StatusCodes.Status201Created)]
         [Route("createpointset")]
