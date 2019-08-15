@@ -49,7 +49,7 @@ namespace VueExample.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(Dictionary<string, PointsInMeasurementViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<ResponseObjects.Error>), StatusCodes.Status404NotFound)]
-        [Route("get/withoutspaces")]        
+        [Route("get/withoutspaces")]    
         public async Task<IActionResult> GetPointsWithoutSpaces([FromQuery(Name = "measurementid")] int measurementId, [FromQuery(Name = "deviceid")] int deviceId, [FromQuery(Name = "graphicid")] int graphicId, [FromQuery(Name = "port")] int port)
         {
             var pointsDictionary = new Dictionary<string, PointsInMeasurementViewModel>();
@@ -64,7 +64,6 @@ namespace VueExample.Controllers
             
             for (var i = 0; i < pointsList.Count; i++)
             {
-
                 if (i > 0 && (pointsList[i].Time - pointsList[i - 1].Time).TotalSeconds > 2*measurement.IntervalInSeconds)
                 {
                     var spaceduration = pointsList[i].Time  - pointsList[i - 1].Time;
@@ -75,7 +74,6 @@ namespace VueExample.Controllers
                 }                                   
             }
 
-
             var k = Math.Ceiling((double)pointsList.Count / 500);
             var filteredPointsList = pointsList.GetNth<PointViewModel>(Convert.ToInt32(k)).ToList();
             filteredPointsList.Add(pointsList.LastOrDefault());
@@ -85,7 +83,7 @@ namespace VueExample.Controllers
             return Ok(pointsDictionary);
         }
 
-        [EnableCors]
+        [EnableCors("DefaultPolicy")]
         [HttpPost]
         [ProducesResponseType(typeof(long), StatusCodes.Status201Created)]
         [Route("createsinglepoint")]
@@ -95,7 +93,7 @@ namespace VueExample.Controllers
             return CreatedAtAction("CreateSinglePoint", result.TObject.PointId);
         }
 
-        [EnableCors]
+        [EnableCors("DefaultPolicy")]
         [HttpPost]
         [ProducesResponseType(typeof(List<long>), StatusCodes.Status201Created)]
         [Route("createpointset")]

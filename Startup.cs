@@ -40,6 +40,13 @@ namespace VueExample
             services.AddSignalR();
             services.AddOptions();
 
+            services.AddCors(o => o.AddPolicy("DefaultPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
+
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
             var appSettings = appSettingsSection.Get<AppSettings>();
@@ -121,6 +128,8 @@ namespace VueExample
                 options.MapHub<LivePointHub>("/livepoint");
             });
 
+            app.UseCors("DefaultPolicy");
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -130,7 +139,7 @@ namespace VueExample
 
             app.UseAuthentication();
             app.UseStaticFiles();
-            app.UseCors();
+            
 
             app.UseMvc(routes =>
             {

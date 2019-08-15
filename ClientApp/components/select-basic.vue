@@ -19,27 +19,7 @@
       right
       temporary
     >
-      <v-list>
-        <v-chip>Сглаживание</v-chip>
-        <v-divider></v-divider>
-      </v-list>
-
-      <v-list>
-        <v-layout>
-          <v-flex lg10 offset-lg1>
-        <v-checkbox v-model="settings.smoothing.require" label="Сглаживание"></v-checkbox>
-        <v-slider
-          v-model="settings.smoothing.power"
-          :disabled="!settings.smoothing.require"
-          thumb-color="indigo"
-          thumb-label="always"
-          :max="8"
-          :min="2"
-          :step="2"
-        ></v-slider>
-        </v-flex>
-        </v-layout>
-      </v-list>
+     
       <v-list>
         <v-chip>Настройки оси Y</v-chip>
         <v-divider></v-divider>
@@ -92,7 +72,7 @@
           ></v-text-field>
           </v-flex>
           <v-flex lg4 offset-lg1>
-          <input type="color" v-model="settings.colors.backgroundColor"/>
+           <swatches v-model="settings.colors.backgroundColor" colors="text-advanced" popover-to="left"></swatches>
           </v-flex>
           </v-layout>
 
@@ -106,7 +86,7 @@
           ></v-text-field>
           </v-flex>
           <v-flex lg4 offset-lg1>
-          <input type="color" v-model="settings.colors.textColor"/>
+           <swatches v-model="settings.colors.textColor" colors="text-advanced" popover-to="left"></swatches>
           </v-flex>
           </v-layout>
 
@@ -120,11 +100,33 @@
           ></v-text-field>
           </v-flex>
           <v-flex lg4 offset-lg1>
-          <input type="color" v-model="settings.colors.gridColor"/>
+           <swatches v-model="settings.colors.gridColor" colors="text-advanced" popover-to="left"></swatches>
           </v-flex>     
         </v-layout>
 
         </v-list>
+
+         <v-list>
+        <v-chip>Сглаживание</v-chip>
+        <v-divider></v-divider>
+      </v-list>
+
+      <v-list>
+        <v-layout>
+          <v-flex lg10 offset-lg1>
+        <v-checkbox v-model="settings.smoothing.require" label="Сглаживание"></v-checkbox>
+        <v-slider
+          v-model="settings.smoothing.power"
+          :disabled="!settings.smoothing.require"
+          thumb-color="indigo"
+          thumb-label="always"
+          :max="8"
+          :min="2"
+          :step="2"
+        ></v-slider>
+        </v-flex>
+        </v-layout>
+      </v-list>
 
       <v-list class="pa-1">
         <v-divider></v-divider>
@@ -564,16 +566,16 @@
 import chart from "./time-chart.vue";
 import date from 'date-and-time';
 import * as signalR from '@aspnet/signalr';
-date.locale('ru')
+import Swatches from 'vue-swatches' 
+import "vue-swatches/dist/vue-swatches.min.css"
+
+date.locale('ru');
+
 export default {
   data() {
     return {
       drawer: null,
-        items: [
-          { title: 'Home', icon: 'dashboard' },
-          { title: 'About', icon: 'question_answer' }
-        ],
-      fab: false,
+       fab: false,
       dialogAddToMeasurementSet: false,
       dialogStatistics: false,
       dialogAddMeasurementSet: false,
@@ -638,7 +640,7 @@ export default {
     };
   },
   components: {
-    chart
+    chart, Swatches 
   },
 
   computed:
@@ -695,8 +697,7 @@ export default {
     {
        
        this.savedSettings = JSON.parse(JSON.stringify(this.settings));
-       this.drawer = false;
-        
+       this.drawer = false;    
       
        
     },
