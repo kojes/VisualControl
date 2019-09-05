@@ -12,6 +12,7 @@ namespace VueExample.Controllers
     {
         private readonly WaferProvider _waferProvider = new WaferProvider();
         private readonly DefectProvider _defectProvider = new DefectProvider();
+        
         [HttpGet]
         public IActionResult GetAll()
         {

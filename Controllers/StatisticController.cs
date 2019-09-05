@@ -1,18 +1,15 @@
 using System.Globalization;
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
 using LazyCache;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VueExample.Models.SRV6;
-using VueExample.ViewModels;
 using VueExample.Services;
 using VueExample.Providers.Srv6;
 
-namespace VueExample.Controllers {
+namespace VueExample.Controllers
+{
     [Route ("api/[controller]/[action]")]
     public class StatisticController : Controller 
     {

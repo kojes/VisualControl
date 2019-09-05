@@ -1,18 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
-using VueExample.Contexts;
-using VueExample.Entities;
 using VueExample.Models.SRV6;
-using VueExample.Parsing.Concrete;
-using VueExample.Parsing.Strategies;
 using VueExample.Providers.Srv6;
 
-namespace VueExample.StatisticsCore.Services {
-    public class StatisticService {
+namespace VueExample.StatisticsCore.Services
+{
+    public class StatisticService 
+    {
         GraphicService graphicService = new GraphicService ();
+        
         public Dictionary<string, List<SingleParameterStatistic>> GetSingleParameterStatisticByDieValues (Dictionary<string, List<DieValue>> dieValues, int? stageId, double divider) {
            
             var statisticsDictionary = new Dictionary<string, List<SingleParameterStatistic>> ();

@@ -8,7 +8,7 @@ namespace VueExample.Providers.ChipVerification.Abstract
 {
     public interface IDeviceProvider
     {
-        List<Device> GetAll();
+        Task<AfterDbManipulationObject<List<DeviceViewModel>>> GetAll();
         Task<AfterDbManipulationObject<Device>> GetByName(string name);
         Task<List<Device>> GetAvailableByMeasurementId(int measurementId);
         Task<AfterDbManipulationObject<Device>> Delete(int deviceId);

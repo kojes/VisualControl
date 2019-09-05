@@ -11,21 +11,23 @@ namespace VueExample.StatisticsCore.SingleStatisticServices
     {
         public override List<SingleParameterStatistic> CreateSingleParameterStatisticsList(List<DieValue> dieValues, Graphic graphic, int? stageId, double divider)
         {
-                var statisticsItem = new Statistics();
-                var dieIdList = new List<long?> ();
-             
-                var singleParameterStatisticsList = new List<SingleParameterStatistic> ();
-                var commonYList = new List<List<string>> ();
-                foreach (var gdv in dieValues) {
-                    commonYList.Add (gdv.YList);
-                    dieIdList.Add (gdv.DieId);
-                }
+            var statisticsItem = new Statistics();
+            var dieIdList = new List<long?>();             
+            var singleParameterStatisticsList = new List<SingleParameterStatistic>();
+            var commonYList = new List<List<string>>();
 
-                foreach (var stat in statisticsItem.GetStatistics (dieValues.FirstOrDefault ().XList, commonYList, graphic, divider)) {
-                    singleParameterStatisticsList.Add (new SingleParameterStatistic (stat.StatisticsName, dieIdList, stat.FullList).CalculateDirtyCellsFixed(StatParameterService.GetByStatParameterIdAndStageId(stat.ParameterID, stageId)));
-                }
+            foreach (var gdv in dieValues) 
+            {
+                commonYList.Add(gdv.YList);
+                dieIdList.Add(gdv.DieId);
+            }
 
-                return singleParameterStatisticsList;
+            foreach (var stat in statisticsItem.GetStatistics(dieValues.FirstOrDefault().XList, commonYList, graphic, divider)) 
+            {
+                singleParameterStatisticsList.Add(new SingleParameterStatistic(stat.StatisticsName, dieIdList, stat.FullList).CalculateDirtyCellsFixed(StatParameterService.GetByStatParameterIdAndStageId(stat.ParameterID, stageId)));
+            }
+
+            return singleParameterStatisticsList;
         }
 
         public override List<SingleStatisticData> CreateSingleStatisticData(List<long?> dieList, Graphic graphic, List<DieValue> dieValuesList, double divider, List<VueExample.StatisticsCore.SingleParameterStatistic> singleParameterStatisticsList)

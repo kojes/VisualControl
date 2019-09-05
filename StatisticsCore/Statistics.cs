@@ -1035,7 +1035,7 @@ namespace VueExample.StatisticsCore
                 }
 
             }
-
+          
             var ronList = new List<double>();
             if (divider < 1)
             {
@@ -2235,7 +2235,7 @@ namespace VueExample.StatisticsCore
 
             foreach (List<double> yListdouble in enumerable.Select(yList => yList.Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToList()))
             {
-                ocList.Add((xListdouble[ocIndex] / yListdouble[ocIndex] - 0.8) * divider);
+                ocList.Add((xListdouble[ocIndex] / yListdouble[ocIndex] - 1.1) * divider);
                 id2List.Add(yListdouble[twoIndex] * 1.11 / divider);
                 id3List.Add(yListdouble[threeIndex] * 1.11 / divider);
                 id5List.Add(yListdouble[fiveIndex] * 1.11 / divider);

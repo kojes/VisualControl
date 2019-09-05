@@ -23,11 +23,13 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(List<Device>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<DeviceViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Error>), StatusCodes.Status404NotFound)]
         [Route("getall")]
-        public IActionResult GetAll() 
+        public async Task<IActionResult> GetAll() 
         {
-            return Ok(_deviceProvider.GetAll());
+            var result = await _deviceProvider.GetAll();
+            return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(result.TObject);
         }
 
         [HttpGet]

@@ -91,7 +91,7 @@
         series.strokeWidth = 2;
         series.tensionX = 0.7;
         series.tensionY = 0.7;
-        let device = this.devices.find(x => x.deviceId === this.points[prop].pointsList[0].deviceId);
+        let device = this.devices.find(x => x.id === this.points[prop].pointsList[0].deviceId);
         series.name =  "Измерение: " + this.points[prop].measurementName + " Устройство: " + device.name + " Порт: " + this.points[prop].pointsList[0].portNumber;
       }
 

@@ -21,11 +21,18 @@ namespace VueExample.Providers.ChipVerification
             _applicationContext = applicationContext;
             _mapper = mapper;
         }
-        public List<Device> GetAll()
+        public async Task<AfterDbManipulationObject<List<DeviceViewModel>>> GetAll()
         {
-            return _applicationContext.Device.ToList();            
+            var obj = new AfterDbManipulationObject<List<DeviceViewModel>>();
+            var devicesList = await _applicationContext.Device.Select(x => _mapper.Map<DeviceViewModel>(x)).ToListAsync();
+            if(devicesList.Count() == 0)
+            {
+                 obj.AddError(new Error(@"Приборы не найдены"));
+                 return obj;
+            }
+            obj.SetObject(devicesList);
+            return obj;
         }
-
         public async Task<AfterDbManipulationObject<Device>> Create(DeviceViewModel deviceViewModel) 
         {
                
@@ -46,7 +53,6 @@ namespace VueExample.Providers.ChipVerification
             obj.SetObject(device);    
             return obj;
         }
-
         public async Task<AfterDbManipulationObject<Device>> Delete(int deviceId) 
         {
             try
@@ -61,10 +67,10 @@ namespace VueExample.Providers.ChipVerification
                  return new AfterDbManipulationObject<Device>(new Error(ex.Message, ex.HResult.ToString()));            
             }
         }
-
         public async Task<List<Device>> GetAvailableByMeasurementId(int measurementId)
         {
-            return await _applicationContext.Point.Where(x => x.MeasurementId == measurementId).Join(_applicationContext.Device, 
+            return await _applicationContext.Point.Where(x => x.MeasurementId == measurementId)
+                                                        .Join(_applicationContext.Device, 
                                                         p => p.DeviceId, 
                                                         d => d.DeviceId, 
                                                         (p, d) => new Device { DeviceId = p.DeviceId, 
@@ -72,7 +78,6 @@ namespace VueExample.Providers.ChipVerification
                                                                                Name = d.Name})
                                                         .Distinct().ToListAsync();
         }
-
         public async Task<AfterDbManipulationObject<Device>> Edit(DeviceViewModel deviceViewModel)
         {
             var obj = new AfterDbManipulationObject<Device>();
@@ -107,7 +112,6 @@ namespace VueExample.Providers.ChipVerification
                 }
             }  
         }
-
         public async Task<AfterDbManipulationObject<Device>> GetByName(string name)
         {          
             var device = await _applicationContext.Device.FirstOrDefaultAsync(x => x.Name == name);

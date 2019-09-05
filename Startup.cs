@@ -19,6 +19,8 @@ using VueExample.Providers.ChipVerification;
 using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.Providers.Srv6.Interfaces;
 using VueExample.Services;
+using VueExample.StatisticsCore.Abstract;
+using VueExample.StatisticsCore.Services;
 
 namespace VueExample
 {
@@ -103,6 +105,7 @@ namespace VueExample
             services.AddTransient<IFacilityProvider, FacilityProvider>();
             services.AddTransient<IMeasuredDeviceProvider, MeasuredDeviceProvider>();
             services.AddTransient<IPointProvider, PointProvider>();
+            services.AddTransient<IExportProvider, ExportService>();
         }
 
 
