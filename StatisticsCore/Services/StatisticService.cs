@@ -7,12 +7,13 @@ namespace VueExample.StatisticsCore.Services
 {
     public class StatisticService 
     {
-        GraphicService graphicService = new GraphicService ();
+        GraphicService graphicService = new GraphicService();
         
-        public Dictionary<string, List<SingleParameterStatistic>> GetSingleParameterStatisticByDieValues (Dictionary<string, List<DieValue>> dieValues, int? stageId, double divider) {
+        public Dictionary<string, List<SingleParameterStatistic>> GetSingleParameterStatisticByDieValues(Dictionary<string, List<DieValue>> dieValues, int? stageId, double divider) {
            
             var statisticsDictionary = new Dictionary<string, List<SingleParameterStatistic>> ();
-            foreach (var graphicDV in dieValues) {
+            foreach (var graphicDV in dieValues) 
+            {
              
                 var graphic = graphicService.GetById(Convert.ToInt32(graphicDV.Key.Split('_')[0]));
                 var singleParameterStatisticsList = SingleStatisticsServiceCreator(graphic).CreateSingleParameterStatisticsList(graphicDV.Value, graphic, stageId, divider);

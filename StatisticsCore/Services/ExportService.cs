@@ -9,6 +9,7 @@ using VueExample.Services;
 using VueExample.StatisticsCore.Abstract;
 using VueExample.Providers;
 using VueExample.Models.SRV6.Export;
+using System.Threading.Tasks;
 
 namespace VueExample.StatisticsCore.Services
 {
@@ -18,7 +19,6 @@ namespace VueExample.StatisticsCore.Services
         private readonly DieValueService _dieValueService = new DieValueService();
         private readonly MeasurementRecordingService _measurementRecordingService = new MeasurementRecordingService();
         private readonly StatisticService _statisticService = new StatisticService();
-
         private readonly DieProvider _dieProvider = new DieProvider();
         public ExportService(IAppCache appCache)
         {
@@ -32,6 +32,23 @@ namespace VueExample.StatisticsCore.Services
             }
             kurbatovXLS.FindDirty();            
         }
+
+        public async Task<List<string>> GetStatisticsNameByMeasurementId(int measurementRecordingId)
+        {
+            var statNamesList = new List<string>();
+            string measurementRecordingIdAsKey = Convert.ToString(measurementRecordingId);
+            var stageId = _measurementRecordingService.GetStageId(measurementRecordingId);
+            Func<Dictionary<string, List<DieValue>>> cachedDieValueService = () => _dieValueService.GetDieValuesByMeasurementRecording(measurementRecordingId);
+            var dieValuesDictionary = _appCache.GetOrAdd($"V_{measurementRecordingIdAsKey}", cachedDieValueService);
+            Func<Dictionary<string, List<VueExample.StatisticsCore.SingleParameterStatistic>>> cachedStatisticService = () => _statisticService.GetSingleParameterStatisticByDieValues(dieValuesDictionary, stageId, 1.0);
+            var statDictionary = _appCache.GetOrAdd($"S_{measurementRecordingIdAsKey}", cachedStatisticService);
+            statNamesList.AddRange(from stat in statDictionary
+                                   from singleParameterStatistic in stat.Value
+                                   select singleParameterStatistic.Name);
+            return statNamesList;
+        }
+
+        
 
         private void GetDieValues(KurbatovParameter kurbatovParameter)
         {
@@ -121,7 +138,7 @@ namespace VueExample.StatisticsCore.Services
             }
             return exportList;
         }
+
     
-         
     }
 }

@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VueExample.Entities;
 using VueExample.Models;
 using VueExample.Models.SRV6;
 using Graphic = VueExample.Models.SRV6.Graphic;
 
-namespace VueExample.Contexts {
+namespace VueExample.Contexts
+{
     public class Srv6Context : DbContext {
         public DbSet<CodeProduct> CodeProducts { get; set; }
         public DbSet<Process> Processes { get; set; }
@@ -22,6 +19,7 @@ namespace VueExample.Contexts {
         public DbSet<Graphic> Graphics { get; set; }
         public DbSet<DieParameterOld> DiesParameterOld { get; set; }
         public DbSet<FkMrP> FkMrPs { get; set; }
+        public DbSet<ShortLinkEntity> ShortLinkEntities { get; set; }
         public DbSet<Divider> Dividers { get; set; }
         public DbSet<StatParameterForStage> StatParametersForStage { get; set; }
 
