@@ -11,7 +11,7 @@ namespace VueExample.StatisticsCore.Services
         
         public Dictionary<string, List<SingleParameterStatistic>> GetSingleParameterStatisticByDieValues(Dictionary<string, List<DieValue>> dieValues, int? stageId, double divider) {
            
-            var statisticsDictionary = new Dictionary<string, List<SingleParameterStatistic>> ();
+            var statisticsDictionary = new Dictionary<string, List<SingleParameterStatistic>>();
             foreach (var graphicDV in dieValues) 
             {
              
@@ -26,7 +26,7 @@ namespace VueExample.StatisticsCore.Services
         public List<VueExample.StatisticsCore.DataModels.SingleStatisticData> GetStatisticsDataByGraphicState (List<long?> dieList, string keyGraphicState, List<DieValue> dieValuesList, double divider, List<VueExample.StatisticsCore.SingleParameterStatistic> singleParameterStatisticsList) 
         {
             var graphicId = Convert.ToInt32(keyGraphicState.Split('_')[0]);
-            var graphic = graphicService.GetById (graphicId);                          
+            var graphic = graphicService.GetById(graphicId);                          
             return SingleStatisticsServiceCreator(graphic).CreateSingleStatisticData(dieList, graphic, dieValuesList, divider, singleParameterStatisticsList);
         }
 

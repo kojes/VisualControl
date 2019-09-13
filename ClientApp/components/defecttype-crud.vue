@@ -24,7 +24,7 @@
 
           <v-list-tile v-for="defect in defecttypes"
                        :key="defect.defectId"
-                       @click="">
+                       >
           
 
             <v-list-tile-content>

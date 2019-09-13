@@ -10,7 +10,11 @@ namespace VueExample.ViewModels
         public List<AtomicDieValue> dieValueList = new List<AtomicDieValue>();
     }
    
-
+    public class KurbatovXLSBodyModel
+    {
+        public List<KurbatovXLSViewModel> kurbatovXLSViewModelList = new List<KurbatovXLSViewModel>();     
+     
+    }
     public class KurbatovXLSViewModel
     {
         public string OperationNumber { get; set; }

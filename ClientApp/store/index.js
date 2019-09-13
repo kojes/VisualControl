@@ -5,12 +5,19 @@ import { alert } from './modules/alert.module'
 import { authentication } from './modules/authentication.module'
 import { users } from './modules/users.module'
 import { wafermeas } from './modules/wafermeas.module'
+import { exportkurb } from './modules/exportkurb.module'
 
+Vue.config.devtools = true
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
-    defects, alert, authentication, users, wafermeas
+    defects, 
+    alert, 
+    authentication, 
+    users, 
+    wafermeas, 
+    exportkurb
   }
 
 })

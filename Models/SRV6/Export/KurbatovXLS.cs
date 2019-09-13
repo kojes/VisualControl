@@ -17,7 +17,7 @@ namespace VueExample.Models.SRV6.Export
         public int DieQuantity { get; set; }        
         [JsonProperty(Order = -2)]
         public int DirtyPercentage { get; set;}
-         [JsonProperty(Order = 0)]
+        [JsonProperty(Order = 0)]
         public List<KurbatovParameter> kpList = new List<KurbatovParameter>();     
 
         public void FindDirty()

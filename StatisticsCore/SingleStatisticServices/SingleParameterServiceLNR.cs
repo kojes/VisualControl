@@ -33,15 +33,16 @@ namespace VueExample.StatisticsCore.SingleStatisticServices
         public override List<SingleStatisticData> CreateSingleStatisticData(List<long?> dieList, Graphic graphic, List<DieValue> dieValuesList, double divider, List<VueExample.StatisticsCore.SingleParameterStatistic> singleParameterStatisticsList)
         {
             var statisticsItem = new Statistics();
-            var selectedDieList = new List<long?> ();
-            var xList = dieValuesList.FirstOrDefault ().XList;
-            var commonYList = new List<List<string>> ();
-            foreach (var dieValue in dieValuesList.Where (d => dieList.Contains (d.DieId))) {
-                commonYList.Add (dieValue.YList);
+            var selectedDieList = new List<long?>();
+            var xList = dieValuesList.FirstOrDefault().XList;
+            var commonYList = new List<List<string>>();
+            foreach (var dieValue in dieValuesList.Where(d => dieList.Contains (d.DieId))) 
+            {
+                commonYList.Add(dieValue.YList);
                 selectedDieList.Add(dieValue.DieId);
             }
-            var statistics = statisticsItem.GetStatistics (xList, commonYList, graphic, divider);
-            var singleStatisticDataList = StatisticDataMapping (statistics, selectedDieList, singleParameterStatisticsList);
+            var statistics = statisticsItem.GetStatistics(xList, commonYList, graphic, divider);
+            var singleStatisticDataList = StatisticDataMapping(statistics, selectedDieList, singleParameterStatisticsList);
             return singleStatisticDataList;
         }
     }

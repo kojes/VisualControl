@@ -258,7 +258,7 @@ export default {
       this.wafers = response.data;
     });
 
-    await this.$http.get(`/api/divider/getall`).then(response => {
+    await this.$http.get(`/api/divider/all`).then(response => {
       this.dividers = response.data;
     });
   },
@@ -307,27 +307,18 @@ export default {
 
   watch: {
     selectedWafer: function() {
-      this.availiableGraphics = [];
+      this.availiableGraphics = []
       this.$http
-        .get(
-          `/api/measurementrecording/GetMeasurementRecordingsByWaferId?waferId=${
-            this.selectedWafer
-          }`
-        )
+        .get(`/api/measurementrecording?waferId=${this.selectedWafer}`)
         .then(response => {
           this.measurementRecordings = response.data;
         });
     },
 
     selectedMeasurementId: function() {
-      this.availiableGraphics = [];
-      this.loading = true;
-      this.$http
-        .get(
-          `api/dievalue/GetByMeasurementRecordingId?measurementRecordingId=${
-            this.selectedMeasurementId
-          }`
-        )
+      this.availiableGraphics = []
+      this.loading = true
+      this.$http.get(`api/dievalue/GetByMeasurementRecordingId?measurementRecordingId=${this.selectedMeasurementId}`)
         .then(response => {
           ///Можно и не считывать DieValueList
           var dieValues = response.data;

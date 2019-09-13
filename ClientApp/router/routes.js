@@ -32,8 +32,7 @@ export const routes = [
   { name: 'adddefect', path: '/adddefect', component: DefectSingle, display: 'Добавление дефекта', nav: true },
   { name: 'defects', path: '/defects', component: DefectVue, display: 'Просмотр дефектов', nav: true },
   { name: 'wafermeasurement', path: '/wafermeas', component: WaferMeas, display: 'Измерения', nav: true },
-  { name: 'kurbatov', path: '/export-kurb', component: Kurbatov, display: 'Экспорт', nav: true },
-  { name: 'exel', path: '/export-element', component: ExEl, display: 'ex-el', nav: true },
+  { name: 'kurbatov', path: '/export-kurb', component: Kurbatov, display: 'Экспорт', nav: true }, 
 
   {
     name: 'defectsbywafer',

@@ -1,129 +1,262 @@
 <template>
     <v-container grid-list-lg>
-        <v-layout row>
-            <v-flex lg-3 offset-lg1>
-                <v-autocomplete
-                        v-model="selectedWafer"
-                        :items="wafers"
-                        no-data-text="Нет данных"
-                        item-text="waferId"
-                        item-value="waferId"
-                        box
-                        outline
-                        label="Номер пластины"
-                      ></v-autocomplete>
-                     
+        <v-layout v-if="initialDialog === false" row class="alwaysOnTop">
+            <v-flex lg4 offset-lg1>
+                <v-btn color="indigo" @click="createElement()">
+                    Добавить элемент
+                </v-btn>   
+                <v-btn v-if="elements.length > 0" color="indigo" @click="deleteDialog = true">
+                    Удалить элемент
+                </v-btn>   
             </v-flex>
-            <v-flex lg-3>
-                <v-select
-                        v-model="selectedMeasurementId"
-                        :items="measurementRecordings"
-                        no-data-text="Нет данных"
-                        item-text="name"
-                        item-value="id"
-                        box
-                        outline
-                        label="Выберите измерение"
-                      ></v-select>
-            </v-flex>
+            <v-flex lg3 offset-lg1>
+                <v-btn v-if="readyToExport" color="green" @click="exportDialog = true">
+                    Экспорт
+                </v-btn>
+                <v-btn v-else outline color="pink">
+                    Для экспорта необходимо заполнить все элементы
+                </v-btn>       
+            </v-flex>          
         </v-layout>
         <v-layout row>
-              <v-flex lg-3 offset-lg1>
-                  <v-textarea
-                    v-model="statNames"
-                    auto-grow
-                    box
-                    label="Статистические параметры для экспорта"
-                    rows="1"
-                ></v-textarea>
-              </v-flex>
+           <v-flex lg11 offset-lg1>
+               <v-stepper v-if="elements.length>0" v-model="e1" vertical>               
+                    <template v-for="(element, index) in elements">
+                    <v-stepper-step 
+                        :key="`${index+1}-step`"
+                        :step="index + 1"
+                        :color="$store.getters['exportkurb/isThisElementisReady'](element.key) ? 'green' : 'red'"
+                        complete
+                        editable>
+                        {{"Операция: " + element.operation.number + " Элемент: " + element.element.name}}
+                    </v-stepper-step>
+                    <v-stepper-content
+                        :key="`${index+1}-content`"
+                        :step="index + 1">
+                        <v-card>
+                            <v-card-text>
+                               <export-element :key.sync="element.key" :parameters.sync="element.parameters" :dividers="dividers" 
+                                               :operation.sync="element.operation" :element.sync="element.element" 
+                                               :done.sync="element.done"></export-element>
+                            </v-card-text>
+                        </v-card>                                        
+                    </v-stepper-content>
+                    </template>                          
+            </v-stepper>
+           </v-flex>
         </v-layout>
          <v-layout row>
-             <v-flex lg-3 offset-lg1>
-                   <v-btn outline color="primary">                   
-                      <download-csv
-                        class = "btn btn-primary"
-                        :data = "exportData"
-                        :name = "filename">                   
-                        Экспортировать       
-                    </download-csv>
-                    </v-btn>
-                   
-             </v-flex>
-         </v-layout>
+            <v-dialog v-model="deleteDialog" persistent max-width="400">
+               <v-card>
+                    <v-card-title class="headline">Удаление</v-card-title>
+                    <v-card-text>Вы действительно хотите удалить элемент?</v-card-text>
+                    <v-spacer></v-spacer>
+                    <v-card-actions>
+                        <v-btn color="pink" flat @click="deleteElement()">Удалить</v-btn>
+                        <v-btn color="indigo" flat @click="deleteDialog = false">Отмена</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+        </v-layout>
+         <v-layout row>
+            <v-dialog v-model="exportDialog" persistent max-width="400">
+               <v-card>
+                    <v-card-title class="headline">Экспорт</v-card-title>
+                    <v-card-text>
+                        <v-text-field v-model="filename" :error-messages="filename ? [] : 'Введите название файла'" 
+                            label="Введите имя файла"
+                        ></v-text-field>
+                    </v-card-text>
+                    <v-spacer></v-spacer>
+                    <v-card-actions>
+                        <v-btn v-if="filename" color="green" flat @click="exportK()">Сформировать файл</v-btn>
+                        <v-btn color="pink" flat @click="exportDialog = false">Отмена</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+        </v-layout>
+         <v-layout row>
+            <v-dialog v-model="initialDialog" persistent max-width="400">
+               <v-card>
+                    <v-card-text>
+                       <v-select    v-model="selectedPattern"
+                                    :items="patterns"
+                                    no-data-text="Нет данных"
+                                    outline
+                                    label="Выберите начальный шаблон:">
+                        </v-select>
+                    </v-card-text>
+                    <v-spacer></v-spacer>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="indigo" @click="selectPattern()">Выбрать</v-btn>
+                   </v-card-actions>
+                </v-card>
+            </v-dialog>
+        </v-layout>
     </v-container>
 </template>
 
 
 <script>
-import JsonCSV from 'vue-json-csv'
-export default {
+import exportElement from './export-element.vue';
 
+export default {
     data() {
         return {
-            wafers: ["E740", "E740B", "E740DC_NU2"],
-            selectedWafer: "E740",
-            statNames: "S21<sub>(2.5GHz)</sub>(коэффициент передачи)$S<sub>22(5GHz)</sub>",
-            measurementRecordings: [],
-            selectedMeasurementId: "",
-            exportData: ""
+           e1: 0,
+           filename: "",
+           elements: [],
+           patterns: ["Пустой", "Курбатов"],
+           selectedPattern: "Пустой",
+           dividers: [],
+           initialDialog: true,
+           deleteDialog: false,
+           exportDialog: false,
+           elementsVM: []
         }
-    },  
-
+    },
     components:
     {
-        "download-csv" : JsonCSV
+        "export-element": exportElement,
     },
-
     computed:
     {
-        filename()
-        {
-            if(this.measurementRecordings.length > 0 && this.selectedMeasurementId)
-            {
-                return this.selectedWafer + "_" + this.measurementRecordings.filter(x => x.id == this.selectedMeasurementId)[0].name.split('.')[1];
-            }
-            return "";
-          
+         readyToExport: function () {     
+           return this.$store.getters['exportkurb/isReadyForExport']
         }
     },
-
     methods:
     {
-       
-    },
-
-    watch:
-    {
-        selectedWafer: function()
-        {
-            this.$http.get(`/api/measurementrecording/GetMeasurementRecordingsByWaferId?waferId=${this.selectedWafer}`)
-                      .then(response => 
-                      {
-                            this.measurementRecordings = response.data;
-                      });
+       async exportK() {
+            const response = await this.$http({
+                method: "post",
+                url: `/api/export/create-kurb`, 
+                data: {kurbatovXLSViewModelList: this.mapElementsToElementsVM()}, 
+                responseType: 'blob',
+                config: {
+                    headers: {
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
+                    }
+                }
+            })
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', this.filename + '.xlsx');
+                document.body.appendChild(link);
+                link.click();
+            });
         },
-
-        selectedMeasurementId: function()
-        {
-             this.$http.get(`/api/export/get/kurbxls`)
-                      .then(response => 
-                      {
-                          let data = response.data;
-                          this.exportData = data;
-                      });
+        async selectPattern() {
+            if(this.selectedPattern === "Курбатов") {
+                await   this.$http
+                        .get(`/api/export/pattern/kurb`)
+                        .then(response => {
+                            const elementsVm = response.data
+                            this.elements = this.mapElementsVMToElements(elementsVm)
+                            this.e1 = 1
+                        })
+                        .catch((error) => {
+                            
+                        });
+            }
+            this.initialDialog = false;           
+        },
+        mapElementsToElementsVM() {
+           const elements = JSON.parse(JSON.stringify(this.elements))
+           return elements.map((x) => {
+                x.parameters = x.parameters.map((p) => {
+                    let pVm = {
+                        lower: p.bounds.lower.value,
+                        upper: p.bounds.upper.value,
+                        parameterName: p.parameterName.value,
+                        russianParameterName: p.russianParameterName.value,
+                        parameterNameStat: p.selectedStatParameter,
+                        dividerId: p.dividerId,
+                        divider: p.divider,
+                        measurementRecordingId: p.measurementRecording.id
+                    }
+                    return pVm                                       
+                })  
+                x.element = x.element.name
+                x.operationNumber = x.operation.number
+                delete x.done
+                delete x.operation
+                return x
+             })
+        },
+        mapElementsVMToElements(elementsVm) {
+           const elements = JSON.parse(JSON.stringify(elementsVm))
+           return elements.map((x) => {
+                x.parameters = x.parameters.map((p) => {
+                    p.lower = +p.lower ? p.lower : ""
+                    p.upper = +p.upper ? p.upper : ""
+                    let pVm = {
+                        parameterName: {value: p.parameterName, isValidDirty: false, isValid: true},
+                        russianParameterName: {value: p.russianParameterName, isValidDirty: false, isValid: true},
+                        waferId: "",
+                        measurementRecording: {id: "0", name: "Неизвестно"},
+                        selectedStatParameter: p.parameterNameStat,
+                        bounds: {lower: {value: p.lower, isValidDirty: false, isValid: true, errorMessages: []}, 
+                                upper: {value: p.upper, isValidDirty: false, isValid: true, errorMessages: []}},     
+                        dividerId: p.dividerId,   
+                        divider: p.divider.toFixed(3),      
+                        statParameterArray: [],
+                        shortLink: {value: "", success: "", errorMessage: ""},
+                        done: false
+                    }
+                    return pVm
+                                       
+                })  
+                x.operation = {number: x.operationNumber, errorMessage: "Введите номер операции"},
+                x.element = {name: x.element, errorMessage: "Введите название элемента"},                
+                x.key = `f${(~~(Math.random()*1e8)).toString(16)}`
+                delete x.operationNumber
+                return x
+             })
+        },
+        createElement() {
+           let element = {
+                key: `f${(~~(Math.random()*1e8)).toString(16)}`,
+                operation: {number: "", errorMessage: "Введите номер операции"},
+                element: {name: "", errorMessage: "Введите название элемента"},
+                parameters: []
+                               
+           }
+           this.elements.splice(this.e1, 0, element)
+           this.e1++
+          
+        },
+        deleteElement() {
+            this.$store.commit("exportkurb/deleteFromElementsReady", this.elements[this.e1 - 1].key);
+            this.elements.splice(this.e1 - 1, 1)
+            this.deleteDialog = false
+            this.e1--
         }
-
-
     },
-
-    async created()
-    {
-         this.$http.get(`/api/measurementrecording/GetMeasurementRecordingsByWaferId?waferId=${this.selectedWafer}`)
-                      .then(response => 
-                      {
-                            this.measurementRecordings = response.data;
-                      });
+    async created() {
+        await this.$http
+            .get(`/api/divider/all`)
+            .then(response => {
+                this.dividers = response.data
+            })
+            .catch((error) => {
+                   
+            });
     }
 }
 </script>
+
+<style>
+    .alwaysOnTop{
+        top: 64px;
+        width: 100%;
+        position: fixed;
+        z-index: 9999;
+        opacity: 0.85;
+        background-color: #303030;
+    }
+</style>
