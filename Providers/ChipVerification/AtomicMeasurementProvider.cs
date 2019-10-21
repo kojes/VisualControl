@@ -31,8 +31,7 @@ namespace VueExample.Providers .ChipVerification
                                                           AtomicMeasurementId = atomicMeasurementId};
             _applicationContext.MeasurementSetAtomicMeasurement.Add(measurementSetAtomicMeasurement);
             _applicationContext.SaveChanges();
-            return measurementSetAtomicMeasurement.Id;
-          
+            return measurementSetAtomicMeasurement.Id;          
 
         }
 

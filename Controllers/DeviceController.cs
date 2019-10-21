@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using VueExample.Models;
 using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.ResponseObjects;
@@ -25,7 +26,7 @@ namespace VueExample.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<DeviceViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<Error>), StatusCodes.Status404NotFound)]
-        [Route("getall")]
+        [Route("all")]
         public async Task<IActionResult> GetAll() 
         {
             var result = await _deviceProvider.GetAll();
@@ -44,27 +45,38 @@ namespace VueExample.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<Error>), StatusCodes.Status404NotFound)]
-        [Route("getbyname/{name}")]
+        [Route("name/{name}")]
         public async Task<IActionResult> GetByName([FromRoute] string name)
         {
             var result = await _deviceProvider.GetByName(name);
             return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(_mapper.Map<DeviceViewModel>(result.TObject));
         }
 
+       
+        [HttpGet]
+        [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Error>), StatusCodes.Status404NotFound)]
+        [Route("address/{address}")]
+        public async Task<IActionResult> GetByAddress([FromRoute] string address)
+        {
+            var result = await _deviceProvider.GetByAddress(address);
+            return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(_mapper.Map<DeviceViewModel>(result.TObject));
+        }
+
         [HttpPut]
         [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ResponseObjects.Error), StatusCodes.Status409Conflict)]
-        [Route("create")]
-        public async Task<IActionResult> Create([FromBody] DeviceViewModel deviceViewModel)
+        [Route("")]
+        public async Task<IActionResult> Create([FromBody] JObject deviceViewModel)
         {
-            var result = await _deviceProvider.Create(deviceViewModel);
-            return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)CreatedAtRoute("Create", _mapper.Map<DeviceViewModel>(result.TObject));           
+            var result = await _deviceProvider.Create(deviceViewModel.ToObject<DeviceViewModel>());
+            return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)CreatedAtAction("Create", _mapper.Map<DeviceViewModel>(result.TObject));           
         }
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ResponseObjects.Error), StatusCodes.Status409Conflict)]
-        [Route("delete/{deviceId:int}")]
+        [Route("{deviceId:int}")]
         public async Task<IActionResult> Delete([FromRoute] int deviceId)
         {
             var result = await _deviceProvider.Delete(deviceId);

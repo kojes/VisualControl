@@ -10,6 +10,7 @@ namespace VueExample.Providers.ChipVerification.Abstract
     {
         Task<AfterDbManipulationObject<List<DeviceViewModel>>> GetAll();
         Task<AfterDbManipulationObject<Device>> GetByName(string name);
+        Task<AfterDbManipulationObject<Device>> GetByAddress(string address);
         Task<List<Device>> GetAvailableByMeasurementId(int measurementId);
         Task<AfterDbManipulationObject<Device>> Delete(int deviceId);
         Task<AfterDbManipulationObject<Device>> Create(DeviceViewModel deviceViewModel);

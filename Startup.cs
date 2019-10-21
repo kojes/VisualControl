@@ -18,6 +18,7 @@ using VueExample.Providers;
 using VueExample.Providers.Abstract;
 using VueExample.Providers.ChipVerification;
 using VueExample.Providers.ChipVerification.Abstract;
+using VueExample.Providers.Srv6;
 using VueExample.Providers.Srv6.Interfaces;
 using VueExample.Services;
 using VueExample.StatisticsCore.Abstract;
@@ -91,6 +92,7 @@ namespace VueExample
            
             services.AddScoped<IUserProvider, UserProvider>();
             services.AddTransient<IWaferMapProvider, WaferMapProvider>();
+            services.AddTransient<IDeviceTypeProvider, DeviceTypeProvider>();
             services.AddTransient<IDieProvider, DieProvider>();
             services.AddTransient<IMeasurementProvider, SimpleMeasurementProvider>();
             services.AddTransient<IGraphicProvider, BasicGraphicProvider>();
@@ -99,6 +101,7 @@ namespace VueExample
             services.AddTransient<IChartJSProvider, ChartJSProvider>();
             services.AddTransient<IDieValueService, DieValueService>();
             services.AddTransient<IColorService, ColorService>();
+            services.AddTransient<IElementService, ElementService>();
             services.AddTransient<IDeviceProvider, DeviceProvider>();
             services.AddTransient<IMeasurementSetProvider, MeasurementSetProvider>();
             services.AddTransient<IAtomicMeasurementProvider, AtomicMeasurementProvider>();
@@ -152,9 +155,16 @@ namespace VueExample
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
 
-                routes.MapSpaFallbackRoute(
-                    "spa-fallback",
-                    new {controller = "Home", action = "Index"});
+            });
+
+            app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api"), builder =>
+            {
+                builder.UseMvc(routes =>
+                {
+                    routes.MapSpaFallbackRoute(
+                        name: "spa-fallback",
+                        defaults: new { controller = "Home", action = "Index" });
+                });
             });
         }
     }

@@ -10,6 +10,7 @@ namespace VueExample.Contexts
         public DbSet<Graphic> Graphic { get; set; }
         public DbSet<Material> Material { get; set; }
         public DbSet<Device> Device { get; set; }
+        public DbSet<DeviceType> DeviceType { get; set; }
         public DbSet<Measurement> Measurement { get; set; }
         public DbSet<Facility> Facility { get; set; }
         public DbSet<MeasuredDevice> MeasuredDevice { get; set; }

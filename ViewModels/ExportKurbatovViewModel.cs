@@ -18,7 +18,9 @@ namespace VueExample.ViewModels
     public class KurbatovXLSViewModel
     {
         public string OperationNumber { get; set; }
-        public string Element { get; set; }
+        public string ElementName { get; set; }
+        public string StageName {get; set;}
+        public bool IsAddedToCommonWorksheet { get; set; } = true;
         public List<KurbatovParameter> parameters = new List<KurbatovParameter>();     
      
     }

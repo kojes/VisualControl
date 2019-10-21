@@ -11,6 +11,7 @@ namespace VueExample.Contexts
         public DbSet<Process> Processes { get; set; }
         public DbSet<Wafer> Wafers { get; set; }
         public DbSet<Die> Dies { get; set; }
+        public DbSet<Element> Elements { get; set; }
         public DbSet<Stage> Stages { get; set; }
         public DbSet<WaferMap> WaferMaps { get; set; }
         public DbSet<Models.SRV6.DieType> DieTypes { get; set; }

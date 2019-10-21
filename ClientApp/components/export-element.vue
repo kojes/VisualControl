@@ -7,16 +7,24 @@
                                 @change="validateElement()" label="Номер операции:"  outline>
                 </v-text-field>             
             </v-flex>
-            <v-flex lg3 offset-lg1>
+            <v-flex lg3>
                 <v-text-field   v-model="element.name" 
                                 :error-messages="$v.$dirty && !$v.element.name.required ? [element.errorMessage] : []" 
                                 @change="validateElement()" label="Название элемента:" outline>
                 </v-text-field>          
             </v-flex>
-            <v-flex lg2 offset-lg1>
+             <v-flex lg2>
                 <v-btn v-if="!isElementReady" large outline color="pink">Элемент заполнен некорректно</v-btn>
                 <v-btn v-else large outline color="green" >Элемент заполнен корректно</v-btn>       
-            </v-flex>    
+            </v-flex>
+             <v-flex lg2 offset-lg2>
+                <v-switch
+                    v-model="element.isAddedToCommonWorksheet"
+                    color='primary'
+                    :label="element.isAddedToCommonWorksheet ? `Элемент будет добавлен в сводную таблицу` : `Элемент не будет добавлен в сводную таблицу`"
+                ></v-switch>  
+            </v-flex>   
+               
          </v-layout>
          <v-layout row>
             <v-flex lg12>
@@ -190,7 +198,7 @@ export default {
       }    
     },
 
-    props: ['key', 'parameters', 'dividers', 'operation', 'element'],  
+    props: ['waferId', 'key', 'parameters', 'dividers', 'operation', 'element'],  
 
     computed: {
         isElementReady: function() { return (this.parameters.length > 0 && this.validateElement()) }        
@@ -271,8 +279,8 @@ export default {
                     upperBound.isValid = false
                     lowerBound.errorMessages.push("Должна быть установлена хотя бы одна граница")
                     upperBound.errorMessages.push("Должна быть установлена хотя бы одна граница")
-                } 
-                if(lowerBound.value && upperBound.value && lowerBound.isValid && upperBound.isValid && lowerBound.value > upperBound.value) {
+                } ``
+                if(lowerBound.value && upperBound.value && lowerBound.isValid && upperBound.isValid && parseFloat(lowerBound.value) > parseFloat(upperBound.value)) {
                     upperBound.isValid = false;
                     upperBound.errorMessages.push("Верхняя граница должна быть больше нижней")
                 }
@@ -290,7 +298,7 @@ export default {
             await this.$http.get(`api/shortlink/${generatedId}/element-export`)
                 .then((response) => {
                     let data = response.data;              
-                    if(response.status == 200) {                               
+                    if(response.status === 200) {                               
                         parameter.statParameterArray = data.statisticNameList
                         if(!parameter.selectedStatParameter)
                             parameter.selectedStatParameter = parameter.statParameterArray[0]

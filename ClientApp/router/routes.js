@@ -9,7 +9,7 @@ import Device from 'components/device-crud'
 import WaferMap from 'components/wafermap-full'
 import SelectBasic from 'components/select-basic'
 import Kurbatov from 'components/export-kurb'
-import ExEl from 'components/export-element'
+import VerificationSettings from 'components/verification-settings'
 import DefectMassiveUploader from 'components/massive-uploader'
 
 // Service components
@@ -33,6 +33,7 @@ export const routes = [
   { name: 'defects', path: '/defects', component: DefectVue, display: 'Просмотр дефектов', nav: true },
   { name: 'wafermeasurement', path: '/wafermeas', component: WaferMeas, display: 'Измерения', nav: true },
   { name: 'kurbatov', path: '/export-kurb', component: Kurbatov, display: 'Экспорт', nav: true }, 
+  //{ name: 'verificationsettings', path: '/vsettings', component: VerificationSettings, display: 'Редактирование параметров испытаний', nav: true }, 
 
   {
     name: 'defectsbywafer',

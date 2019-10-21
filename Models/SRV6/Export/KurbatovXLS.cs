@@ -10,13 +10,15 @@ namespace VueExample.Models.SRV6.Export
         [JsonProperty(Order = -4)]
         public string OperationNumber { get; set; }
         [JsonProperty(Order = -4)]
-        public string Element { get; set; }
+        public string ElementName { get; set; }
+        public string StageName { get; set; }
         [JsonProperty(Order = -1)]
         public HashSet<int> DirtyCodesList = new HashSet<int>();
         [JsonProperty(Order = -2)]
         public int DieQuantity { get; set; }        
         [JsonProperty(Order = -2)]
         public int DirtyPercentage { get; set;}
+        public bool IsAddedToCommonWorksheet { get; set; }
         [JsonProperty(Order = 0)]
         public List<KurbatovParameter> kpList = new List<KurbatovParameter>();     
 
@@ -34,6 +36,10 @@ namespace VueExample.Models.SRV6.Export
             }
             this.DieQuantity = kpList.FirstOrDefault().advList.Count();
             this.DirtyPercentage = (int)Math.Ceiling((DirtyCodesList.Count * 100.0 / DieQuantity));
-        }
+            foreach (var kurbatovParameter in kpList)
+            {
+                kurbatovParameter.FindGoodAverage(this.DirtyCodesList);
+            }
+        }        
     }
 }

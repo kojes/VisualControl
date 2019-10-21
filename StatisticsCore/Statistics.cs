@@ -1398,6 +1398,153 @@ namespace VueExample.StatisticsCore
             return returnList;
         }
 
+        private List<Statistics> GetIdssAndUgsoff_REVERSED(List<string> xList, IEnumerable<List<string>> commonYList, double divider)
+        {
+            List<double> xListdouble = xList.Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToList();
+            var zeroIndex = xListdouble.IndexOf(xListdouble.OrderBy(item => Math.Abs(0.0 - item)).FirstOrDefault());
+            var fiveIndex = xListdouble.IndexOf(xListdouble.OrderBy(item => Math.Abs(0.5 - item)).FirstOrDefault());
+            var idssList = new List<double>();
+            var id05List = new List<double>();
+            var ugsoffwithinterpolationList = new List<double>();
+            var ugsoffwithinterpolation100List = new List<double>();
+            var ugsoffList = new List<double>();
+            var ugsoffminList = new List<double>();
+            var unit = "A";
+            if (Math.Abs(divider - 1) > 1E-6)
+            {
+                unit = "A/мм";
+            }
+            foreach (List<double> yListdouble in commonYList.Select(yList => yList.Select(x => double.Parse(x, CultureInfo.InvariantCulture) / divider).ToList()))
+            {
+                var isugsoff = false;
+                idssList.Add(yListdouble[zeroIndex]);
+                id05List.Add(yListdouble[fiveIndex]);
+                ugsoffminList.Add(xListdouble[yListdouble.IndexOf(yListdouble.Min())]);
+                for (int i = 0; i < yListdouble.Count; i++)
+                {
+
+                    if (yListdouble[i] < yListdouble[zeroIndex] / 1000)
+                    {
+                        if (i < yListdouble.Count - 1)
+                        {
+                            var xtwopointList = new List<double> { xListdouble[i], xListdouble[i + 1] };
+                            var ytwopointList = new List<double> { yListdouble[i], yListdouble[i + 1] };
+                            var interpolationmethod = Interpolate.Linear(ytwopointList, xtwopointList);
+                            ugsoffwithinterpolationList.Add(interpolationmethod.Interpolate(yListdouble[zeroIndex] / 1000));
+
+                            ugsoffList.Add((xListdouble[i] + xListdouble[i + 1]) / 2);
+                            isugsoff = true;
+                        }
+                        else
+                        {
+                            ugsoffwithinterpolationList.Add(xListdouble[i]);
+                            ugsoffList.Add(xListdouble[i]);
+                            isugsoff = true;
+                        }
+
+                        i = yListdouble.Count - 1;
+                    }
+
+                }
+
+                for (int i = 0; i < yListdouble.Count; i++)
+                {
+
+                    if (yListdouble[i] < yListdouble[zeroIndex] / 100)
+                    {
+                        if (i < yListdouble.Count - 1)
+                        {
+                            var xtwopointList = new List<double> { xListdouble[i], xListdouble[i + 1] };
+                            var ytwopointList = new List<double> { yListdouble[i], yListdouble[i + 1] };
+                            var interpolationmethod100 = Interpolate.Linear(ytwopointList, xtwopointList);
+                            ugsoffwithinterpolation100List.Add(interpolationmethod100.Interpolate(yListdouble[zeroIndex] / 100));
+
+
+
+                        }
+                        else
+                        {
+                            ugsoffwithinterpolation100List.Add(xListdouble[i]);
+
+                        }
+
+                        i = yListdouble.Count - 1;
+                    }
+
+                }
+                if (!isugsoff)
+                {
+                    ugsoffList.Add(double.NaN);
+                    ugsoffwithinterpolationList.Add(double.NaN);
+                }
+
+
+
+            }
+            if (ugsoffList.Count(x => Double.IsNaN(x)) == ugsoffList.Count())
+            {
+                foreach (List<double> yListdouble in commonYList.Select(yList => yList.Select(x => double.Parse(x, CultureInfo.InvariantCulture) / divider).ToList()))
+                {
+                    ugsoffList.Clear();
+                    var isugsoff = false;
+                    for (int i = 0; i < yListdouble.Count; i++)
+                    {
+
+                        if (yListdouble[i] < yListdouble[zeroIndex] / 100)
+                        {
+                            if (i < yListdouble.Count - 1)
+                            {
+                                ugsoffList.Add((xListdouble[i] + xListdouble[i + 1]) / 2);
+                                var xtwopointList = new List<double> { xListdouble[i], xListdouble[i + 1] };
+                                var ytwopointList = new List<double> { yListdouble[i], yListdouble[i + 1] };
+                                var interpolationmethod = Interpolate.Linear(ytwopointList, xtwopointList);
+                                ugsoffwithinterpolationList.Add(interpolationmethod.Interpolate(yListdouble[zeroIndex] / 100));
+                                isugsoff = true;
+                            }
+                            else
+                            {
+                                ugsoffwithinterpolationList.Add(xListdouble[i]);
+                                ugsoffList.Add(xListdouble[i]);
+                                isugsoff = true;
+                            }
+
+                            i = yListdouble.Count - 1;
+                        }
+                    }
+                    if (!isugsoff)
+                    {
+                        ugsoffList.Add(double.NaN);
+                        ugsoffwithinterpolationList.Add(1E9);
+                    }
+
+
+
+                }
+
+                var returnexList = new List<Statistics>
+                {
+                    GetFullStatisticsFromList(idssList, "I<sub>DSS(3V)</sub> (начальный ток стока)", unit, 3),
+                    GetFullStatisticsFromList(ugsoffwithinterpolationList.Select(x => x*(-1)).ToList(), "U<sub>GS(off)</sub> (напряжение отсечки при Idss/100) !Транзисторы не закрываются!", "В", 4),
+                    GetFullStatisticsFromList(id05List, "Id<sub>max</sub> (ток при Vgs=0.5В)", "А"),
+                    GetFullStatisticsFromList(ugsoffminList.Select(x => x*(-1)).ToList(), "U<sub>GS(min)</sub> (напряжение отсечки при Imin)", "В"),
+
+                };
+                return returnexList;
+
+            }
+
+            var returnList = new List<Statistics>
+                {
+                    GetFullStatisticsFromList(idssList, "I<sub>DSS(3V)</sub> (начальный ток стока)", unit, 3),
+                    GetFullStatisticsFromList(ugsoffwithinterpolationList.Select(x => x*(-1)).ToList(), "U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)", "В", 4),
+                    GetFullStatisticsFromList(id05List, "Id<sub>max</sub> (ток при Vgs=0.5В)", "А"),
+                    GetFullStatisticsFromList(ugsoffwithinterpolation100List.Select(x => x*(-1)).ToList(), "U<sub>GS-100(off)</sub> (напряжение отсечки при Idss/100)", "В"),
+                    GetFullStatisticsFromList(ugsoffminList.Select(x => x*(-1)).ToList(), "U<sub>GS(min)</sub> (напряжение при Imin)", "В"),
+
+                };
+            return returnList;
+        }
+
         private List<Statistics> GetCAPPCM(List<string> xList, IEnumerable<List<string>> commonYList, double divider)
         {
             List<double> xListdouble = xList.Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToList();
@@ -1412,6 +1559,24 @@ namespace VueExample.StatisticsCore
                     GetFullStatisticsFromList(zeroList, "C при U=0В", "Ф"),
                     GetFullStatisticsFromList(zeroList.Select(x=>x*1E14).ToList(), "C<sub>MIM</sub>при U=0B (удельная ёмкость МДМ-конденсатора)", "пФ/мм²", 37),
                   
+                };
+            return returnList;
+        }
+
+        private List<Statistics> GetCAPPCM025(List<string> xList, IEnumerable<List<string>> commonYList, double divider)
+        {
+            List<double> xListdouble = xList.Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToList();
+            var zeroIndex = xListdouble.IndexOf(xListdouble.OrderBy(item => Math.Abs(0.0 - item)).FirstOrDefault());
+
+
+            var zeroList = commonYList.Select(yList => yList.Select(x => double.Parse(x, CultureInfo.InvariantCulture) / divider).ToList()).Select(yListdouble => zeroIndex < 0 ? yListdouble[0] : yListdouble[zeroIndex]).ToList();
+
+            var returnList = new List<Statistics>
+                {
+
+                    GetFullStatisticsFromList(zeroList, "C при U=0В", "Ф")
+                  
+
                 };
             return returnList;
         }

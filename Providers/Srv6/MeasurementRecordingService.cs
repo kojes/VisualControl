@@ -5,6 +5,7 @@ using System.Linq;
 using VueExample.Models.SRV6;
 using VueExample.Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 namespace VueExample.Providers.Srv6
 {
@@ -30,6 +31,17 @@ namespace VueExample.Providers.Srv6
             {
                 return srv6Context.MeasurementRecordings.FirstOrDefault(x => x.Id == measurementRecordingId).StageId;
             }
-        }        
+        }
+
+        public List<MeasurementRecording> GetByWaferIdAndStageNameAndElementId(string waferId, string stageName, int elementId)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                 var waferIdSqlParameter = new SqlParameter("waferId", waferId);
+                 var stageNameSqlParameter = new SqlParameter("stageName", stageName);
+                 var elementIdSqlParameter = new SqlParameter("elementId", elementId);
+                 return srv6Context.MeasurementRecordings.FromSql("EXECUTE select_mr_by_stagename_waferid_elementid @waferId, @elementId, @stageName", waferIdSqlParameter, elementIdSqlParameter, stageNameSqlParameter).ToList();
+            }
+        }         
     }
 }

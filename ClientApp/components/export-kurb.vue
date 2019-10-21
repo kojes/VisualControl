@@ -1,7 +1,7 @@
 <template>
     <v-container grid-list-lg>
         <v-layout v-if="initialDialog === false" row class="alwaysOnTop">
-            <v-flex lg4 offset-lg1>
+            <v-flex lg3 offset-lg1>
                 <v-btn color="indigo" @click="createElement()">
                     Добавить элемент
                 </v-btn>   
@@ -9,7 +9,33 @@
                     Удалить элемент
                 </v-btn>   
             </v-flex>
-            <v-flex lg3 offset-lg1>
+            <v-flex lg2>               
+                <v-menu
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :nudge-width="200"
+                    offset-x>
+                <template v-slot:activator="{ on }">
+                        <v-btn
+                        color="indigo"
+                        dark
+                        v-on="on"
+                        >
+                        Автозаполнение
+                        </v-btn>
+                    </template>
+                    <v-card>      
+                       <v-card-text>
+                        <v-text-field v-model="waferId" :error-messages="waferId ? [] : 'Введите название пластины'" 
+                            label="Номер пластины"
+                        ></v-text-field>
+                         <v-btn color="primary" outline @click="">Заполнить шаблон</v-btn>
+                       </v-card-text>                    
+                    </v-card>
+                </v-menu>
+  
+            </v-flex>
+            <v-flex lg3>
                 <v-btn v-if="readyToExport" color="green" @click="exportDialog = true">
                     Экспорт
                 </v-btn>
@@ -35,7 +61,7 @@
                         :step="index + 1">
                         <v-card>
                             <v-card-text>
-                               <export-element :key.sync="element.key" :parameters.sync="element.parameters" :dividers="dividers" 
+                               <export-element :waferId="waferId" :key.sync="element.key" :parameters.sync="element.parameters" :dividers="dividers" 
                                                :operation.sync="element.operation" :element.sync="element.element" 
                                                :done.sync="element.done"></export-element>
                             </v-card-text>
@@ -105,9 +131,10 @@ export default {
     data() {
         return {
            e1: 0,
+           waferId: "E906",
            filename: "",
            elements: [],
-           patterns: ["Пустой", "Курбатов"],
+           patterns: ["Пустой", "PHEMT05_СМКК", "PHEMT05_ВП"],
            selectedPattern: "Пустой",
            dividers: [],
            initialDialog: true,
@@ -151,9 +178,14 @@ export default {
             });
         },
         async selectPattern() {
-            if(this.selectedPattern === "Курбатов") {
+            let path = ""
+            if(this.selectedPattern === "PHEMT05_СМКК")
+                path = "kurb"
+            if(this.selectedPattern === "PHEMT05_ВП")
+                path = "vp"
+            if(this.selectedPattern !== "Пустой") {
                 await   this.$http
-                        .get(`/api/export/pattern/kurb`)
+                        .get(`/api/export/pattern/${path}`)
                         .then(response => {
                             const elementsVm = response.data
                             this.elements = this.mapElementsVMToElements(elementsVm)
@@ -163,11 +195,11 @@ export default {
                             
                         });
             }
-            this.initialDialog = false;           
+            this.initialDialog = false      
         },
         mapElementsToElementsVM() {
-           const elements = JSON.parse(JSON.stringify(this.elements))
-           return elements.map((x) => {
+            const elements = JSON.parse(JSON.stringify(this.elements))
+            return elements.map((x) => {
                 x.parameters = x.parameters.map((p) => {
                     let pVm = {
                         lower: p.bounds.lower.value,
@@ -181,12 +213,14 @@ export default {
                     }
                     return pVm                                       
                 })  
-                x.element = x.element.name
+                x.isAddedToCommonWorksheet = x.element.isAddedToCommonWorksheet
+                x.elementName = x.element.name               
                 x.operationNumber = x.operation.number
                 delete x.done
                 delete x.operation
+                delete x.element
                 return x
-             })
+            })
         },
         mapElementsVMToElements(elementsVm) {
            const elements = JSON.parse(JSON.stringify(elementsVm))
@@ -212,9 +246,11 @@ export default {
                                        
                 })  
                 x.operation = {number: x.operationNumber, errorMessage: "Введите номер операции"},
-                x.element = {name: x.element, errorMessage: "Введите название элемента"},                
+                x.element = {name: x.elementName, isAddedToCommonWorksheet: x.isAddedToCommonWorksheet, errorMessage: "Введите название элемента"},                
                 x.key = `f${(~~(Math.random()*1e8)).toString(16)}`
                 delete x.operationNumber
+                delete x.elementName
+                delete x.isAddedToCommonWorksheet
                 return x
              })
         },

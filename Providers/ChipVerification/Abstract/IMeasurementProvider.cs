@@ -12,8 +12,7 @@ namespace VueExample.Providers.ChipVerification.Abstract
         (List<Process>, List<CodeProduct>, List<MeasuredDevice>, List<Measurement>) GetAllMeasurementInfo(int facilityId);
         Task<List<int>> GetAvailablePorts(int measurementId);
         Task<AfterDbManipulationObject<MeasurementViewModel>> Create(MeasurementViewModel measurementViewModel);
-        Task<AfterDbManipulationObject<MeasurementViewModel>> Delete(int measurementId);
-        
+        Task<AfterDbManipulationObject<MeasurementViewModel>> Delete(int measurementId);        
         Measurement GetById(int measurementId);
         MeasurementOnlineStatus GetMeasurementOnlineStatus(int measurementId);
         bool IsMeasurementOnline(int measurementId);       

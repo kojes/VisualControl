@@ -11,9 +11,6 @@ import Lightbox from 'vue-my-photos'
 import Vuelidate from 'vuelidate'
 
 
-
-// Registration of global components
-
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/dist/vuetify.min.css'
 

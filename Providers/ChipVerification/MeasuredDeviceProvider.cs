@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -18,9 +20,37 @@ namespace VueExample.Providers.ChipVerification
             _applicationContext = applicationContext;
             _mapper = mapper;
         }
-        public Task<AfterDbManipulationObject<MeasuredDevice>> Create(MeasuredDeviceViewModel measuredDeviceViewModel)
+        public async Task<AfterDbManipulationObject<MeasuredDevice>> Create(MeasuredDeviceViewModel measuredDeviceViewModel)
         {
-            throw new System.NotImplementedException();
+            var obj = new AfterDbManipulationObject<MeasuredDevice>();
+            if(HasDuplicate(measuredDeviceViewModel.Name, measuredDeviceViewModel.WaferId))
+            {
+                obj.AddError(new Error(@"Такое устройство уже добавлено"));
+            }             
+             
+            if(obj.HasErrors)
+            {
+                return obj;
+            }
+
+            var measuredDevice = _mapper.Map<MeasuredDevice>(measuredDeviceViewModel);
+            _applicationContext.Add(measuredDevice);
+            await _applicationContext.SaveChangesAsync();
+            obj.SetObject(measuredDevice);    
+            return obj;
+        }
+
+        public async Task<AfterDbManipulationObject<List<MeasuredDeviceViewModel>>> GetAll()
+        {
+            var obj = new AfterDbManipulationObject<List<MeasuredDeviceViewModel>>();
+            var devicesList = await _applicationContext.MeasuredDevice.Select(x => _mapper.Map<MeasuredDeviceViewModel>(x)).ToListAsync();
+            if(devicesList.Count() == 0)
+            {
+                 obj.AddError(new Error(@"Приборы не найдены"));
+                 return obj;
+            }
+            obj.SetObject(devicesList);
+            return obj;
         }
 
         public async Task<AfterDbManipulationObject<MeasuredDevice>> GetById(int measuredDeviceId)
@@ -43,6 +73,11 @@ namespace VueExample.Providers.ChipVerification
                 obj.AddError(new Error(@"Кристалл не найден"));  
             }
             return obj;
+        }
+
+        private bool HasDuplicate(string name, string waferId)
+        {
+            return _applicationContext.MeasuredDevice.Count(x => x.WaferId == waferId && x.Name == name) > 0;
         }
     }
 }

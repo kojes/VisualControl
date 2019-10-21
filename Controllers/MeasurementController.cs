@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using VueExample.Models;
 using VueExample.ResponseObjects;
+using Newtonsoft.Json.Linq;
 
 namespace VueExample.Controllers
 {
@@ -25,10 +26,10 @@ namespace VueExample.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(MeasurementViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<ResponseObjects.Error>), StatusCodes.Status409Conflict)]
-        [Route("create")]
-        public async Task<IActionResult> Create([FromBody] MeasurementViewModel measurementViewModel)
+        [Route("")]
+        public async Task<IActionResult> Create([FromBody] JObject measurementViewModel)
         {
-            var result = await _measurementProvider.Create(measurementViewModel);
+            var result = await _measurementProvider.Create(measurementViewModel.ToObject<MeasurementViewModel>());
             return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)CreatedAtAction("Create", result.TObject);         
         }
 

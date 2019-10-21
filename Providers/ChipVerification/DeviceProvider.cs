@@ -123,6 +123,17 @@ namespace VueExample.Providers.ChipVerification
             return obj;
         }
 
+        public async Task<AfterDbManipulationObject<Device>> GetByAddress(string address)
+        {
+            var device = await _applicationContext.Device.FirstOrDefaultAsync(x => x.Address == address);
+            var obj = new AfterDbManipulationObject<Device>(device);
+            if(device is null)
+            {
+                obj.AddError(new Error("@Прибор не найден"));
+            }
+            return obj;
+        }
+
         private bool HasDuplicate(string columnName, string newValue)
         {
             return _applicationContext.Device.Count(x => x.GetType().GetProperty(columnName).GetValue(x).ToString() == newValue) > 0;

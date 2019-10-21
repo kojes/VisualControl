@@ -1,13 +1,10 @@
 using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using VueExample.Models.SRV6.Export;
 using VueExample.StatisticsCore.Abstract;
 using VueExample.ViewModels;
 using OfficeOpenXml;
-using OfficeOpenXml.Table;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -66,51 +63,22 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        [Route(("pattern/kurb"))]
-        public IActionResult GetPattern()
+        [Route(("pattern/vp"))]
+        public IActionResult GetPatternVP()
         {
             var xlsList = new List<KurbatovXLSViewModel>();
-            var row1 = new KurbatovXLSViewModel();
-            row1.Element = "TC16";
-            row1.OperationNumber = "180.50.00";
-            row1.parameters.Add(new KurbatovParameter{ParameterName = "Ro-m1", Upper = 17, DividerId = 1, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_OK_RAZV"});
-            
-            var row2 = new KurbatovXLSViewModel();
-            row2.Element = "TC17";
-            row2.OperationNumber = "180.55.00";
-            row2.parameters.Add(new KurbatovParameter{ParameterName = "Rg-m1", Upper = 12, DividerId = 1, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_GATE_RAZV"});
-            
-            var row3 = new KurbatovXLSViewModel();
-            row3.Element = "TC18";
-            row3.OperationNumber = "295.65.00";
-            row3.parameters.Add(new KurbatovParameter{ParameterName = "Rm1-m2", Upper = 7, DividerId = 1, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_RAZV_GALV"});
-           
-            var row4 = new KurbatovXLSViewModel();
-            row4.Element = "TC8";
-            row4.OperationNumber = "317.10.00";
-            row4.parameters.Add(new KurbatovParameter{ParameterName = "Risol", Lower = 0.15, DividerId = 1, RussianParameterName="Сопротивление межприборной изоляции, ГОм", ParameterNameStat="Risol"});
-            
-            var row5 = new KurbatovXLSViewModel();
-            row5.Element = "TC5";
-            row5.OperationNumber = "317.25.00";
-            row5.parameters.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.25, Upper = 2.1, DividerId = 3, Divider = 1000/75, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="r<sub>DS(on)</sub> (сопротивление открытого канала при Uси = 0.02В)"});
-            row5.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.33, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
-            row5.parameters.Add(new KurbatovParameter{ParameterName = "gmax", Lower = 0.32, Divider = 0.075, DividerId = 3, RussianParameterName="Максимум крутизны, См/мм", ParameterNameStat="g<sub>max</sub> (максимум крутизны)"});
-            row5.parameters.Add(new KurbatovParameter{ParameterName = "Igss(-3V)", Lower = -2E-5, Divider = 0.075, DividerId = 3, RussianParameterName="Ток утечки затвора, А/мм", ParameterNameStat="I<sub>GSS(-3V)</sub> (ток утечки затвора при Uзи=-3В)"});
-            row5.parameters.Add(new KurbatovParameter{ParameterName = "Idss(3V)", Lower = 0.32, Upper = 0.56, Divider = 0.075, DividerId = 3, RussianParameterName="Начальный ток стока, A/мм", ParameterNameStat="I<sub>DSS(3V)</sub> (начальный ток стока)"});
-            row5.parameters.Add(new KurbatovParameter{ParameterName = "Ubr", Lower = 11.0, DividerId = 1, RussianParameterName="Напряжение пробоя сток-исток, В", ParameterNameStat="U<sub>BR</sub> (напряжение пробоя сток-исток)"});
-            row5.parameters.Add(new KurbatovParameter{ParameterName = "S21(5GHz)", Lower = 8.0, DividerId = 1, RussianParameterName="Коэффициент передачи, дБ", ParameterNameStat="S21<sub>(5GHz)</sub>(коэффициент передачи)"});
-         
             var row6 = new KurbatovXLSViewModel();
-            row6.Element = "TC1";
-            row6.OperationNumber = "560.00.00";
+            row6.ElementName = "TC1";
+            row6.OperationNumber = "570.00.00";
+            row6.StageName = "Снятие рабочей пластины с пластины-носителя";
             row6.parameters.Add(new KurbatovParameter{ParameterName = "Cmicap", Lower = 0.1E-12, Upper = 0.6E-12, DividerId = 1, RussianParameterName="Емкость элемента, Ф", ParameterNameStat="C при U=0.06В"});
 
             var row7 = new KurbatovXLSViewModel();
-            row7.Element = "TC5";
-            row7.OperationNumber = "560.00.00";
+            row7.ElementName = "TC5";
+            row7.OperationNumber = "570.00.00";
+            row7.StageName = "Снятие рабочей пластины с пластины-носителя";
             row7.parameters.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.2, Upper = 2.3, Divider = 1000/75, DividerId = 3, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="r<sub>DS(on)</sub> (сопротивление открытого канала при Uси = 0.02В)"});
-            row7.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.9, Upper = -1.3, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.9, Upper = -1.25, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
             row7.parameters.Add(new KurbatovParameter{ParameterName = "gmax", Lower = 0.3, Divider = 0.075, DividerId = 3, RussianParameterName="Максимум крутизны, См/мм", ParameterNameStat="g<sub>max</sub> (максимум крутизны)"});
             row7.parameters.Add(new KurbatovParameter{ParameterName = "Igss(-3V)", Lower = -3E-5, Divider = 0.075, DividerId = 3, RussianParameterName="Ток утечки затвора, А/мм", ParameterNameStat="I<sub>GSS(-3V)</sub> (ток утечки затвора при Uзи=-3В)"});
             row7.parameters.Add(new KurbatovParameter{ParameterName = "Idss(3V)", Lower = 0.3, Upper = 0.6, Divider = 0.075, DividerId = 3, RussianParameterName="Начальный ток стока, A/мм", ParameterNameStat="I<sub>DSS(3V)</sub> (начальный ток стока)"});
@@ -118,61 +86,211 @@ namespace VueExample.Controllers
             row7.parameters.Add(new KurbatovParameter{ParameterName = "S21(5GHz)", Lower = 7.8, DividerId = 1, RussianParameterName="Коэффициент передачи, дБ", ParameterNameStat="S21<sub>(5GHz)</sub>(коэффициент передачи)"});
             
             var row8 = new KurbatovXLSViewModel();
-            row8.Element = "TC6";
-            row8.OperationNumber = "560.00.00";
+            row8.ElementName = "TC6";
+            row8.OperationNumber = "570.00.00";
+            row8.StageName = "Снятие рабочей пластины с пластины-носителя";
             row8.parameters.Add(new KurbatovParameter{ParameterName = "S21(on)", Lower = -1.5, DividerId = 1, RussianParameterName="Коэффициент передачи в открытом состоянии на частоте 20 ГГц, дБ", ParameterNameStat="S<sub>21ON(20GHz)</sub>"});
             row8.parameters.Add(new KurbatovParameter{ParameterName = "S21(off)", Upper = -15, DividerId = 1, RussianParameterName="Коэффициент передачи в закрытом состоянии на частоте 1 ГГц, дБ", ParameterNameStat="S<sub>21OFF(1GHz)</sub>"});
-            row8.parameters.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.2, Upper = 3.0, DividerId = 1, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="R<sub>ds(on)</sub> (сопротивление открытого канала)"});
-            row8.parameters.Add(new KurbatovParameter{ParameterName = "Idss(3V)", Lower = 0.3, Upper = 0.6, DividerId = 1, RussianParameterName="Начальный ток стока, A/мм", ParameterNameStat="I<sub>DSS(3V)</sub> (начальный ток стока)"});
-            row8.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.33, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
-            row8.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.33, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
-            row8.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.33, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.2, Upper = 3.0, Divider=0.6, DividerId = 10, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="R<sub>ds(on)</sub> (сопротивление открытого канала)"});
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "Idss(3V)", Lower = 0.3, Upper = 0.6, Divider=0.6, DividerId = 10, RussianParameterName="Начальный ток стока, A/мм", ParameterNameStat="I<sub>DSS(3V)</sub> (начальный ток стока)"});
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.9, Upper = -1.25, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
+            
             
             var row9 = new KurbatovXLSViewModel();
-            row9.Element = "TC8";
-            row9.OperationNumber = "560.00.00";
+            row9.ElementName = "TC8";
+            row9.OperationNumber = "570.00.00";
+            row9.StageName = "Снятие рабочей пластины с пластины-носителя";
             row9.parameters.Add(new KurbatovParameter{ParameterName = "Risol", Lower = 0.1, DividerId = 1, RussianParameterName="Сопротивление межприборной изоляции, ГОм", ParameterNameStat="Risol"});
             
             var row10 = new KurbatovXLSViewModel();
-            row10.Element = "TC10";
-            row10.OperationNumber = "560.00.00";
+            row10.ElementName = "TC10";
+            row10.OperationNumber = "570.00.00";
+            row10.StageName = "Снятие рабочей пластины с пластины-носителя";
             row10.parameters.Add(new KurbatovParameter{ParameterName = "Rgate", Upper = 30, DividerId = 1, RussianParameterName="Сопротивление затвора, Ом", ParameterNameStat="Rgate"});
 
             var row11 = new KurbatovXLSViewModel();
-            row11.Element = "TC12";
-            row11.OperationNumber = "560.00.00";
+            row11.ElementName = "TC12";
+            row11.OperationNumber = "570.00.00";
+            row11.StageName = "Снятие рабочей пластины с пластины-носителя";
             row11.parameters.Add(new KurbatovParameter{ParameterName = "Rc", Upper = 0.4, DividerId = 1, RussianParameterName="Контактное сопротивление омических контактов, Ом*мм", ParameterNameStat="Rc"});
             row11.parameters.Add(new KurbatovParameter{ParameterName = "Rs", Lower = 135, Upper = 185, DividerId = 1, RussianParameterName="Слоевое cопротивление, Ом/кв", ParameterNameStat="Rs"});
                         
             var row12 = new KurbatovXLSViewModel();
-            row12.Element = "TC13";
-            row12.OperationNumber = "560.00.00";
+            row12.ElementName = "TC13";
+            row12.OperationNumber = "570.00.00";
+            row12.StageName = "Снятие рабочей пластины с пластины-носителя";
             row12.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_1", Lower = 40, Upper = 60, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq"});
 
             var row13 = new KurbatovXLSViewModel();
-            row13.Element = "TC14";
-            row13.OperationNumber = "560.00.00";
+            row13.ElementName = "TC14";
+            row13.OperationNumber = "570.00.00";
+            row13.StageName = "Снятие рабочей пластины с пластины-носителя";
             row13.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_2", Lower = 480, Upper = 720, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq"});
 
-            var row14 = new KurbatovXLSViewModel();
-            row14.Element = "TC19";
-            row14.OperationNumber = "560.00.00";
-            row14.parameters.Add(new KurbatovParameter{ParameterName = "Rm2", Upper = 7, DividerId = 1, RussianParameterName="Сопротивление элемента 'змейка', Ом", ParameterNameStat="Rline"});
-
             var row15 = new KurbatovXLSViewModel();
-            row15.Element = "TC20";
-            row15.OperationNumber = "560.00.00";
+            row15.ElementName = "TC20";
+            row15.OperationNumber = "570.00.00";
+            row15.StageName = "Снятие рабочей пластины с пластины-носителя";
             row15.parameters.Add(new KurbatovParameter{ParameterName = "Rhole", Upper = 3, DividerId = 1, RussianParameterName="Сопротивление металлизированного отверстия, Ом", ParameterNameStat="Rhole"});
 
             var row16 = new KurbatovXLSViewModel();
-            row16.Element = "TC21";
-            row16.OperationNumber = "560.00.00";
+            row16.ElementName = "TC21";
+            row16.OperationNumber = "570.00.00";
+            row16.StageName = "Снятие рабочей пластины с пластины-носителя";
             row16.parameters.Add(new KurbatovParameter{ParameterName = "Rind", Upper = 4, DividerId = 1, RussianParameterName="Сопротивление катушки индуктивности, Ом", ParameterNameStat="Rind"});
             
             var row17 = new KurbatovXLSViewModel();
-            row17.Element = "TC23";
-            row17.OperationNumber = "560.00.00";
+            row17.ElementName = "TC23";
+            row17.OperationNumber = "570.00.00";
+            row17.StageName = "Снятие рабочей пластины с пластины-носителя";
             row17.parameters.Add(new KurbatovParameter{ParameterName = "Сmim", Lower = 270, Upper = 350, DividerId = 1, RussianParameterName="Удельная емкость МДМ-конденсатора, пФ/мм2", ParameterNameStat="C<sub>MIM</sub> при U=0.06B (удельная ёмкость МДМ-конденсатора)"});
+            row17.parameters.Add(new KurbatovParameter{ParameterName = "Ubrc", Lower = 20, DividerId = 1, RussianParameterName="Пробивное напряжение МДМ-конденсатора, В", ParameterNameStat="U<sub>BRC</sub> (пробивное напряжение МДМ-конденсатора)"});
+          
+           
+            xlsList.Add(row6);
+            xlsList.Add(row7);
+            xlsList.Add(row8);
+            xlsList.Add(row9);
+            xlsList.Add(row10);
+            xlsList.Add(row11);
+            xlsList.Add(row12);
+            xlsList.Add(row13);
+            xlsList.Add(row15);
+            xlsList.Add(row16);
+            xlsList.Add(row17);
+
+            return Ok(xlsList);
+        }
+
+        [HttpGet]
+        [Route(("pattern/kurb"))]
+        public IActionResult GetPatternKurb()
+        {
+            var xlsList = new List<KurbatovXLSViewModel>();
+            var row1 = new KurbatovXLSViewModel();
+            row1.ElementName = "TC16";            
+            row1.OperationNumber = "180.50.00";
+            row1.IsAddedToCommonWorksheet = false;
+            row1.StageName = "Формирование разводки и нижней обкладки";
+            row1.parameters.Add(new KurbatovParameter{ParameterName = "Ro-m1", Upper = 17, DividerId = 1, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_OK_RAZV"});
+            
+            var row2 = new KurbatovXLSViewModel();
+            row2.ElementName = "TC17";
+            row2.OperationNumber = "180.55.00";
+            row2.IsAddedToCommonWorksheet = false;
+            row2.StageName = "Формирование разводки и нижней обкладки";
+            row2.parameters.Add(new KurbatovParameter{ParameterName = "Rg-m1", Upper = 12, DividerId = 1, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_GATE_RAZV"});
+            
+            var row3 = new KurbatovXLSViewModel();
+            row3.ElementName = "TC18";
+            row3.OperationNumber = "295.65.00";
+            row3.IsAddedToCommonWorksheet = false;
+            row3.StageName = "Формирование верхней обкладки, мостов, катушек, гальваники";
+            row3.parameters.Add(new KurbatovParameter{ParameterName = "Rm1-m2", Upper = 7, DividerId = 1, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_RAZV_GALV"});
+           
+            var row4 = new KurbatovXLSViewModel();
+            row4.ElementName = "TC8";
+            row4.OperationNumber = "317.10.00";
+            row4.IsAddedToCommonWorksheet = false;
+            row4.StageName = "Формирование защиты ВСВ";
+            row4.parameters.Add(new KurbatovParameter{ParameterName = "Risol", Lower = 0.15, DividerId = 1, RussianParameterName="Сопротивление межприборной изоляции, ГОм", ParameterNameStat="Risol"});
+            
+            var row5 = new KurbatovXLSViewModel();
+            row5.ElementName = "TC5";
+            row5.OperationNumber = "317.25.00";
+            row5.IsAddedToCommonWorksheet = false;
+            row5.StageName = "Формирование защиты ВСВ";
+            row5.parameters.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.25, Upper = 2.1, DividerId = 3, Divider = 1000/75, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="r<sub>DS(on)</sub> (сопротивление открытого канала при Uси = 0.02В)"});
+            row5.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.3, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
+            row5.parameters.Add(new KurbatovParameter{ParameterName = "gmax", Lower = 0.32, Divider = 0.075, DividerId = 3, RussianParameterName="Максимум крутизны, См/мм", ParameterNameStat="g<sub>max</sub> (максимум крутизны)"});
+            row5.parameters.Add(new KurbatovParameter{ParameterName = "Igss(-3V)", Lower = -2E-5, Divider = 0.075, DividerId = 3, RussianParameterName="Ток утечки затвора, А/мм", ParameterNameStat="I<sub>GSS(-3V)</sub> (ток утечки затвора при Uзи=-3В)"});
+            row5.parameters.Add(new KurbatovParameter{ParameterName = "Idss(3V)", Lower = 0.32, Upper = 0.56, Divider = 0.075, DividerId = 3, RussianParameterName="Начальный ток стока, A/мм", ParameterNameStat="I<sub>DSS(3V)</sub> (начальный ток стока)"});
+            row5.parameters.Add(new KurbatovParameter{ParameterName = "Ubr", Lower = 11.0, DividerId = 1, RussianParameterName="Напряжение пробоя сток-исток, В", ParameterNameStat="U<sub>BR</sub> (напряжение пробоя сток-исток)"});
+            row5.parameters.Add(new KurbatovParameter{ParameterName = "S21(5GHz)", Lower = 8.0, DividerId = 1, RussianParameterName="Коэффициент передачи, дБ", ParameterNameStat="S21<sub>(5GHz)</sub>(коэффициент передачи)"});
+         
+            var row6 = new KurbatovXLSViewModel();
+            row6.ElementName = "TC1";
+            row6.OperationNumber = "560.00.00";
+            row6.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row6.parameters.Add(new KurbatovParameter{ParameterName = "Cmicap", Lower = 0.1E-12, Upper = 0.6E-12, DividerId = 1, RussianParameterName="Емкость элемента, Ф", ParameterNameStat="C при U=0.06В"});
+
+            var row7 = new KurbatovXLSViewModel();
+            row7.ElementName = "TC5";
+            row7.OperationNumber = "560.00.00";
+            row7.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.25, Upper = 2.1, Divider = 1000/75, DividerId = 3, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="r<sub>DS(on)</sub> (сопротивление открытого канала при Uси = 0.02В)"});
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.3, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "gmax", Lower = 0.32, Divider = 0.075, DividerId = 3, RussianParameterName="Максимум крутизны, См/мм", ParameterNameStat="g<sub>max</sub> (максимум крутизны)"});
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "Igss(-3V)", Lower = -2E-5, Divider = 0.075, DividerId = 3, RussianParameterName="Ток утечки затвора, А/мм", ParameterNameStat="I<sub>GSS(-3V)</sub> (ток утечки затвора при Uзи=-3В)"});
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "Idss(3V)", Lower = 0.32, Upper = 0.56, Divider = 0.075, DividerId = 3, RussianParameterName="Начальный ток стока, A/мм", ParameterNameStat="I<sub>DSS(3V)</sub> (начальный ток стока)"});
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "Ubr", Lower = 11.0, DividerId = 1, RussianParameterName="Напряжение пробоя сток-исток, В", ParameterNameStat="U<sub>BR</sub> (напряжение пробоя сток-исток)"});
+            row7.parameters.Add(new KurbatovParameter{ParameterName = "S21(5GHz)", Lower = 8, DividerId = 1, RussianParameterName="Коэффициент передачи, дБ", ParameterNameStat="S21<sub>(5GHz)</sub>(коэффициент передачи)"});
+            
+            var row8 = new KurbatovXLSViewModel();
+            row8.ElementName = "TC6";
+            row8.OperationNumber = "560.00.00";
+            row8.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "S21(on)", Lower = -1.5, DividerId = 1, RussianParameterName="Коэффициент передачи в открытом состоянии на частоте 20 ГГц, дБ", ParameterNameStat="S<sub>21ON(20GHz)</sub>"});
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "S21(off)", Upper = -15, DividerId = 1, RussianParameterName="Коэффициент передачи в закрытом состоянии на частоте 1 ГГц, дБ", ParameterNameStat="S<sub>21OFF(1GHz)</sub>"});
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.2, Upper = 2.7, Divider=0.6, DividerId = 10, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="R<sub>ds(on)</sub> (сопротивление открытого канала)"});
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "Idss(3V)", Lower = 0.32, Upper = 0.56, Divider=0.6, DividerId = 10, RussianParameterName="Начальный ток стока, A/мм", ParameterNameStat="I<sub>DSS(3V)</sub> (начальный ток стока)"});
+            row8.parameters.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.3, DividerId = 1, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)"});
+            
+            
+            var row9 = new KurbatovXLSViewModel();
+            row9.ElementName = "TC8";
+            row9.OperationNumber = "560.00.00";
+            row9.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row9.parameters.Add(new KurbatovParameter{ParameterName = "Risol", Lower = 0.15, DividerId = 1, RussianParameterName="Сопротивление межприборной изоляции, ГОм", ParameterNameStat="Risol"});
+            
+            var row10 = new KurbatovXLSViewModel();
+            row10.ElementName = "TC10";
+            row10.OperationNumber = "560.00.00";
+            row10.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row10.parameters.Add(new KurbatovParameter{ParameterName = "Rgate", Upper = 27, DividerId = 1, RussianParameterName="Сопротивление затвора, Ом", ParameterNameStat="Rgate"});
+
+            var row11 = new KurbatovXLSViewModel();
+            row11.ElementName = "TC12";
+            row11.OperationNumber = "560.00.00";
+            row11.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row11.parameters.Add(new KurbatovParameter{ParameterName = "Rc", Upper = 0.35, DividerId = 1, RussianParameterName="Контактное сопротивление омических контактов, Ом*мм", ParameterNameStat="Rc"});
+            row11.parameters.Add(new KurbatovParameter{ParameterName = "Rs", Lower = 140, Upper = 180, DividerId = 1, RussianParameterName="Слоевое cопротивление, Ом/кв", ParameterNameStat="Rs"});
+                        
+            var row12 = new KurbatovXLSViewModel();
+            row12.ElementName = "TC13";
+            row12.OperationNumber = "560.00.00";
+            row12.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row12.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_1", Lower = 42, Upper = 58, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq"});
+
+            var row13 = new KurbatovXLSViewModel();
+            row13.ElementName = "TC14";
+            row13.OperationNumber = "560.00.00";
+            row13.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row13.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_2", Lower = 485, Upper = 715, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq"});
+
+            var row14 = new KurbatovXLSViewModel();
+            row14.ElementName = "TC19";
+            row14.OperationNumber = "560.00.00";
+            row14.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row14.parameters.Add(new KurbatovParameter{ParameterName = "Rm2", Upper = 7, DividerId = 1, RussianParameterName="Сопротивление элемента 'змейка', Ом", ParameterNameStat="Rline"});
+
+            var row15 = new KurbatovXLSViewModel();
+            row15.ElementName = "TC20";
+            row15.OperationNumber = "560.00.00";
+            row15.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row15.parameters.Add(new KurbatovParameter{ParameterName = "Rhole", Upper = 2.7, DividerId = 1, RussianParameterName="Сопротивление металлизированного отверстия, Ом", ParameterNameStat="Rhole"});
+
+            var row16 = new KurbatovXLSViewModel();
+            row16.ElementName = "TC21";
+            row16.OperationNumber = "560.00.00";
+            row16.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row16.parameters.Add(new KurbatovParameter{ParameterName = "Rind", Upper = 3.6, DividerId = 1, RussianParameterName="Сопротивление катушки индуктивности, Ом", ParameterNameStat="Rind"});
+            
+            var row17 = new KurbatovXLSViewModel();
+            row17.ElementName = "TC23";
+            row17.OperationNumber = "560.00.00";
+            row17.StageName = "Снятие рабочей пластины с пластины-носителя";
+            row17.parameters.Add(new KurbatovParameter{ParameterName = "Сmim", Lower = 275, Upper = 345, DividerId = 1, RussianParameterName="Удельная емкость МДМ-конденсатора, пФ/мм2", ParameterNameStat="C<sub>MIM</sub> при U=0.06B (удельная ёмкость МДМ-конденсатора)"});
             row17.parameters.Add(new KurbatovParameter{ParameterName = "Ubrc", Lower = 20, DividerId = 1, RussianParameterName="Пробивное напряжение МДМ-конденсатора, В", ParameterNameStat="U<sub>BRC</sub> (пробивное напряжение МДМ-конденсатора)"});
           
             xlsList.Add(row1);
@@ -203,27 +321,27 @@ namespace VueExample.Controllers
         {
             var xlsList = new List<KurbatovXLS>();
             var row1 = new KurbatovXLS();
-            row1.Element = "TC16";
+            row1.ElementName = "TC16";
             row1.OperationNumber = "180.50.00";
             row1.kpList.Add(new KurbatovParameter{ParameterName = "Ro-m1", Upper = 17, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_OK_RAZV", MeasurementRecordingId=25653});
             
             var row2 = new KurbatovXLS();
-            row2.Element = "TC17";
+            row2.ElementName = "TC17";
             row2.OperationNumber = "180.55.00";
             row2.kpList.Add(new KurbatovParameter{ParameterName = "Rg-m1", Upper = 12, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_GATE_RAZV", MeasurementRecordingId=25653});
             
             var row3 = new KurbatovXLS();
-            row3.Element = "TC18";
+            row3.ElementName = "TC18";
             row3.OperationNumber = "295.65.00";
             row3.kpList.Add(new KurbatovParameter{ParameterName = "Rm1-m2", Upper = 7, RussianParameterName="Сопротивление цепочки, Ом", ParameterNameStat="Rchain_RAZV_GALV", MeasurementRecordingId=25786});
            
             var row4 = new KurbatovXLS();
-            row4.Element = "TC8";
+            row4.ElementName = "TC8";
             row4.OperationNumber = "317.10.00";
             row4.kpList.Add(new KurbatovParameter{ParameterName = "Risol", Lower = 0.15, RussianParameterName="Сопротивление межприборной изоляции, ГОм", ParameterNameStat="Risol", MeasurementRecordingId=25852});
             
             var row5 = new KurbatovXLS();
-            row5.Element = "TC5";
+            row5.ElementName = "TC5";
             row5.OperationNumber = "317.25.00";
             row5.kpList.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.25, Upper = 2.1, Divider = 1000/75, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="r<sub>DS(on)</sub> (сопротивление открытого канала при Uси = 0.02В)", MeasurementRecordingId=25851});
             row5.kpList.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.33, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)", MeasurementRecordingId=25851});
@@ -234,12 +352,12 @@ namespace VueExample.Controllers
             row5.kpList.Add(new KurbatovParameter{ParameterName = "S21(5GHz)", Lower = 8.0, RussianParameterName="Коэффициент передачи, дБ", ParameterNameStat="S21<sub>(5GHz)</sub>(коэффициент передачи)", MeasurementRecordingId=26323});
          
             var row6 = new KurbatovXLS();
-            row6.Element = "TC1";
+            row6.ElementName = "TC1";
             row6.OperationNumber = "560.00.00";
             row6.kpList.Add(new KurbatovParameter{ParameterName = "Cmicap", Lower = 0.1E-12, Upper = 0.6E-12, RussianParameterName="Емкость элемента, Ф", ParameterNameStat="C при U=0.06В", MeasurementRecordingId=26252});
 
             var row7 = new KurbatovXLS();
-            row7.Element = "TC5";
+            row7.ElementName = "TC5";
             row7.OperationNumber = "560.00.00";
             row7.kpList.Add(new KurbatovParameter{ParameterName = "rDS(on)", Lower = 1.2, Upper = 2.3, Divider = 1000/75, RussianParameterName="Сопротивление открытого канала, Ом*мм", ParameterNameStat="r<sub>DS(on)</sub> (сопротивление открытого канала при Uси = 0.02В)", MeasurementRecordingId=26238});
             row7.kpList.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.9, Upper = -1.3, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)", MeasurementRecordingId=26238});
@@ -250,7 +368,7 @@ namespace VueExample.Controllers
             row7.kpList.Add(new KurbatovParameter{ParameterName = "S21(5GHz)", Lower = 7.8, RussianParameterName="Коэффициент передачи, дБ", ParameterNameStat="S21<sub>(5GHz)</sub>(коэффициент передачи)", MeasurementRecordingId=26323});
             
             var row8 = new KurbatovXLS();
-            row8.Element = "TC6";
+            row8.ElementName = "TC6";
             row8.OperationNumber = "560.00.00";
             row8.kpList.Add(new KurbatovParameter{ParameterName = "S21(on)", Lower = -1.5, RussianParameterName="Коэффициент передачи в открытом состоянии на частоте 20 ГГц, дБ", ParameterNameStat="S<sub>21ON(20GHz)</sub>", MeasurementRecordingId=26320});
             row8.kpList.Add(new KurbatovParameter{ParameterName = "S21(off)", Upper = -15, RussianParameterName="Коэффициент передачи в закрытом состоянии на частоте 1 ГГц, дБ", ParameterNameStat="S<sub>21OFF(1GHz)</sub>", MeasurementRecordingId=26320});
@@ -261,48 +379,48 @@ namespace VueExample.Controllers
             row8.kpList.Add(new KurbatovParameter{ParameterName = "Ugs(off)", Lower = -1.8, Upper = -1.33, RussianParameterName="Напряжение отсечки, В", ParameterNameStat="U<sub>GS(off)</sub> (напряжение отсечки при Idss/1000)", MeasurementRecordingId=26326});
             
             var row9 = new KurbatovXLS();
-            row9.Element = "TC8";
+            row9.ElementName = "TC8";
             row9.OperationNumber = "560.00.00";
             row9.kpList.Add(new KurbatovParameter{ParameterName = "Risol", Lower = 0.1, RussianParameterName="Сопротивление межприборной изоляции, ГОм", ParameterNameStat="Risol", MeasurementRecordingId=26246});
             
             var row10 = new KurbatovXLS();
-            row10.Element = "TC10";
+            row10.ElementName = "TC10";
             row10.OperationNumber = "560.00.00";
             row10.kpList.Add(new KurbatovParameter{ParameterName = "Rgate", Upper = 30, RussianParameterName="Сопротивление затвора, Ом", ParameterNameStat="Rgate", MeasurementRecordingId=26242});
 
             var row11 = new KurbatovXLS();
-            row11.Element = "TC12";
+            row11.ElementName = "TC12";
             row11.OperationNumber = "560.00.00";
             row11.kpList.Add(new KurbatovParameter{ParameterName = "Rc", Upper = 0.4, RussianParameterName="Контактное сопротивление омических контактов, Ом*мм", ParameterNameStat="Rc", MeasurementRecordingId=26249});
             row11.kpList.Add(new KurbatovParameter{ParameterName = "Rs", Lower = 135, Upper = 185, RussianParameterName="Слоевое cопротивление, Ом/кв", ParameterNameStat="Rs", MeasurementRecordingId=26249});
                         
             var row12 = new KurbatovXLS();
-            row12.Element = "TC13";
+            row12.ElementName = "TC13";
             row12.OperationNumber = "560.00.00";
             row12.kpList.Add(new KurbatovParameter{ParameterName = "Rtfr_1", Lower = 40, Upper = 60, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq", MeasurementRecordingId=26250});
 
             var row13 = new KurbatovXLS();
-            row13.Element = "TC14";
+            row13.ElementName = "TC14";
             row13.OperationNumber = "560.00.00";
             row13.kpList.Add(new KurbatovParameter{ParameterName = "Rtfr_2", Lower = 480, Upper = 720, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq", MeasurementRecordingId=26251});
 
             var row14 = new KurbatovXLS();
-            row14.Element = "TC19";
+            row14.ElementName = "TC19";
             row14.OperationNumber = "560.00.00";
             row14.kpList.Add(new KurbatovParameter{ParameterName = "Rm2", Upper = 7, RussianParameterName="Сопротивление элемента 'змейка', Ом", ParameterNameStat="Rline", MeasurementRecordingId=26247});
 
             var row15 = new KurbatovXLS();
-            row15.Element = "TC20";
+            row15.ElementName = "TC20";
             row15.OperationNumber = "560.00.00";
             row15.kpList.Add(new KurbatovParameter{ParameterName = "Rhole", Upper = 3, RussianParameterName="Сопротивление металлизированного отверстия, Ом", ParameterNameStat="Rhole", MeasurementRecordingId=26244});
 
             var row16 = new KurbatovXLS();
-            row16.Element = "TC21";
+            row16.ElementName = "TC21";
             row16.OperationNumber = "560.00.00";
             row16.kpList.Add(new KurbatovParameter{ParameterName = "Rind", Upper = 4, RussianParameterName="Сопротивление катушки индуктивности, Ом", ParameterNameStat="Rind", MeasurementRecordingId=26245});
             
             var row17 = new KurbatovXLS();
-            row17.Element = "TC23";
+            row17.ElementName = "TC23";
             row17.OperationNumber = "560.00.00";
             row17.kpList.Add(new KurbatovParameter{ParameterName = "Сmim", Lower = 270, Upper = 350, RussianParameterName="Удельная емкость МДМ-конденсатора, пФ/мм2", ParameterNameStat="C<sub>MIM</sub> при U=0.06B (удельная ёмкость МДМ-конденсатора)", MeasurementRecordingId=26253});
             row17.kpList.Add(new KurbatovParameter{ParameterName = "Ubrc", Lower = 20, RussianParameterName="Пробивное напряжение МДМ-конденсатора, В", ParameterNameStat="U<sub>BRC</sub> (пробивное напряжение МДМ-конденсатора)", MeasurementRecordingId=26253});
@@ -349,10 +467,30 @@ namespace VueExample.Controllers
             package.Workbook.Properties.Title = "Report";
             package.Workbook.Properties.Author = "Roma Molchanov";
 
+            var commonWorksheet = package.Workbook.Worksheets.Add("Сводная");
+            commonWorksheet.Cells[1, 1].Value = "№ тестовой структуры";
+            commonWorksheet.Cells[1, 2].Value = "Порядковый номер и наименование параметра, единица измерения";
+            commonWorksheet.Cells[1, 3].Value = "Буквенное обозначение параметра";
+            commonWorksheet.Cells[1, 4].Value = "Результат измерений";
+            commonWorksheet.Cells[1, 5].Value = "Процент годных ТС";
+            commonWorksheet.Cells[1, 6].Value = "Приложение 1 к МСЛ №";
+            commonWorksheet.Cells[1, 6, 1, 8].Merge = true;
+            commonWorksheet.Row(1).Height = 20;
+            for (int i = 1; i < 6; i++)
+            {
+                commonWorksheet.Column(i).Width = 20;
+                commonWorksheet.Column(i).Style.WrapText = true;
+                commonWorksheet.Column(i).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                commonWorksheet.Column(i).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            }
+            commonWorksheet.Column(2).Width = 30;
+           
+            var currentCursor = 2;
+
             foreach (var kurbatovXLS in xlsList.Select((value, i) => new { i, value }))
             {             
                   
-                var worksheet = package.Workbook.Worksheets.Add(kurbatovXLS.value.OperationNumber + "_" + kurbatovXLS.value.Element);
+                var worksheet = package.Workbook.Worksheets.Add(kurbatovXLS.value.OperationNumber + "_" + kurbatovXLS.value.ElementName);
                
            
                 worksheet.Cells[6, 1, kurbatovXLS.value.kpList[0].advList.Count + 9, 2 + kurbatovXLS.value.kpList.Count].Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -370,7 +508,7 @@ namespace VueExample.Controllers
                 worksheet.Cells[1, 3].Value = kurbatovXLS.value.OperationNumber;
                 worksheet.Cells[1, 1, 1, 2].Merge = true;
 
-                worksheet.Cells[1, 4].Value = $"Приложение {kurbatovXLS.i + 1} к МСЛ №";
+                worksheet.Cells[1, 4].Value = $"Приложение {kurbatovXLS.i + 2} к МСЛ №";
                 worksheet.Cells[1, 4, 1, 6].Merge = true;
                 worksheet.Column(4).Width = 20;
                 worksheet.Column(5).Width = 20;
@@ -379,7 +517,7 @@ namespace VueExample.Controllers
              
                 worksheet.Cells[2, 1].Value = "Элемент:";
                 worksheet.Cells[2, 1].Style.Font.Bold = true;
-                worksheet.Cells[2, 3].Value = kurbatovXLS.value.Element;
+                worksheet.Cells[2, 3].Value = kurbatovXLS.value.ElementName;
                 worksheet.Cells[2, 1, 2, 2].Merge = true;
                 
                 worksheet.Cells[3, 1].Value = "Количество кристаллов:";
@@ -434,6 +572,29 @@ namespace VueExample.Controllers
                 }
                 for (int i = 0; i < kurbatovXLS.value.kpList.Count; i++)
                 {
+                    if(kurbatovXLS.value.IsAddedToCommonWorksheet)
+                    {
+                        if(i == 0)
+                        {
+                            commonWorksheet.Cells[currentCursor, 1].Value = kurbatovXLS.value.ElementName;
+                            commonWorksheet.Cells[currentCursor, 5].Value = 100.0 - kurbatovXLS.value.DirtyPercentage;
+                            commonWorksheet.Cells[currentCursor, 1, currentCursor + kurbatovXLS.value.kpList.Count - 1, 1].Merge = true;
+                            commonWorksheet.Cells[currentCursor, 5, currentCursor + kurbatovXLS.value.kpList.Count - 1, 5].Merge = true;
+                        }                   
+                        commonWorksheet.Cells[currentCursor, 2].Value = (i+1) + " " + kurbatovXLS.value.kpList[i].RussianParameterName;
+                        commonWorksheet.Cells[currentCursor, 3].Value = kurbatovXLS.value.kpList[i].ParameterName;
+                        var averageGood = kurbatovXLS.value.kpList[i].AverageGood;
+                        if ((Math.Abs(averageGood) >= 10000 || Math.Abs(averageGood) < 1E-2))
+                        {
+                            commonWorksheet.Cells[currentCursor, 4].Value = averageGood.ToString("0.00E0");
+                        }
+                        else
+                        {
+                            commonWorksheet.Cells[currentCursor, 4].Value = averageGood.ToString("0.00");
+                        }                        
+                        currentCursor++;
+                    }
+                    
                     worksheet.Cells[9, 2 + i].Value = "Измеренное значение";
                     worksheet.Column(2 + i).Width = 20;
                     worksheet.Column(2 + i).Style.WrapText = true;
@@ -468,6 +629,12 @@ namespace VueExample.Controllers
                     } 
                 }
             }
+
+            commonWorksheet.Cells[1, 1, currentCursor - 1, 5].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+            commonWorksheet.Cells[1, 1, currentCursor - 1, 5].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+            commonWorksheet.Cells[1, 1, currentCursor - 1, 5].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+            commonWorksheet.Cells[1, 1, currentCursor - 1, 5].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            
             return package;
         }
     }
