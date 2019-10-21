@@ -125,7 +125,7 @@ namespace VueExample.Controllers
             row13.ElementName = "TC14";
             row13.OperationNumber = "570.00.00";
             row13.StageName = "Снятие рабочей пластины с пластины-носителя";
-            row13.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_2", Lower = 480, Upper = 720, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq"});
+            row13.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_2", Lower = 480, Upper = 720, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR2_1sq"});
 
             var row15 = new KurbatovXLSViewModel();
             row15.ElementName = "TC20";
@@ -266,7 +266,7 @@ namespace VueExample.Controllers
             row13.ElementName = "TC14";
             row13.OperationNumber = "560.00.00";
             row13.StageName = "Снятие рабочей пластины с пластины-носителя";
-            row13.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_2", Lower = 485, Upper = 715, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR1_1sq"});
+            row13.parameters.Add(new KurbatovParameter{ParameterName = "Rtfr_2", Lower = 485, Upper = 715, DividerId = 1, RussianParameterName="Удельное поверхностное сопротивление тонкопленочного резистора, Ом/кв", ParameterNameStat="TFR2_1sq"});
 
             var row14 = new KurbatovXLSViewModel();
             row14.ElementName = "TC19";
