@@ -194,17 +194,48 @@ export default {
           freakDividerParameters: ["r<sub>DS(on)</sub> (сопротивление открытого канала при Uси = 0.02В)", "R<sub>ds(on)</sub> (сопротивление открытого канала)"],
           defaultRequiredMessage : "Введите значение",
           deleteParameterDialog: false,
-          e1: 0
+          measurementRecordings: [],
+          e1: 0,
+         
       }    
     },
 
-    props: ['waferId', 'key', 'parameters', 'dividers', 'operation', 'element'],  
+    props: ['key', 'parameters', 'dividers', 'operation', 'element'],  
 
     computed: {
         isElementReady: function() { return (this.parameters.length > 0 && this.validateElement()) }        
     },
 
     methods: {        
+        async getAutoIdmr(waferId, stageName) {
+            await this.$http.get(`api/measurementrecording/getbyelement?waferId=${waferId}&elementName=${this.element.name}&stageName=${stageName}`)
+                .then((response) => {
+                    let data = response.data
+                    if(response.status === 200) {                               
+                        this.measurementRecordings = data
+                        this.parameters.forEach(parameter => {
+                            const currentMr = this.measurementRecordings.find(x => x.avStatisticParameters.includes(parameter.selectedStatParameter))
+                            console.log(currentMr)
+                            if(currentMr) {
+                                parameter.statParameterArray = currentMr.avStatisticParameters
+                                if(!parameter.selectedStatParameter)
+                                    parameter.selectedStatParameter = parameter.statParameterArray[0]
+                                parameter.waferId = waferId
+                                parameter.measurementRecording.id = currentMr.id
+                                parameter.measurementRecording.name = currentMr.name.split('.')[1]
+                                parameter.shortLink.success = true
+                                parameter.shortLink.errorMessage = ""
+                            }                         
+                        })
+                    } else {
+                       
+                    }
+                })
+                .catch((error) => {
+                   
+                });  
+        },
+
         createParameter() {
             const parameter = {
                 parameterName: {value: "", isValidDirty: false, isValid: true},

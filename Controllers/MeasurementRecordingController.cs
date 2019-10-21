@@ -1,9 +1,13 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Models.SRV6;
 using VueExample.Providers.Srv6;
 using VueExample.Providers.Srv6.Interfaces;
+using VueExample.StatisticsCore.Abstract;
+using VueExample.ViewModels;
 
 namespace VueExample.Controllers
 {
@@ -13,9 +17,11 @@ namespace VueExample.Controllers
     {
         MeasurementRecordingService measurementRecordingService = new MeasurementRecordingService();
         private readonly IElementService _elementService;
-        public MeasurementRecordingController(IElementService elementService)
+        private readonly IExportProvider _exportProvider;
+        public MeasurementRecordingController(IElementService elementService, IExportProvider exportProvider)
         {
             _elementService = elementService;
+            _exportProvider = exportProvider;
         }
 
         [HttpGet]
@@ -35,14 +41,22 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(MeasurementRecording), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<MeasurementRecordingViewModel>), StatusCodes.Status200OK)]
         [Route("getbyelement")]
         public async Task<IActionResult> GetByWaferIdAndStageNameAndElementName([FromQuery] string waferId, [FromQuery] string stageName, [FromQuery] string elementName)
         {
             var element = await _elementService.GetByNameAndWafer(elementName, waferId);
+            var mrList = new List<MeasurementRecordingViewModel>();
             if(element is null)
                 return BadRequest();
-            return Ok(measurementRecordingService.GetByWaferIdAndStageNameAndElementId(waferId, stageName, element.ElementId));
+            var measurementRecordingsList = measurementRecordingService.GetByWaferIdAndStageNameAndElementId(waferId, stageName, element.ElementId);
+            foreach (var measurementRecording in measurementRecordingsList)
+            {
+                mrList.Add(new MeasurementRecordingViewModel {Id = measurementRecording.Id, 
+                                                              Name = measurementRecording.Name, 
+                                                              avStatisticParameters = await _exportProvider.GetStatisticsNameByMeasurementId(measurementRecording.Id)});
+            }
+            return Ok(mrList);
         }
 
 

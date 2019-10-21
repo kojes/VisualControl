@@ -29,7 +29,7 @@
                         <v-text-field v-model="waferId" :error-messages="waferId ? [] : 'Введите название пластины'" 
                             label="Номер пластины"
                         ></v-text-field>
-                         <v-btn color="primary" outline @click="fill">Заполнить шаблон</v-btn>
+                         <v-btn color="primary" outline @click="getAutoIdmr()">Заполнить шаблон</v-btn>
                        </v-card-text>                    
                     </v-card>
                 </v-menu>
@@ -61,7 +61,7 @@
                         :step="index + 1">
                         <v-card>
                             <v-card-text>
-                               <export-element :waferId="waferId" :key.sync="element.key" :parameters.sync="element.parameters" :dividers="dividers" 
+                               <export-element :ref="element.key" :key.sync="element.key" :parameters.sync="element.parameters" :dividers="dividers" 
                                                :operation.sync="element.operation" :element.sync="element.element" 
                                                :done.sync="element.done"></export-element>
                             </v-card-text>
@@ -155,6 +155,14 @@ export default {
     },
     methods:
     {
+       async getAutoIdmr()
+       {
+           this.elements.forEach(e => {
+               const {key, stageName} = e
+               this.$refs[key][0].getAutoIdmr(this.waferId, stageName)
+           })
+           
+       },
        async exportK() {
             const response = await this.$http({
                 method: "post",
