@@ -29,7 +29,7 @@
                         <v-text-field v-model="waferId" :error-messages="waferId ? [] : 'Введите название пластины'" 
                             label="Номер пластины"
                         ></v-text-field>
-                         <v-btn color="primary" outline @click="">Заполнить шаблон</v-btn>
+                         <v-btn color="primary" outline @click="fill">Заполнить шаблон</v-btn>
                        </v-card-text>                    
                     </v-card>
                 </v-menu>
