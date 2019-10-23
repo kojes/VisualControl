@@ -33,7 +33,6 @@
                         <template v-for="(parameter, index) in parameters">
                             <v-stepper-step 
                                 :key="`${parameter}-step`"
-                                :complete="parameter.done"
                                 :step="index + 1"
                                 color="indigo"
                                 editable>
@@ -59,7 +58,7 @@
                                                             @change="validateParameter(parameter)" outline label="Буквенное обозначение:">
                                             </v-text-field>
                                         </v-flex>
-                                        <v-flex lg8 offset-lg1>
+                                        <v-flex lg6 offset-lg1>
                                             <v-text-field   v-model="parameter.russianParameterName.value" 
                                                             :error-messages="parameter.russianParameterName.isValidDirty 
                                                                              &&!parameter.russianParameterName.isValid 
@@ -67,7 +66,17 @@
                                                                              : []" 
                                                             @change="validateParameter(parameter)" outline label="Наименование:">
                                             </v-text-field>
-                                        </v-flex>           
+                                        </v-flex>          
+                                        <v-flex lg1 offset-lg1>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-btn outline fab dark small color="primary" v-on="on" @click="cleanParameter(parameter)">
+                                                        <v-icon dark color="primary">autorenew</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                            <span>Очистить параметр</span>
+                                        </v-tooltip>   
+                                        </v-flex>
                                     </v-layout>
                                     <v-layout row v-if="!parameter.shortLink.success">
                                         <v-flex lg3>
@@ -79,22 +88,35 @@
                                     </v-layout>
                                     <v-layout row v-else>
                                         <v-flex lg3>
-                                            <p>Номер пластины: {{parameter.waferId}}</p>
-                                            <p>Название операции: {{parameter.measurementRecording.name}}</p>
+                                            <v-text-field v-model="parameter.waferId" 
+                                                          readonly label="Номер пластины:">
+                                            </v-text-field>                                     
                                         </v-flex>
                                         <v-flex lg8 offset-lg1>
                                             <v-select   v-model="parameter.selectedStatParameter"
                                                         :items="parameter.statParameterArray"
                                                         no-data-text="Нет данных"
                                                         outline
-                                                        v-on:change="changeDividerId(parameter)"
                                                         label="Выберите параметр:">
                                             </v-select>
                                         </v-flex>
                                     </v-layout>
                                     <v-layout row v-if="parameter.shortLink.success">
                                         <v-flex lg3>
-                                           
+                                             <v-select  v-if="measurementRecordings.length > 1" v-model="parameter.measurementRecording"
+                                                        :items="measurementRecordings"
+                                                        no-data-text="Нет данных"
+                                                        item-value="id"
+                                                        item-text="name"
+                                                        outline
+                                                        v-on:change="changeMeasurementRecording(parameter)"
+                                                        label="Выберите номер операции:">
+                                            </v-select>
+
+                                             <v-text-field v-else :value="measurementRecordings.length ? measurementRecordings.find(x => x.id === parameter.measurementRecording).name : ''" 
+                                                           readonly label="Номер операции:">
+                                            </v-text-field>
+                                             <p>ID операции: {{parameter.measurementRecording}}</p>
                                         </v-flex>
                                          <v-flex lg3 offset-lg1>
                                             <v-select   v-model="parameter.dividerId"
@@ -196,6 +218,7 @@ export default {
           deleteParameterDialog: false,
           measurementRecordings: [],
           e1: 0,
+          done: 'loading'
          
       }    
     },
@@ -211,29 +234,36 @@ export default {
             await this.$http.get(`api/measurementrecording/getbyelement?waferId=${waferId}&elementName=${this.element.name}&stageName=${stageName}`)
                 .then((response) => {
                     let data = response.data
-                    if(response.status === 200) {                               
+                    if(response.status === 200) {       
+                                           
                         this.measurementRecordings = data
                         this.parameters.forEach(parameter => {
                             const currentMr = this.measurementRecordings.find(x => x.avStatisticParameters.includes(parameter.selectedStatParameter))
-                            console.log(currentMr)
                             if(currentMr) {
                                 parameter.statParameterArray = currentMr.avStatisticParameters
                                 if(!parameter.selectedStatParameter)
-                                    parameter.selectedStatParameter = parameter.statParameterArray[0]
+                                    parameter.selectedStatParameter = parameter.statParameterArrapy[0]
                                 parameter.waferId = waferId
-                                parameter.measurementRecording.id = currentMr.id
-                                parameter.measurementRecording.name = currentMr.name.split('.')[1]
+                                parameter.measurementRecording = currentMr.id
                                 parameter.shortLink.success = true
                                 parameter.shortLink.errorMessage = ""
                             }                         
                         })
-                    } else {
                        
-                    }
+                        this.$store.commit("exportkurb/updateElementAutoIdmr", {key: this.key, operation: this.operation.number, element: this.element.name, done: 'success'});
+                       
+                    } 
                 })
                 .catch((error) => {
-                   
+                    this.$store.commit("exportkurb/updateElementAutoIdmr", {key: this.key, operation: this.operation.number, element: this.element.name, done: 'fail'});
                 });  
+        },
+
+        cleanParameter(parameter) {
+            parameter.waferId = ""
+            parameter.measurementRecording = 0
+            parameter.statParameterArray = []
+            parameter.shortLink = {value: "", success: "", errorMessage: ""}
         },
 
         createParameter() {
@@ -249,7 +279,6 @@ export default {
                 divider: "1.0",         
                 statParameterArray: [],
                 shortLink: {value: "", success: "", errorMessage: ""},
-                done: false
             }
             this.parameters.push(parameter)
             this.e1++
@@ -329,18 +358,17 @@ export default {
             await this.$http.get(`api/shortlink/${generatedId}/element-export`)
                 .then((response) => {
                     let data = response.data;              
-                    if(response.status === 200) {                               
-                        parameter.statParameterArray = data.statisticNameList
+                    if(response.status === 200) {     
+                        this.measurementRecordings = data  
+                        let currentMeasurementRecording = this.measurementRecordings[0];                        
+                        parameter.statParameterArray = currentMeasurementRecording.avStatisticParameters
                         if(!parameter.selectedStatParameter)
                             parameter.selectedStatParameter = parameter.statParameterArray[0]
-                        parameter.waferId = data.waferId
-                        parameter.measurementRecording.id = data.measurementRecordingId
+                        parameter.waferId = currentMeasurementRecording.waferId
+                        parameter.measurementRecording = currentMeasurementRecording.id
                         parameter.shortLink.success = true
                         parameter.shortLink.errorMessage = ""
-                        this.$http
-                            .get(`api/measurementrecording/${parameter.measurementRecording.id}`)
-                            .then(response => {parameter.measurementRecording.name = response.data.name.split('.')[1]})
-                            .catch(error => {});
+                       
                     }
                     else {
                         parameter.shortLink.success = false;
@@ -357,6 +385,11 @@ export default {
                                 ? (1/(this.dividers.find(_ => _.id == parameter.dividerId).dividerK)).toFixed(3) 
                                 : (+this.dividers.find(_ => _.id == parameter.dividerId).dividerK).toFixed(3)
         },
+
+        changeMeasurementRecording(parameter) {
+            parameter.statParameterArray = this.measurementRecordings.filter(x => x.id == parameter.measurementRecording)[0].avStatisticParameters
+        },
+
         nextStep (n) {       
             if (n === this.parameters.length) {
                 this.e1 = 1

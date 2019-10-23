@@ -1,7 +1,8 @@
 export const exportkurb = {
   namespaced: true,
   state: {
-    elementsReady: []
+    elementsReady: [],
+    elementsAutoIdmr: []
   },
 
   getters: {
@@ -11,10 +12,28 @@ export const exportkurb = {
     isThisElementisReady: state => key => {
       const thisElement = state.elementsReady.find(_ => _.key === key)
       return thisElement && thisElement.ready
+    },
+    elementsAutoIdmrStatus: state => {
+       return state.elementsAutoIdmr
     }
   },
 
   mutations: {
+    initAutoIdmr(state, payload) {
+        state.elementsAutoIdmr = payload.elements
+    },
+
+    clearAutoIdmr(state) {
+       state.elementsAutoIdmr = []
+    },
+
+    updateElementAutoIdmr(state, payload) {
+      const element = state.elementsAutoIdmr.find(_ => _.key === payload.key);
+      if (element) {
+        element.done = payload.done;
+      }
+    
+    },
     updateElementsReady(state, payload) {
       const element = state.elementsReady.find(_ => _.key === payload.key);
       if (element) {

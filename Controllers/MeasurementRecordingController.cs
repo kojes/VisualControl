@@ -48,15 +48,16 @@ namespace VueExample.Controllers
             var element = await _elementService.GetByNameAndWafer(elementName, waferId);
             var mrList = new List<MeasurementRecordingViewModel>();
             if(element is null)
-                return BadRequest();
+                return (IActionResult)NotFound();
             var measurementRecordingsList = measurementRecordingService.GetByWaferIdAndStageNameAndElementId(waferId, stageName, element.ElementId);
             foreach (var measurementRecording in measurementRecordingsList)
             {
                 mrList.Add(new MeasurementRecordingViewModel {Id = measurementRecording.Id, 
                                                               Name = measurementRecording.Name, 
+                                                              WaferId = waferId,
                                                               avStatisticParameters = await _exportProvider.GetStatisticsNameByMeasurementId(measurementRecording.Id)});
             }
-            return Ok(mrList);
+            return mrList.Count == 0 ? (IActionResult)NotFound() : Ok(mrList);
         }
 
 

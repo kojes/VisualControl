@@ -6,6 +6,7 @@ namespace VueExample.ViewModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string WaferId { get; set; }
         public List<string> avStatisticParameters { get; set; } = new List<string>();
     }
 }
