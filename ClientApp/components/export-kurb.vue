@@ -165,16 +165,29 @@ export default {
     },
     methods:
     {
-       async getAutoIdmr()
-       {
+       async getAutoIdmr() {
+           
            this.$store.commit("exportkurb/clearAutoIdmr")
            this.dialog = true
            this.$store.commit("exportkurb/initAutoIdmr", {elements: this.elements.map(function(e) {return {key: e.key, operation: e.operation.number, element: e.element.name, done: 'loading'}})})
            this.elements.forEach(e => {
                const {key, stageName} = e
+               e.operation.waferId = this.waferId
                this.$refs[key][0].getAutoIdmr(this.waferId, stageName)
            })
+           await this.getAvStages(this.waferId, this.elements)           
            
+       },
+
+       async getAvStages(waferId, elements) {
+        await   this.$http
+                .get(`/api/stage/GetStagesByWaferId?waferId=${waferId}`)
+                .then(response => {
+                    elements.forEach(e => e.operation.avStages = response.data)
+                })
+                .catch((error) => {
+                            
+                });
        },
        async exportK() {
             const response = await this.$http({
@@ -265,7 +278,7 @@ export default {
                     return pVm
                                        
                 })  
-                x.operation = {number: x.operationNumber, errorMessage: "Введите номер операции"},
+                x.operation = {number: x.operationNumber, waferId: "", stageName: x.stageName, avStages: [], errorMessage: "Введите номер операции"},
                 x.element = {name: x.elementName, isAddedToCommonWorksheet: x.isAddedToCommonWorksheet, errorMessage: "Введите название элемента"},                
                 x.key = `f${(~~(Math.random()*1e8)).toString(16)}`
                 delete x.operationNumber

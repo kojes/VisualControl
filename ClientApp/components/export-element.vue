@@ -17,13 +17,60 @@
                 <v-btn v-if="!isElementReady" large outline color="pink">Элемент заполнен некорректно</v-btn>
                 <v-btn v-else large outline color="green" >Элемент заполнен корректно</v-btn>       
             </v-flex>
-             <v-flex lg2 offset-lg2>
-                <v-switch
-                    v-model="element.isAddedToCommonWorksheet"
-                    color='primary'
-                    :label="element.isAddedToCommonWorksheet ? `Элемент будет добавлен в сводную таблицу` : `Элемент не будет добавлен в сводную таблицу`"
-                ></v-switch>  
+             <v-flex lg1 offset-lg2>                
+                <v-menu
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :nudge-width="300"
+                    offset-x>                
+                     <template v-slot:activator="{ on }">
+                        <v-btn outline fab dark small color="primary" v-on="on">
+                            <v-icon dark color="primary">perm_data_setting</v-icon>
+                        </v-btn>                    
+                    </template>
+                    <v-card>      
+                       <v-card-text>
+                        <v-layout row>
+                            <v-switch
+                                v-model="element.isAddedToCommonWorksheet"
+                                color='primary'
+                                :label="element.isAddedToCommonWorksheet ? `Включить в сводную таблицу` : `Не включать в сводную таблицу`">
+                            </v-switch>
+                        </v-layout>  
+                         <v-layout row>
+                           <v-flex lg11 offset-lg1>
+                                <v-text-field v-model="operation.waferId" label="Номер пластины:" readonly>
+                                </v-text-field>     
+                           </v-flex>                   
+                        </v-layout>
+                         <v-layout row>                          
+                            <v-flex  lg11 offset-lg1>
+                                <v-textarea v-if="operation.avStages.length === 0" v-model="operation.stageName" label="Название этапа:" readonly no-resize>
+                                </v-textarea>  
+                                <v-select v-else v-model="operation.stageName"
+                                                  :items="operation.avStages"
+                                                  no-data-text="Нет данных"
+                                                  item-value="stageName"
+                                                  item-text="stageName"
+                                                  outline
+                                                  label="Выберите параметр:">
+                                </v-select>     
+                            </v-flex>                                                         
+                         </v-layout>
+                       </v-card-text>                    
+                    </v-card>
+                </v-menu>                 
             </v-flex>   
+             <v-flex lg1>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                            <v-btn outline fab dark small color="primary" v-on="on" @click="getAutoIdmrSingle()">
+                                <v-icon dark color="primary">brightness_auto</v-icon>
+                            </v-btn>
+                    </template>
+                    <span>Автозаполнение</span>
+                </v-tooltip>   
+             </v-flex>
                
          </v-layout>
          <v-layout row>
@@ -242,7 +289,7 @@ export default {
                             if(currentMr) {
                                 parameter.statParameterArray = currentMr.avStatisticParameters
                                 if(!parameter.selectedStatParameter)
-                                    parameter.selectedStatParameter = parameter.statParameterArrapy[0]
+                                    parameter.selectedStatParameter = parameter.statParameterArray[0]
                                 parameter.waferId = waferId
                                 parameter.measurementRecording = currentMr.id
                                 parameter.shortLink.success = true
