@@ -89,9 +89,34 @@
                <v-card>
                     <v-card-title class="headline">Экспорт</v-card-title>
                     <v-card-text>
-                        <v-text-field v-model="filename" :error-messages="filename ? [] : 'Введите название файла'" 
-                            label="Введите имя файла"
-                        ></v-text-field>
+                        <v-layout row>
+                            <v-flex lg10 offset-lg1>
+                                <v-text-field v-model="waferId" :error-messages="waferId ? [] : 'Введите номер пластины'" 
+                                    label="Введите номер пластины"
+                                ></v-text-field>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout row>
+                            <v-flex lg10 offset-lg1>
+                                <v-text-field v-model="mslNumber" :error-messages="mslNumber ? [] : 'Введите номер МСЛ'" 
+                                    label="Введите номер МСЛ"
+                                ></v-text-field>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout row>
+                            <v-flex lg10 offset-lg1>
+                                <v-text-field v-model="currentDate" readonly 
+                                    label="Текущая дата"
+                                ></v-text-field>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout row>
+                            <v-flex lg10 offset-lg1>
+                                <v-text-field v-model="filename" :error-messages="filename ? [] : 'Введите название файла'" 
+                                    label="Введите имя файла"
+                                ></v-text-field>
+                            </v-flex>
+                        </v-layout>
                     </v-card-text>
                     <v-spacer></v-spacer>
                     <v-card-actions>
@@ -132,6 +157,7 @@ export default {
         return {
            e1: 0,
            waferId: "E906",
+           mslNumber: "",
            filename: "",
            elements: [],
            patterns: ["Пустой", "PHEMT05_СМКК", "PHEMT05_ВП"],
@@ -149,17 +175,25 @@ export default {
     },
     computed:
     {
-         readyToExport: function () {     
+        readyToExport: function () {     
            return this.$store.getters['exportkurb/isReadyForExport']
+        },
+        currentDate: function () {
+            let today = new Date()
+            let dd = String(today.getDate()).padStart(2, '0')
+            let mm = String(today.getMonth() + 1).padStart(2, '0')
+            let yyyy = today.getFullYear()
+            return dd + '.' + mm + '.' + yyyy  
         }
+
     },
     methods:
     {
-       async exportK() {
+        async exportK() {
             const response = await this.$http({
                 method: "post",
                 url: `/api/export/create-kurb`, 
-                data: {kurbatovXLSViewModelList: this.mapElementsToElementsVM()}, 
+                data: { waferId: this.waferId, mslNumber: this.mslNumber, date: this.currentDate, kurbatovXLSViewModelList: this.mapElementsToElementsVM()}, 
                 responseType: 'blob',
                 config: {
                     headers: {
