@@ -25,27 +25,39 @@ namespace VueExample.Contexts
         public DbSet<StatParameterForStage> StatParametersForStage { get; set; }
 
         protected override void OnModelCreating (ModelBuilder modelBuilder) {
-            modelBuilder.Entity<DieTypeElement> ()
-                .HasKey (t => new { t.DieTypeId, t.ElementId });
-                modelBuilder.Entity<DieTypeCodeProduct> ()
-                .HasKey (t => new { t.DieTypeId, t.CodeProductId});
+            modelBuilder.Entity<DieTypeElement>()
+                .HasKey(t => new { t.DieTypeId, t.ElementId });
+            
+            modelBuilder.Entity<DieTypeCodeProduct>()
+                .HasKey(t => new { t.DieTypeId, t.CodeProductId});
 
-            modelBuilder.Entity<DieTypeElement> ()
-                .HasOne (pt => pt.DieType)
-                .WithMany (p => p.DieTypeElements)
-                .HasForeignKey (pt => pt.DieTypeId);
+            modelBuilder.Entity<MeasurementRecordingElement>()
+                .HasKey(t => new { t.ElementId, t.MeasurementRecordingId});
+
+            modelBuilder.Entity<DieTypeElement>()
+                .HasOne(pt => pt.DieType)
+                .WithMany(p => p.DieTypeElements)
+                .HasForeignKey(pt => pt.DieTypeId);
+
+            modelBuilder.Entity<MeasurementRecordingElement>()
+                .HasOne(pt => pt.Element)
+                .WithMany(p => p.MeasurementRecordingElements)
+                .HasForeignKey(pt => pt.ElementId);
+            
+            modelBuilder.Entity<MeasurementRecordingElement> ()
+                .HasOne(pt => pt.MeasurementRecording)
+                .WithMany(p => p.MeasurementRecordingElements)
+                .HasForeignKey(pt => pt.MeasurementRecordingId);             
+
+            modelBuilder.Entity<DieTypeCodeProduct>()
+                .HasOne(pt => pt.CodeProduct)
+                .WithMany(p => p.DieTypeCodeProducts)
+                .HasForeignKey(pt => pt.CodeProductId);
                 
-
-            modelBuilder.Entity<DieTypeCodeProduct> ()
-                .HasOne (pt => pt.CodeProduct)
-                .WithMany (p => p.DieTypeCodeProducts)
-                .HasForeignKey (pt => pt.CodeProductId);
-
-
-             modelBuilder.Entity<DieTypeCodeProduct> ()
-                .HasOne (pt => pt.DieType)
-                .WithMany (p => p.DieTypeCodeProducts)
-                .HasForeignKey (pt => pt.DieTypeId);
+            modelBuilder.Entity<DieTypeCodeProduct>()
+                .HasOne(pt => pt.DieType)
+                .WithMany(p => p.DieTypeCodeProducts)
+                .HasForeignKey(pt => pt.DieTypeId);
         }
         protected override void OnConfiguring (DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseSqlServer (@"data source = SRV6\SRV3; Initial Catalog = db_process; persist security info = True; user id = labuser; password = zxvitr78KK; MultipleActiveResultSets = True;");

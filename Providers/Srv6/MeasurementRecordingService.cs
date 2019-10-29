@@ -11,7 +11,7 @@ namespace VueExample.Providers.Srv6
 {
     public class MeasurementRecordingService : RepositorySRV6<MeasurementRecording>
     {
-        public List<MeasurementRecording> GetByWaferId (string waferId)
+        public List<MeasurementRecording> GetByWaferId(string waferId)
         {
             var measurementRecordingsList = new List<MeasurementRecording>();
             using (Srv6Context srv6Context = new Srv6Context())

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VueExample.Contexts;
 using VueExample.Models;
 using VueExample.Repository;
@@ -15,9 +17,6 @@ namespace VueExample.Providers
                 return srv6Context.Stages.Where(x => x.ProcessId == processId && x.CodeProductId == null).ToList();
             }
         }
-
-        
-
-       
+            
     }
 }

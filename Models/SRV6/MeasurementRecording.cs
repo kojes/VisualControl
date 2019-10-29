@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace VueExample.Models.SRV6
 {
@@ -15,6 +12,6 @@ namespace VueExample.Models.SRV6
         public string Name { get; set; }
         [Column("id_stage")]
         public int? StageId { get; set; }
-
+        public ICollection<MeasurementRecordingElement> MeasurementRecordingElements { get; set; }
     }
 }

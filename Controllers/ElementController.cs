@@ -19,5 +19,13 @@ namespace VueExample.Controllers
             var element = await _elementService.GetByNameAndWafer(name, waferId);
             return Ok(element);
         }
+
+        [HttpGet]
+        [Route("getbyidmr")]
+        public async Task<IActionResult> GetByIdmr([FromQuery] int idmr)
+        {
+            var elementList = await _elementService.GetByIdmr(idmr);
+            return elementList.Count > 0 ? Ok(elementList) : (IActionResult)NotFound();           
+        }
     }
 }

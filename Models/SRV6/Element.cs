@@ -11,5 +11,6 @@ namespace VueExample.Models.SRV6
         [Column("Name")]
         public string Name { get; set; }
         public ICollection<DieTypeElement> DieTypeElements { get; set; }
+        public ICollection<MeasurementRecordingElement> MeasurementRecordingElements { get; set; }
     }
 }
