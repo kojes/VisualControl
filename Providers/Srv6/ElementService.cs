@@ -7,11 +7,28 @@ using VueExample.Models.SRV6;
 using VueExample.Providers.Srv6.Interfaces;
 using System.Collections.Generic;
 using VueExample.ResponseObjects;
+using VueExample.ViewModels;
 
 namespace VueExample.Providers.Srv6
 {
     public class ElementService : IElementService
     {
+        public Task<StandardResponseObject> AddToDieType(int elementId, int dieTypeId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<AfterDbManipulationObject<Element>> Create(ElementViewModel elementViewModel)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<AfterDbManipulationObject<Element>> Update(ElementViewModel elementViewModel)
+        {
+            throw new System.NotImplementedException();
+        }
+
+
         public async Task<List<Element>> GetByDieType(int dieTypeId)
         {
              using (Srv6Context db = new Srv6Context())
@@ -69,6 +86,7 @@ namespace VueExample.Providers.Srv6
              }
         }
 
+       
         public async Task<Element> UpdateElementOnIdmr(int measurementRecordingId, int newElementId)
         {
             using (Srv6Context db = new Srv6Context())

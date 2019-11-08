@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VueExample.Models.SRV6;
 using VueExample.ResponseObjects;
@@ -9,6 +10,7 @@ namespace VueExample.Providers.Srv6.Interfaces
     {
         Task<AfterDbManipulationObject<DieType>> Create(DieTypeViewModel dieTypeViewModel);
         Task<AfterDbManipulationObject<DieType>> Update(DieTypeViewModel dieTypeViewModel);
-        
+        Task<StandardResponseObject> UpdateCodeProductsMap(int dieTypeId, IList<int> codeProductsIdList);
+
     }
 }

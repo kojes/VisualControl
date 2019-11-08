@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VueExample.Contexts;
 using VueExample.Models;
 
@@ -15,11 +17,11 @@ namespace VueExample.Providers
             }
         }
 
-        public List<Process> GetAll() 
+        public async Task<List<Process>> GetAll() 
         {
             using (Srv6Context srv6Context = new Srv6Context())
             {
-                return srv6Context.Processes.ToList();
+                return await srv6Context.Processes.ToListAsync();
             }   
         }
     }

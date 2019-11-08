@@ -7,13 +7,17 @@
                     Создание нового монитора
                 </v-tab>
                 <v-tab-item key="create">
-                    
+                    <v-card>
+                        <create></create>
+                    </v-card>
                 </v-tab-item>
                 <v-tab key="edit">
                     Редактирование монитора
                 </v-tab>
                 <v-tab-item key="edit">
-                    <
+                    <v-card>
+                        <update></update>
+                    </v-card>
                 </v-tab-item>
             </v-tabs>
         </v-flex>
@@ -22,7 +26,20 @@
 </template>
 
 <script>
+    import DieTypeCreate from './dietype-create.vue';
+    import DieTypeUpdate from './dietype-update.vue';
+  
     export default {
-        
+        data() {
+            return {
+
+            }
+        },
+
+        components:
+        {
+            "create": DieTypeCreate,
+            "update": DieTypeUpdate           
+        }
     }
 </script>

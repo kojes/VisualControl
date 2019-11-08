@@ -21,6 +21,7 @@ namespace VueExample.Contexts
         public DbSet<Graphic> Graphics { get; set; }
         public DbSet<DieParameterOld> DiesParameterOld { get; set; }
         public DbSet<Entities.DieTypeElement> DieTypeElements{ get; set; }
+        public DbSet<DieTypeCodeProduct> DieTypeCodeProducts { get; set; }
         public DbSet<MeasurementRecordingElement> MeasurementRecordingElements {get; set;}
         public DbSet<FkMrP> FkMrPs { get; set; }
         public DbSet<ShortLinkEntity> ShortLinkEntities { get; set; }

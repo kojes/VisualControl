@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VueExample.Models.SRV6;
 using VueExample.Providers.Srv6.Interfaces;
@@ -14,6 +15,11 @@ namespace VueExample.Providers.Srv6
         }
 
         public Task<AfterDbManipulationObject<DieType>> Update(DieTypeViewModel dieTypeViewModel)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<StandardResponseObject> UpdateCodeProductsMap(int dieTypeId, IList<int> codeProductsIdList)
         {
             throw new System.NotImplementedException();
         }
