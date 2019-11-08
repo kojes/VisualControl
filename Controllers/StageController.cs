@@ -31,6 +31,13 @@ namespace VueExample.Controllers
             
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetStagesByWaferId([FromQuery(Name = "waferId")] string waferId) 
+        {
+            var stageList = await stageProvider.GetStagesByWaferId(waferId); 
+            return stageList.Count > 0 ? Ok(stageList) : (IActionResult)NotFound();
+        }
+
         
 
         [HttpGet]

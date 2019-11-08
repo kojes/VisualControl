@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using VueExample.Contexts;
 using VueExample.Models;
@@ -13,6 +14,14 @@ namespace VueExample.Providers
             {
                 var wafer = applicationContext.Wafers.FirstOrDefault(x => x.WaferId == waferId);
                 return wafer != null ? applicationContext.CodeProducts.Find(wafer.CodeProductId) : null;
+            }
+        }
+
+        public List<CodeProduct> GetByProcessId(int processId) 
+        {
+            using (var applicationContext = new Srv6Context())
+            {
+                return applicationContext.CodeProducts.Where(x => x.ProcessId == processId).ToList();
             }
         }
     }

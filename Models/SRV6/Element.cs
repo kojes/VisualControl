@@ -10,7 +10,6 @@ namespace VueExample.Models.SRV6
         public int ElementId {get; set; }
         [Column("Name")]
         public string Name { get; set; }
-        public ICollection<DieTypeElement> DieTypeElements { get; set; }
         public ICollection<MeasurementRecordingElement> MeasurementRecordingElements { get; set; }
     }
 }

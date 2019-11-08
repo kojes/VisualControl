@@ -34,26 +34,48 @@ namespace VueExample.Controllers
             return Ok(measurementRecordingService.GetByWaferId(waferId));
         }
 
-        [HttpGet]
-        [ProducesResponseType(typeof(List<MeasurementRecordingWithStageAndElementViewModel>), StatusCodes.Status200OK)]
-        [Route("getbywaferidwithoutstage")]
-        public async Task<IActionResult> GetMeasurementRecordingsByWaferIdWithoutStage([FromQuery] string waferId)
+        [HttpPost]
+        [ProducesResponseType(typeof(MeasurementRecording), StatusCodes.Status200OK)]
+        [Route("update-stage")]
+        public async Task<IActionResult> UpdateStage([FromBody] StageMeasurementRecordingChunkViewModel stageMeasurementRecordingChunkViewModel)
         {
-            var measurementRecordingList = measurementRecordingService.GetByWaferId(waferId).Where(x => x.StageId == null);
-            var measurementRecordingViewModelList = new List<MeasurementRecordingWithStageAndElementViewModel>();
+            var measurementRecording = await measurementRecordingService.UpdateStage(stageMeasurementRecordingChunkViewModel.MeasurementRecordingId, 
+                                                                                     stageMeasurementRecordingChunkViewModel.StageId);
+            return Ok(measurementRecording);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(List<StageFullViewModel>), StatusCodes.Status200OK)]
+        [Route("wafer/{waferid}/stage")]
+        public async Task<IActionResult> GetMeasurementRecordingWithStagesByWaferId([FromRoute] string waferId)
+        {
+            var measurementRecordingList = measurementRecordingService.GetByWaferId(waferId).Distinct();
+            var stagesFullViewModelList = new List<StageFullViewModel>();
+            var stagesList = measurementRecordingList.Select(x => x.StageId ?? 0).Distinct().ToList();
+            stagesList.Remove(0);
+            stagesList.Insert(0,0);
+            foreach (var stage in stagesList)
+            {
+                stagesFullViewModelList.Add(new StageFullViewModel{
+                    Id = stage,
+                    Name = stage == 0 ? "Этап не выбран" : (await _stageProvider.GetByIdAsync(stage)).StageName,
+                    MeasurementRecordingList = new List<MeasurementRecordingWithStageAndElementViewModel>()
+                });
+            }
+
             foreach (var measurementRecording in measurementRecordingList)
             {
                 var elementList = await _elementService.GetByIdmr(measurementRecording.Id);
-                measurementRecordingViewModelList.Add(
-                    new MeasurementRecordingWithStageAndElementViewModel  {   
-                        Id = measurementRecording.Id, 
-                        Name = measurementRecording.Name, 
-                        ElementList = elementList.Select(x => _mapper.Map<ElementViewModel>(x)).ToList(), 
-                        Stage = null});
+                var thisStage = stagesFullViewModelList.FirstOrDefault(x => x.Id == (measurementRecording.StageId ?? 0));
+                thisStage.MeasurementRecordingList.Add(new MeasurementRecordingWithStageAndElementViewModel {
+                                                        Id = measurementRecording.Id, 
+                                                        Name = measurementRecording.Name, 
+                                                        Element = elementList.Select(x => _mapper.Map<ElementViewModel>(x)).ToList().FirstOrDefault()});
             }
-            return Ok(measurementRecordingViewModelList);
 
+            return Ok(stagesFullViewModelList);
         }
+      
 
         [HttpGet]
         [ProducesResponseType(typeof(MeasurementRecording), StatusCodes.Status200OK)]

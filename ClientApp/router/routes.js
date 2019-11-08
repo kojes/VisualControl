@@ -10,8 +10,9 @@ import WaferMap from 'components/wafermap-full'
 import SelectBasic from 'components/select-basic'
 import Kurbatov from 'components/export-kurb'
 import VerificationSettings from 'components/verification-settings'
+import IdmrVoc from 'components/idmr-voc'
 import DefectMassiveUploader from 'components/massive-uploader'
-
+import DieTypeSettings from 'components/dietype-settings'
 // Service components
 import LoginPage from 'components/login-page'
 import RegistrationPage from 'components/registration-page'
@@ -33,6 +34,8 @@ export const routes = [
   { name: 'defects', path: '/defects', component: DefectVue, display: 'Просмотр дефектов', nav: true },
   { name: 'wafermeasurement', path: '/wafermeas', component: WaferMeas, display: 'Измерения', nav: true },
   { name: 'kurbatov', path: '/export-kurb', component: Kurbatov, display: 'Экспорт', nav: true }, 
+  { name: 'idmrvoc', path: '/idmr-voc', component: IdmrVoc, display: 'voc', nav: true }, 
+  { name: 'dietypesettings', path: '/dts', component: DieTypeSettings, display: 'dts', nav: true }, 
   //{ name: 'verificationsettings', path: '/vsettings', component: VerificationSettings, display: 'Редактирование параметров испытаний', nav: true }, 
 
   {

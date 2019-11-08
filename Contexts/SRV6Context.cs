@@ -3,6 +3,7 @@ using VueExample.Entities;
 using VueExample.Models;
 using VueExample.Models.SRV6;
 using Graphic = VueExample.Models.SRV6.Graphic;
+using MeasurementRecordingElement = VueExample.Models.SRV6.MeasurementRecordingElement;
 
 namespace VueExample.Contexts
 {
@@ -19,35 +20,17 @@ namespace VueExample.Contexts
         public DbSet<MeasurementRecording> MeasurementRecordings { get; set; }
         public DbSet<Graphic> Graphics { get; set; }
         public DbSet<DieParameterOld> DiesParameterOld { get; set; }
+        public DbSet<Entities.DieTypeElement> DieTypeElements{ get; set; }
+        public DbSet<MeasurementRecordingElement> MeasurementRecordingElements {get; set;}
         public DbSet<FkMrP> FkMrPs { get; set; }
         public DbSet<ShortLinkEntity> ShortLinkEntities { get; set; }
         public DbSet<Divider> Dividers { get; set; }
         public DbSet<StatParameterForStage> StatParametersForStage { get; set; }
 
         protected override void OnModelCreating (ModelBuilder modelBuilder) {
-            modelBuilder.Entity<DieTypeElement>()
-                .HasKey(t => new { t.DieTypeId, t.ElementId });
-            
+           
             modelBuilder.Entity<DieTypeCodeProduct>()
-                .HasKey(t => new { t.DieTypeId, t.CodeProductId});
-
-            modelBuilder.Entity<MeasurementRecordingElement>()
-                .HasKey(t => new { t.ElementId, t.MeasurementRecordingId});
-
-            modelBuilder.Entity<DieTypeElement>()
-                .HasOne(pt => pt.DieType)
-                .WithMany(p => p.DieTypeElements)
-                .HasForeignKey(pt => pt.DieTypeId);
-
-            modelBuilder.Entity<MeasurementRecordingElement>()
-                .HasOne(pt => pt.Element)
-                .WithMany(p => p.MeasurementRecordingElements)
-                .HasForeignKey(pt => pt.ElementId);
-            
-            modelBuilder.Entity<MeasurementRecordingElement> ()
-                .HasOne(pt => pt.MeasurementRecording)
-                .WithMany(p => p.MeasurementRecordingElements)
-                .HasForeignKey(pt => pt.MeasurementRecordingId);             
+                .HasKey(t => new { t.DieTypeId, t.CodeProductId});                
 
             modelBuilder.Entity<DieTypeCodeProduct>()
                 .HasOne(pt => pt.CodeProduct)

@@ -6,6 +6,8 @@ using VueExample.Models.SRV6;
 using VueExample.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlClient;
+using System;
+using System.Threading.Tasks;
 
 namespace VueExample.Providers.Srv6
 {
@@ -42,6 +44,18 @@ namespace VueExample.Providers.Srv6
                  var elementIdSqlParameter = new SqlParameter("elementId", elementId);
                  return srv6Context.MeasurementRecordings.FromSql("EXECUTE select_mr_by_stagename_waferid_elementid @waferId, @elementId, @stageName", waferIdSqlParameter, elementIdSqlParameter, stageNameSqlParameter).ToList();
             }
-        }         
+        }
+
+        public async Task<MeasurementRecording> UpdateStage(int measurementRecordingId, int stageId)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var measurementRecording = await srv6Context.MeasurementRecordings.FirstOrDefaultAsync(x => x.Id == measurementRecordingId);
+                measurementRecording.StageId = stageId;
+                await srv6Context.SaveChangesAsync();
+                return measurementRecording;
+            }
+
+        }
     }
 }
