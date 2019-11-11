@@ -18,38 +18,38 @@
             absolute
             offset-y>
       <v-list>
-        <v-list-tile v-for="(item, index) in menuItems"
+        <v-list-item v-for="(item, index) in menuItems"
                      :key="index"
                      @click="sendToWaferMapFull">
-          <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-        </v-list-tile>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
 
-  <v-bottom-nav v-model="showNav"
+  <v-bottom-navigation v-model="showNav"
                 :active.sync="currentOrientation"
-                color="transparent">
-    <v-btn :value="0" flat color="#fc0">
+                background-color="transparent">
+    <v-btn :value="0" text color="#fc0">
       0°
       
     </v-btn>
 
-    <v-btn :value="90" flat color="#fc0">
+    <v-btn :value="90" text color="#fc0">
       90°
 
     </v-btn>
 
-    <v-btn :value="180" flat color="#fc0">
+    <v-btn :value="180" text color="#fc0">
       180°
      
     </v-btn>
 
-    <v-btn :value="270" flat color="#fc0">
+    <v-btn :value="270" text color="#fc0">
       270°
      
     </v-btn>
     
-  </v-bottom-nav>
+  </v-bottom-navigation>
 
 </v-container>
 </template>

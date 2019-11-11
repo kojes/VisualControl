@@ -17,17 +17,17 @@
 
                 <v-list>
                 <v-divider></v-divider>
-                <v-list-tile v-for="device in devices"
+                <v-list-item v-for="device in devices"
                             :key="device.name">
                 
-                    <v-list-tile-avatar size="100">
+                    <v-list-item-avatar size="100">
                     ID: {{ device.id }}
-                    </v-list-tile-avatar>
+                    </v-list-item-avatar>
                     
-                    <v-list-tile-content>
-                    <v-list-tile-title>{{ device.name }}</v-list-tile-title>
-                    <v-list-tile-sub-title>{{ device.address }}</v-list-tile-sub-title>
-                    </v-list-tile-content>
+                    <v-list-item-content>
+                    <v-list-item-title>{{ device.name }}</v-list-item-title>
+                    <v-list-item-sub-title>{{ device.address }}</v-list-item-sub-title>
+                    </v-list-item-content>
                    
                     <div>
                         <v-tooltip bottom>
@@ -50,7 +50,7 @@
                       
                     </div>
 
-                </v-list-tile>
+                </v-list-item>
                 <v-divider></v-divider>
 
                 </v-list>
@@ -103,8 +103,8 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="grey" flat @click="createDialog = false">Отмена</v-btn>
-                    <v-btn color="green" flat @click="createDevice">Добавить</v-btn>
+                    <v-btn color="grey" text @click="createDialog = false">Отмена</v-btn>
+                    <v-btn color="green" text @click="createDevice">Добавить</v-btn>
                 </v-card-actions>
 
             </v-card>
@@ -136,8 +136,8 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="grey" flat @click="editDialog = false">Отмена</v-btn>
-                    <v-btn color="green" flat @click="editAddress">Изменить адрес</v-btn>
+                    <v-btn color="grey" text @click="editDialog = false">Отмена</v-btn>
+                    <v-btn color="green" text @click="editAddress">Изменить адрес</v-btn>
                 </v-card-actions>
 
             </v-card>
@@ -149,7 +149,7 @@
                   top>
     {{ snackbar.text }}
     <v-btn color="pink"
-           flat
+           text
            @click="snackbar.visible = false">
       Закрыть
     </v-btn>

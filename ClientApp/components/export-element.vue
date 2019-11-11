@@ -176,8 +176,8 @@
                      <v-card-text>Вы действительно хотите удалить текущий параметр?</v-card-text>
                     <v-spacer></v-spacer>
                     <v-card-actions>
-                        <v-btn color="pink" flat @click="deleteParameter()">Удалить</v-btn>
-                        <v-btn color="indigo" flat @click="deleteParameterDialog = false">Отмена</v-btn>
+                        <v-btn color="pink" text @click="deleteParameter()">Удалить</v-btn>
+                        <v-btn color="indigo" text @click="deleteParameterDialog = false">Отмена</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>

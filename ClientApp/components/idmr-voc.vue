@@ -75,7 +75,7 @@
         </v-layout>
         <v-snackbar v-model="snackbar.visible" top>
         {{ snackbar.text }}
-        <v-btn color="pink" flat @click="snackbar.visible = false">Закрыть</v-btn>
+        <v-btn color="pink" text @click="snackbar.visible = false">Закрыть</v-btn>
         </v-snackbar>
         <v-dialog
             v-model="loading"

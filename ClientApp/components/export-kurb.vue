@@ -78,8 +78,8 @@
                     <v-card-text>Вы действительно хотите удалить элемент?</v-card-text>
                     <v-spacer></v-spacer>
                     <v-card-actions>
-                        <v-btn color="pink" flat @click="deleteElement()">Удалить</v-btn>
-                        <v-btn color="indigo" flat @click="deleteDialog = false">Отмена</v-btn>
+                        <v-btn color="pink" text @click="deleteElement()">Удалить</v-btn>
+                        <v-btn color="indigo" text @click="deleteDialog = false">Отмена</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -120,8 +120,8 @@
                     </v-card-text>
                     <v-spacer></v-spacer>
                     <v-card-actions>
-                        <v-btn v-if="filename" color="green" flat @click="exportK()">Сформировать файл</v-btn>
-                        <v-btn color="pink" flat @click="exportDialog = false">Отмена</v-btn>
+                        <v-btn v-if="filename" color="green" text @click="exportK()">Сформировать файл</v-btn>
+                        <v-btn color="pink" text @click="exportDialog = false">Отмена</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>

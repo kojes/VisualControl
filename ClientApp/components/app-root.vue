@@ -7,17 +7,17 @@
                            app>
         <v-toolbar flat class="transparent">
           <v-list>
-            <v-list-tile avatar>
-              <v-list-tile-avatar>
+            <v-list-item avatar>
+              <v-list-item-avatar>
                 <avatar :username="username"
                         :size="40">
                 </avatar>
-              </v-list-tile-avatar>
+              </v-list-item-avatar>
 
-              <v-list-tile-content>
-                <v-list-tile-title>{{username}}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              <v-list-item-content>
+                <v-list-item-title>{{username}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
 
           </v-list>
 
@@ -25,14 +25,14 @@
         <v-divider class="pt-0"></v-divider>
         <v-list v-for="(route, index) in routes.filter(x=>x.nav === true)" :key="index">
 
-          <v-list-tile ripple :to="route.path">
-            <v-list-tile-action>
+          <v-list-item ripple :to="route.path">
+            <v-list-item-action>
               <v-icon>{{route.icon}}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{route.display}}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{route.display}}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
         </v-list>
       </v-navigation-drawer>

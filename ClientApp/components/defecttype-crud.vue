@@ -22,27 +22,27 @@
         <v-list>
           <v-divider></v-divider>
 
-          <v-list-tile v-for="defect in defecttypes"
+          <v-list-item v-for="defect in defecttypes"
                        :key="defect.defectId"
                        >
           
 
-            <v-list-tile-content>
-              <v-list-tile-title v-text="defect.description"></v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="defect.description"></v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-avatar>
               <avatar :username="defect.description"
                       :background-color="defect.color"
                       :size ="30">
               </avatar>
-            </v-list-tile-avatar>
-            <v-list-tile-action>
+            </v-list-item-avatar>
+            <v-list-item-action>
               <v-btn icon ripple @click="openDeleteDialog(defect)">
                 <v-icon color="grey">delete</v-icon>
               </v-btn>
-            </v-list-tile-action>
+            </v-list-item-action>
 
-          </v-list-tile>
+          </v-list-item>
           <v-divider></v-divider>
 
         </v-list>
@@ -78,8 +78,8 @@
           </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="grey" flat @click="dialog = false">Отмена</v-btn>
-          <v-btn color="green" flat @click="addDefect">Сохранить</v-btn>
+          <v-btn color="grey" text @click="dialog = false">Отмена</v-btn>
+          <v-btn color="green" text @click="addDefect">Сохранить</v-btn>
         </v-card-actions>
       
       </v-card>
@@ -97,8 +97,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="grey" flat @click="deleteDialog = false">Отмена</v-btn>
-          <v-btn color="red" flat @click="deleteDefectType">Удалить</v-btn>
+          <v-btn color="grey" text @click="deleteDialog = false">Отмена</v-btn>
+          <v-btn color="red" text @click="deleteDefectType">Удалить</v-btn>
         </v-card-actions>
 
       </v-card>
@@ -110,7 +110,7 @@
               top>
     {{ snackbarText }}
     <v-btn color="pink"
-           flat
+           text
            @click="snackbarVisibility = false">
       Закрыть
     </v-btn>

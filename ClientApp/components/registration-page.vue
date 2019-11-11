@@ -70,7 +70,7 @@
                 top>
       {{ snackbarText }}
       <v-btn color="pink"
-             flat
+             text
              @click="errorSnackbar = false">
         Закрыть
       </v-btn>

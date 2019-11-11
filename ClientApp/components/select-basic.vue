@@ -313,8 +313,8 @@
 
           <v-list style="max-height: 500px" class="scroll-y" two-line>
             <template v-for="item in selectedAtomics">
-              <v-list-tile :key="item.atomicMeasurementId" ripple>
-              <v-list-tile-action>
+              <v-list-item :key="item.atomicMeasurementId" ripple>
+              <v-list-item-action>
               <div v-if="item.isOnline">
                   <span class="ringringOnline"></span>
                   <span class="circleOnline"></span>
@@ -322,15 +322,15 @@
               <div v-else>
                   <span class="circleDead"></span>
               </div>
-              </v-list-tile-action>
+              </v-list-item-action>
             
-                <v-list-tile-content>
-                  <v-list-tile-title>Измерение: {{ item.measurementName }}</v-list-tile-title>
-                  <v-list-tile-sub-title class="text--primary">Прибор: {{ item.deviceName }} Порт: {{ item.portNumber }}</v-list-tile-sub-title>
+                <v-list-item-content>
+                  <v-list-item-title>Измерение: {{ item.measurementName }}</v-list-item-title>
+                  <v-list-item-sub-title class="text--primary">Прибор: {{ item.deviceName }} Порт: {{ item.portNumber }}</v-list-item-sub-title>
                  
-                </v-list-tile-content>
+                </v-list-item-content>
 
-                <v-list-tile-content>
+                <v-list-item-content>
                 
                   <div v-if="item.isOnline">
 
@@ -346,15 +346,15 @@
               
   
             
-              </v-list-tile-content>
+              </v-list-item-content>
 
-                <v-list-tile-action>
+                <v-list-item-action>
                   <v-icon v-if="measurementSets.length > 0 && !measurementSets.find(x => x.measurementSetId === selectedMeasurementSet.id).isGenerated"
                     color="primary"
                     @click="deleteFromSet(item.atomicMeasurementId)"
                   >delete_outline</v-icon>
-                </v-list-tile-action>
-              </v-list-tile>
+                </v-list-item-action>
+              </v-list-item>
             </template>
           </v-list>
         </v-card>
@@ -518,31 +518,31 @@
             <v-card-title><h4>Испытание: {{ props.item.measurementName }}</h4></v-card-title>
             <v-divider></v-divider>
             <v-list dense>
-              <v-list-tile>
-                <v-list-tile-content>Прибор:</v-list-tile-content>
-                <v-list-tile-content class="align-end">Название: {{ props.item.deviceName }} Порт:{{ props.item.portNumber }}</v-list-tile-content>
-              </v-list-tile>           
+              <v-list-item>
+                <v-list-item-content>Прибор:</v-list-item-content>
+                <v-list-item-content class="align-end">Название: {{ props.item.deviceName }} Порт:{{ props.item.portNumber }}</v-list-item-content>
+              </v-list-item>           
               
-              <v-list-tile>
-                <v-list-tile-content>Значение в начале испытания:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.firstValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
+              <v-list-item>
+                <v-list-item-content>Значение в начале испытания:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.firstValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-item-content>
+              </v-list-item>
 
-              <v-list-tile>
-                <v-list-tile-content>Текущее значение:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.lastValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
+              <v-list-item>
+                <v-list-item-content>Текущее значение:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.lastValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-item-content>
+              </v-list-item>
 
 
-               <v-list-tile>
-                <v-list-tile-content>Падение за время испытания:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ parseFloat(props.item.commonDifference).toFixed(6) * -1 }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
+               <v-list-item>
+                <v-list-item-content>Падение за время испытания:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{ parseFloat(props.item.commonDifference).toFixed(6) * -1 }} {{ props.item.graphicUnit }}</v-list-item-content>
+              </v-list-item>
 
-                <v-list-tile>
-                <v-list-tile-content>Изменение в процентах:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ ((parseFloat(props.item.commonDifference) / parseFloat(props.item.firstValue)) * 100).toFixed(2) }} %</v-list-tile-content>
-              </v-list-tile>
+                <v-list-item>
+                <v-list-item-content>Изменение в процентах:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{ ((parseFloat(props.item.commonDifference) / parseFloat(props.item.firstValue)) * 100).toFixed(2) }} %</v-list-item-content>
+              </v-list-item>
            
             </v-list>
           </v-card>
@@ -554,7 +554,7 @@
 
     <v-snackbar v-model="snackbar" top>
       {{ snackbarText }}
-      <v-btn color="pink" flat @click="snackbar = false">Закрыть</v-btn>
+      <v-btn color="pink" text @click="snackbar = false">Закрыть</v-btn>
     </v-snackbar>
 
  

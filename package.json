@@ -43,7 +43,7 @@
     "vue-template-compiler": "^2.6.10",
     "vuelidate": "^0.7.4",
     "vuesax": "^3.6.2",
-    "vuetify": "^1.5.14",
+    "vuetify": "^1.5.20",
     "vuex": "^2.5.0",
     "vuex-router-sync": "^4.3.2"
   },

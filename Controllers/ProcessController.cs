@@ -24,7 +24,8 @@ namespace VueExample.Controllers
         [Route("all")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(Mapper.Map<List<Process>, List<ProcessViewModel>>(await _processProvider.GetAll()));
+            var processViewModelList = _mapper.Map<List<Process>, List<ProcessViewModel>>(await _processProvider.GetAll());
+            return Ok(processViewModelList);
         }
     }
 }

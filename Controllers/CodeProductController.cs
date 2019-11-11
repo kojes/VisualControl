@@ -9,7 +9,7 @@ using VueExample.ViewModels;
 
 namespace VueExample.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class CodeProductController : Controller
     {
         private readonly CodeProductProvider _codeProductProvider = new CodeProductProvider();
@@ -31,7 +31,7 @@ namespace VueExample.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IList<CodeProductViewModel>), StatusCodes.Status200OK)]
-        [Route("processid/{id:int}")]
+        [Route("processid/{processId:int}")]
         public async Task<IActionResult> GetByProcessId([FromRoute] int processId)
         {
             return Ok(_mapper.Map<IList<CodeProduct>, IList<CodeProductViewModel>>(await _codeProductProvider.GetByProcessId(processId)));

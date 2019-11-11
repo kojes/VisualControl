@@ -24,11 +24,13 @@ Vue.use(Lightbox)
 Vue.use(Vuelidate)
 Vue.use(Vuetify, { theme:
 {
-  primary: '#fc0'
+  dark: true,
+  themes: {
+     dark: {
+       primary: '#fc0'
+     }
+  } 
 }})
-
-
-
 
 
 Vue.prototype.$http = axios;

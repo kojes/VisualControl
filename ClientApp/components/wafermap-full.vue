@@ -10,7 +10,7 @@
 
        
           <v-flex d-flex>
-            <v-tabs color="indigo"
+            <v-tabs background-color="indigo"
                     dark
                     slider-color="primary"
                     icons-and-text>

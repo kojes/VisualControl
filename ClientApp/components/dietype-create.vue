@@ -23,14 +23,14 @@
                         two-line
                         >
                             <v-subheader>Шаблоны</v-subheader>
-                            <v-list-tile v-for="cp in avCodeProducts" :key="cp.id">
-                                <v-list-tile-action>
+                            <v-list-item v-for="cp in avCodeProducts" :key="cp.id">
+                                <v-list-item-action>
                                     <v-checkbox></v-checkbox>
-                                </v-list-tile-action>
-                                <v-list-tile-content>
-                                    <v-list-tile-title>{{cp.name}}</v-list-tile-title>
-                                </v-list-tile-content>
-                            </v-list-tile>                        
+                                </v-list-item-action>
+                                <v-list-item-content>
+                                    <v-list-item-title>{{cp.name}}</v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>                        
                         </v-list>
                     </v-card-text>
                 </v-card>
