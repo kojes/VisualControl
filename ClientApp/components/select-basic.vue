@@ -1044,7 +1044,7 @@ export default {
       this.measureddevices = data.item3;
       this.measurements = data.item4;
       this.selectedProcess = this.processes[0].processId;
-      response = await this.$http.get(`/api/device/getall`);
+      response = await this.$http.get(`/api/device/all`);
       this.avDevices = response.data;
       response = await this.$http.get(`/api/measurementset/getall/${val}`);
       this.measurementSets = response.data;
