@@ -2,11 +2,11 @@
     <v-container>
         <v-layout row>
             <v-flex lg4 offset-lg1>
-                <v-text-field v-model="newMeasurement.name" outline label="Название измерения:">
+                <v-text-field v-model="newMeasurement.name" outlined label="Название измерения:">
                 </v-text-field>
             </v-flex>
             <v-flex lg4 offset-lg1>
-                <v-text-field v-model="newMeasurement.intervalInSeconds" outline label="Интервал измерений в секундах:">
+                <v-text-field v-model="newMeasurement.intervalInSeconds" outlined label="Интервал измерений в секундах:">
                 </v-text-field>
             </v-flex>
         </v-layout>
@@ -15,7 +15,7 @@
                 <v-select   v-model="newMeasurement.materialId"
                             :items="materials"
                             no-data-text="Нет данных"
-                            outline
+                            outlined
                             item-text="name"
                             item-value="materialId"
                             label="Выберите материал:">
@@ -25,7 +25,7 @@
                 <v-select   v-model="newMeasurement.facilityId"
                             :items="facilities"
                             no-data-text="Нет данных"
-                            outline
+                            outlined
                             item-text="name"
                             item-value="facilityId"
                             label="Выберите установку:">
@@ -37,7 +37,7 @@
                  <v-select  v-model="wafers.selected"
                             :items="wafers.items"
                             no-data-text="Нет данных"
-                            outline
+                            outlined
                             v-on:change="setDieCodes(wafers.selected)"
                             label="Выберите пластину:">
                 </v-select>
@@ -46,7 +46,7 @@
                 <v-select  v-model="dieCodes.selected"
                             :items="dieCodes.items"
                             no-data-text="Нет данных"
-                            outline
+                            outlined
                             label="Выберите номер кристалла:">
                 </v-select>
             </v-flex>
@@ -55,7 +55,7 @@
              <v-flex lg4 offset-lg1>
              </v-flex>
              <v-flex lg4 offset-lg1>
-                <v-btn color="indigo" outline @click="selectPattern()">Выбрать</v-btn>
+                <v-btn color="indigo" outlined @click="selectPattern()">Выбрать</v-btn>
              </v-flex>
         </v-layout>
     </v-container>

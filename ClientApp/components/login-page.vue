@@ -5,17 +5,17 @@
     <v-layout align-start wrap>
 
       <v-flex lg4 offset-lg4>
-        <v-text-field v-model="username" outline label="Логин:" :error-messages="usernameErrors" @input="$v.username.$touch()" @blur="$v.username.$touch()">
+        <v-text-field v-model="username" outlined label="Логин:" :error-messages="usernameErrors" @input="$v.username.$touch()" @blur="$v.username.$touch()">
         </v-text-field>
       </v-flex>
 
       <v-flex lg4 offset-lg4>
-        <v-text-field v-model="password" outline label="Пароль:" type="password" :error-messages="passwordErrors" @input="$v.password.$touch()" @blur="$v.password.$touch()">
+        <v-text-field v-model="password" outlined label="Пароль:" type="password" :error-messages="passwordErrors" @input="$v.password.$touch()" @blur="$v.password.$touch()">
         </v-text-field>
       </v-flex>
       
       <v-flex lg4 offset-lg4>
-        <v-btn block outline :disabled="loggingIn" @click="handleSubmit">Войти</v-btn>        
+        <v-btn block outlined :disabled="loggingIn" @click="handleSubmit">Войти</v-btn>        
       </v-flex>
 
       <v-flex lg4 offset-lg4>

@@ -7,8 +7,8 @@
                                     no-data-text="Нет данных"
                                     item-text="waferId"
                                     item-value="waferId"
-                                    box
-                                    outline
+                                    filled
+                                    outlined
                                     label="Номер пластины">
                 </v-autocomplete>
             </v-flex>
@@ -40,7 +40,7 @@
                            
                              <v-layout v-for="idmr in stage.measurementRecordingList" :key="idmr.id">
                                 <v-flex lg3>
-                                    <v-text-field v-model="idmr.name" readonly outline label="Номер операции">
+                                    <v-text-field v-model="idmr.name" readonly outlined label="Номер операции">
                                     </v-text-field>
                                 </v-flex>
                                 <v-flex lg7>
@@ -49,7 +49,7 @@
                                               no-data-text="Нет данных"
                                               item-value="stageId" 
                                               item-text="stageName"
-                                              outline
+                                              outlined
                                               label="Выберите этап:"
                                               @change="updateStageOnIdmr(idmr.id, stage.id, $event)">
                                     </v-select>                                        
@@ -60,7 +60,7 @@
                                               no-data-text="Нет данных"
                                               item-value="elementId" 
                                               item-text="name"
-                                              outline
+                                              outlined
                                               label="Выберите элемент:"
                                               @change="updateElementOnIdmr(idmr.id, idmr.element)">
                                     </v-select>                                     

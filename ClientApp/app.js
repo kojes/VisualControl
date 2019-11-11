@@ -22,22 +22,28 @@ Vue.config.performance = true
 Vue.use(VueSweetalert2)
 Vue.use(Lightbox)
 Vue.use(Vuelidate)
-Vue.use(Vuetify, { theme:
-{
-  dark: true,
-  themes: {
-     dark: {
-       primary: '#fc0'
-     }
-  } 
-}})
 
+
+const opts =  {
+  theme:
+  {
+    dark: true,
+    themes: {
+      dark: {
+        primary: '#fc0'
+      }
+    }
+  }
+}
+
+Vue.use(Vuetify)
 
 Vue.prototype.$http = axios;
 
 sync(store, router);
 
-const app = new Vue({
+const app = new Vue({  
+  vuetify: new Vuetify(opts),
   store,
   router,
   ...App

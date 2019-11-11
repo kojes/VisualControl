@@ -37,8 +37,8 @@
                     <v-autocomplete v-model="selectedWafer"
                                     :items="wafers"
                                     no-data-text="Нет данных"
-                                    box
-                                    outline
+                                    filled
+                                    outlined
                                     label="Номер пластины">
                     </v-autocomplete>
                   </v-card-text>
@@ -54,7 +54,7 @@
                                 no-data-text="Нет данных"
                                 item-text="Description"
                                 item-value="DefectTypeId"
-                                outline
+                                outlined
                                 :disabled="checkboxAllTypes"
                                 :label="selectedDefectTypeLabel">
                       </v-select>
@@ -72,7 +72,7 @@
                                 no-data-text="Нет данных"
                                 item-text="Specification"
                                 item-value="DangerLevelId"
-                                outline
+                                outlined
                                 :disabled="checkboxOnlyBad"
                                 :label="selectedDangerLevelLabel">
                       </v-select>

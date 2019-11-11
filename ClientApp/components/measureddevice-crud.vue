@@ -21,8 +21,8 @@
                         item-text="waferId"
                         item-value="waferId"
                         no-data-text="Нет данных"
-                        box
-                        outline
+                        filled
+                        outlined
                         label="Выберите пластину">
                     </v-autocomplete>
                   </v-flex>                  
@@ -31,7 +31,7 @@
                    <v-flex lg9 offset-lg1>
                       <v-text-field v-model="newMeasuredDevice.name"         :error-messages="rules.name.required
                                                                              ? rules.name.errorMessages[0]
-                                                                             : []" outline label="Номер кристалла:">
+                                                                             : []" outlined label="Номер кристалла:">
                       </v-text-field>
                   </v-flex>
                </v-layout>
@@ -40,8 +40,8 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="white" outline @click="createDialog=false">Отмена</v-btn>
-            <v-btn color="green" outline @click="createMeasuredDevice">Добавить</v-btn>
+            <v-btn color="white" outlined @click="createDialog=false">Отмена</v-btn>
+            <v-btn color="green" outlined @click="createMeasuredDevice">Добавить</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

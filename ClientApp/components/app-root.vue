@@ -23,7 +23,7 @@
 
         </v-toolbar>
         <v-divider class="pt-0"></v-divider>
-        <v-list v-for="(route, index) in routes.filter(x=>x.nav === true)" :key="index">
+        <v-list nav dense v-for="(route, index) in routes.filter(x=>x.nav === true)" :key="index">
 
           <v-list-item ripple :to="route.path">
             <v-list-item-action>
@@ -36,12 +36,12 @@
 
         </v-list>
       </v-navigation-drawer>
-      <v-toolbar v-if="auth" color="indigo" fixed app>
+      <v-app-bar v-if="auth" color="indigo" fixed app>
         <v-toolbar-side-icon v-if="auth" @click.stop="drawer = !drawer"><v-icon>drag_indicator</v-icon></v-toolbar-side-icon>
         <v-toolbar-title>Система контроля за измерениями 2.0</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn to="/login" dark outline>Выйти из системы </v-btn>
-      </v-toolbar>
+        <v-btn to="/login" dark outlined>Выйти из системы </v-btn>
+      </v-app-bar>
       <v-content>
 
         <v-container fluid>

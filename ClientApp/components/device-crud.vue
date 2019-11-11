@@ -26,7 +26,7 @@
                     
                     <v-list-item-content>
                     <v-list-item-title>{{ device.name }}</v-list-item-title>
-                    <v-list-item-sub-title>{{ device.address }}</v-list-item-sub-title>
+                    <v-list-item-subtitle>{{ device.address }}</v-list-item-subtitle>
                     </v-list-item-content>
                    
                     <div>
@@ -75,7 +75,7 @@
                                             :error-messages="rules.name.required || rules.name.duplicate
                                                                              ? rules.name.errorMessages[0]
                                                                              : []" 
-                                            @change="validate('name', newDevice.name)" outline label="Имя прибора:">
+                                            @change="validate('name', newDevice.name)" outlined label="Имя прибора:">
                             </v-text-field>
                         </v-flex>
 
@@ -84,7 +84,7 @@
                                             :error-messages="rules.address.required || rules.address.duplicate
                                                                              ? rules.address.errorMessages[0]
                                                                              : []" 
-                                            @change="validate('address', newDevice.address)" outline label="Адрес:">
+                                            @change="validate('address', newDevice.address)" outlined label="Адрес:">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
@@ -95,7 +95,7 @@
                                         item-text="model"
                                         item-value="model"
                                         no-data-text="Нет данных"
-                                        outline
+                                        outlined
                                         label="Выберите модель прибора:">
                             </v-select>
                         </v-flex>
@@ -119,7 +119,7 @@
                 <v-card-text>
                     <v-layout row>        
                         <v-flex lg7 offset-lg1>
-                            <v-text-field v-model="editedAddress.oldValue" outline readonly label="Предыдущий адрес:">
+                            <v-text-field v-model="editedAddress.oldValue" outlined readonly label="Предыдущий адрес:">
                             </v-text-field>
                         </v-flex>
                     </v-layout>
@@ -129,7 +129,7 @@
                                             :error-messages="rules.address.required || rules.address.duplicate
                                                                              ? rules.address.errorMessages[0]
                                                                              : []" 
-                                            @change="validate('address', editedAddress.newValue)" outline label="Новый адрес:">
+                                            @change="validate('address', editedAddress.newValue)" outlined label="Новый адрес:">
                             </v-text-field>
                         </v-flex>
                     </v-layout>                           

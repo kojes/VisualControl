@@ -29,7 +29,7 @@
                         <v-text-field v-model="waferId" :error-messages="waferId ? [] : 'Введите название пластины'" 
                             label="Номер пластины"
                         ></v-text-field>
-                         <v-btn color="primary" outline @click="">Заполнить шаблон</v-btn>
+                         <v-btn color="primary" outlined @click="">Заполнить шаблон</v-btn>
                        </v-card-text>                    
                     </v-card>
                 </v-menu>
@@ -39,7 +39,7 @@
                 <v-btn v-if="readyToExport" color="green" @click="exportDialog = true">
                     Экспорт
                 </v-btn>
-                <v-btn v-else outline color="pink">
+                <v-btn v-else outlined color="pink">
                     Для экспорта необходимо заполнить все элементы
                 </v-btn>       
             </v-flex>          
@@ -128,12 +128,12 @@
         </v-layout>
          <v-layout row>
             <v-dialog v-model="initialDialog" persistent max-width="400">
-               <v-card>
+               <v-card class="mx-auto">
                     <v-card-text>
-                       <v-select    v-model="selectedPattern"
+                       <v-select class="pt-8" v-model="selectedPattern"
                                     :items="patterns"
                                     no-data-text="Нет данных"
-                                    outline
+                                    outlined
                                     label="Выберите начальный шаблон:">
                         </v-select>
                     </v-card-text>

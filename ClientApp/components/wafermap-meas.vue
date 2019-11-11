@@ -39,8 +39,8 @@
                         no-data-text="Нет данных"
                         item-text="waferId"
                         item-value="waferId"
-                        box
-                        outline
+                        filled
+                        outlined
                         label="Номер пластины"
                       ></v-autocomplete>
                       <v-select
@@ -49,8 +49,8 @@
                         no-data-text="Нет данных"
                         item-text="name"
                         item-value="id"
-                        box
-                        outline
+                        filled
+                        outlined
                         label="Выберите измерение"
                       ></v-select>
                     </v-layout>
@@ -100,8 +100,8 @@
                           no-data-text="Нет данных"
                           item-text="name"
                           item-value="dividerK"
-                          box
-                          outline
+                          filled
+                          outlined
                           label="Выберите приведение к мм"
                         ></v-select>
                       </v-flex>
@@ -124,7 +124,7 @@
                           :value="dirtyCells.statPercentage"
                           color="primary"
                         >{{ dirtyCells.statPercentage + "%" }}</v-progress-circular>
-                        <v-btn outline color="primary" @click="delDirtyCells(dirtyCells.statList)">
+                        <v-btn outlined color="primary" @click="delDirtyCells(dirtyCells.statList)">
                           <v-icon>cached</v-icon>
                         </v-btn>
                       </v-card-text>
@@ -144,7 +144,7 @@
                           color="indigo lighten-4"
                         >{{ dirtyCells.fixedPercentage + "%" }}</v-progress-circular>
                         <v-btn
-                          outline
+                          outlined
                           color="indigo lighten-4"
                           @click="delDirtyCells(dirtyCells.fixedList)"
                         >
@@ -185,7 +185,7 @@
             >{{ Math.ceil((selectedDies.length / avbSelectedDies.length)*100) + "%" }}</v-progress-circular>
           </v-card-text>
           <v-card-actions>
-            <v-btn outline color="primary" @click="selectAllDies()">Выбрать все кристаллы</v-btn>
+            <v-btn outlined color="primary" @click="selectAllDies()">Выбрать все кристаллы</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
