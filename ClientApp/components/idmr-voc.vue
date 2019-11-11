@@ -35,7 +35,8 @@
                         :key="`${index+1}-content`"
                         :step="index + 1">
                        
-                        <v-card>
+                        <v-card style="max-height: 400px"
+                        class="overflow-y-auto">
                             <v-card-text>                              
                            
                              <v-layout v-for="idmr in stage.measurementRecordingList" :key="idmr.id">
@@ -50,7 +51,7 @@
                                               item-value="stageId" 
                                               item-text="stageName"
                                               outlined
-                                              label="Выберите этап:"
+                                              label="Выберите этап"
                                               @change="updateStageOnIdmr(idmr.id, stage.id, $event)">
                                     </v-select>                                        
                                 </v-flex>
@@ -61,7 +62,7 @@
                                               item-value="elementId" 
                                               item-text="name"
                                               outlined
-                                              label="Выберите элемент:"
+                                              label="Выберите элемент"
                                               @change="updateElementOnIdmr(idmr.id, idmr.element)">
                                     </v-select>                                     
                                 </v-flex>

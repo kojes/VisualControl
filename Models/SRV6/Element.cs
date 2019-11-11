@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VueExample.Models.SRV6
@@ -7,6 +8,7 @@ namespace VueExample.Models.SRV6
     [Table("ElementType")]
     public class Element
     {
+        [Key]
         [Column("id")]
         public int ElementId {get; set; }
         [Column("Name")]
@@ -14,9 +16,9 @@ namespace VueExample.Models.SRV6
         [Column("Comment")]
         public string Comment { get; set; }
         [Column("id_et")]
-        public int TypeId { get; set; }
+        public int? TypeId { get; set; }
         [Column("PhotoPath")]
-        public Guid PhotoPath { get; set; }
+        public string PhotoPath { get; set; }
         public ICollection<MeasurementRecordingElement> MeasurementRecordingElements { get; set; }
     }
 }

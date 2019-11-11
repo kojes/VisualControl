@@ -25,6 +25,9 @@ Vue.use(Vuelidate)
 
 
 const opts =  {
+  icons: {
+    iconfont: 'md',
+  },
   theme:
   {
     dark: true,

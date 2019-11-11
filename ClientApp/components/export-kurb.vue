@@ -35,11 +35,11 @@
                 </v-menu>
   
             </v-flex>
-            <v-flex lg3>
-                <v-btn v-if="readyToExport" color="green" @click="exportDialog = true">
+            <v-flex lg4>
+                <v-btn block v-if="readyToExport" color="green" @click="exportDialog = true">
                     Экспорт
                 </v-btn>
-                <v-btn v-else outlined color="pink">
+                <v-btn block v-else outlined color="pink">
                     Для экспорта необходимо заполнить все элементы
                 </v-btn>       
             </v-flex>          
