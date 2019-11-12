@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col lg="12">
-        <v-menu :nudge-width="300" offset-x>
+        <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="300">
           <template v-slot:activator="{ on }">
             <v-btn color="green" outlined dark v-on="on">Создать новый элемент</v-btn>
           </template>
@@ -11,7 +11,8 @@
               <v-col lg="6" class="pl-8">
                 <v-text-field
                   outlined
-                  :error-messages="newElement.name ? [] : 'Введите название элемента'"
+                  v-model="newElement.name"
+                  :error-messages="validationErrors"
                   label="Название элемента"
                 ></v-text-field>
               </v-col>
@@ -34,7 +35,7 @@
             </v-row>
             <v-row>
               <v-col lg="6" offset-lg="6" class="pr-8">
-                <v-btn block outlined color="success" @click="createElement()">Создать</v-btn>
+                <v-btn v-if="validationErrors.length === 0" block outlined color="success" @click="createElement()">Создать</v-btn>
               </v-col>
             </v-row>
           </v-card>
@@ -48,9 +49,10 @@
 export default {
   data() {
     return {
-      newElement: { name: "", comment: "", selectedType: 0 },
-      avElementTypes: []
-    };
+      newElement: {name: "TC1", comment: "Element1", selectedType: 0 },
+      avElementTypes: [],
+      menu: false
+    }
   },
 
   methods: {
@@ -64,8 +66,22 @@ export default {
     },
 
     createElement() {
-        this.$store.commit("elements/addtoElements", newElement)
+        this.$store.commit("elements/addtoElements", this.newElement)
+        this.menu = false
     }
+  },
+
+  computed: {
+     validationErrors() {
+        if(!this.newElement.name) {
+           return 'Введите название элемента'
+        }
+        if(this.$store.state.elements.elements.filter(x => x.name === this.newElement.name).length > 0)
+        {
+           return 'Элемент с таким названием уже существует'
+        }
+        return []
+     }
   },
 
   async mounted() {

@@ -43,16 +43,18 @@
                     </v-tab>
                     <v-tab-item key="elements">   
                         <create-element></create-element>
-                        <div style="max-height: 300px" class="overflow-y-auto">
-                            <v-list-item v-for="element in elements" :key="element.name" >                             
+                        <v-list two-line rounded style="max-height: 300px" class="overflow-y-auto">
+                            <v-subheader v-if="elements && elements.length > 0">Список элементов</v-subheader>
+                            <v-list-item v-for="element in elements" :key="element.name">                             
                                 <v-list-item-content>
                                     <v-list-item-title>{{element.name}}</v-list-item-title>
+                                    <v-list-item-subtitle>{{element.comment}}</v-list-item-subtitle>
                                 </v-list-item-content>
                                 <v-list-item-action>
-                                  <v-icon color="primary" @change="deleteElement(element)" >delete_outline</v-icon>
+                                  <v-icon color="primary" @click="deleteElement(element)">delete_outline</v-icon>
                                 </v-list-item-action>
                             </v-list-item>
-                        </div>                        
+                        </v-list>                        
                     </v-tab-item>
                 </v-tabs>
                 
@@ -110,7 +112,7 @@ export default {
 
     computed: {
         elements() {
-            return  this.$store.getters['elements/getElements']
+            return this.$store.state.elements.elements
         }
     },
 
@@ -124,7 +126,7 @@ export default {
     },
 
     async mounted() {
-        this.getProcesses()
+        await this.getProcesses().then(() => this.selectedProcess = 333)         
     }
 }
 </script>

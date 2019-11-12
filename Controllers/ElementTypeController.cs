@@ -9,12 +9,14 @@ using VueExample.ViewModels;
 
 namespace VueExample.Controllers
 {
+    [Route("api/[controller]")]
     public class ElementTypeController : Controller
     {
         private readonly IElementTypeService _elementTypeService;
         private readonly IMapper _mapper;
-        public ElementTypeController(IMapper mapper)
+        public ElementTypeController(IElementTypeService elementTypeService, IMapper mapper)
         {
+            _elementTypeService = elementTypeService;
             _mapper = mapper;
         }
 
