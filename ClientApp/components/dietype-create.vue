@@ -1,45 +1,73 @@
 <template>
     <v-container>
         <v-layout row>
-            <v-flex lg3 offset-lg1>
-                 <v-text-field v-model="dieTypeName" :error-messages="dieTypeName ? [] : 'Введите название монитора'" 
-                                    label="Введите название монитора"
-                 ></v-text-field>
-            </v-flex>
+           
             <v-flex lg6>
-                <v-card>
-                    <v-card-title>
-                        <v-select v-model="selectedProcess"
-                            :items="processes"
-                            no-data-text="Нет данных"
-                            item-text="processName"
-                            item-value="processId"
-                            label="Выберите техпроцесс"
-                        ></v-select>
-                    </v-card-title>
-                    <v-card-text>
-                        <v-list
-                        subheader
-                        two-line
-                        >
-                            <v-subheader>Шаблоны</v-subheader>
-                            <v-list-item v-for="cp in avCodeProducts" :key="cp.id">
-                                <v-list-item-action>
-                                    <v-checkbox></v-checkbox>
-                                </v-list-item-action>
+                <v-tabs vertical background-color="indigo">
+                    <v-tab key="cp">
+                        Шаблоны
+                    </v-tab>
+                    <v-tab-item key="cp">
+                        <v-card>
+                            <v-card-title>
+                                <v-select v-model="selectedProcess"
+                                    :items="processes"
+                                    no-data-text="Нет данных"
+                                    item-text="processName"
+                                    item-value="processId"
+                                    label="Выберите техпроцесс"
+                                ></v-select>
+                            </v-card-title>
+                            <v-card-text>
+                                <v-list 
+                                subheader
+                                two-line
+                                >
+                                   
+                                    <div style="max-height: 300px" class="overflow-y-auto">
+                                        <v-list-item v-for="cp in avCodeProducts" :key="cp.id" >
+                                            <v-list-item-action>
+                                                <v-checkbox @change="selectCodeProduct(cp)"></v-checkbox>
+                                            </v-list-item-action>
+                                            <v-list-item-content>
+                                                <v-list-item-title>{{cp.name}}</v-list-item-title>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </div>                        
+                                </v-list>
+                            </v-card-text>
+                        </v-card>
+                    </v-tab-item>
+                    <v-tab key="elements">
+                        Элементы
+                    </v-tab>
+                    <v-tab-item key="elements">   
+                        <create-element></create-element>
+                        <div style="max-height: 300px" class="overflow-y-auto">
+                            <v-list-item v-for="element in elements" :key="element.name" >                             
                                 <v-list-item-content>
-                                    <v-list-item-title>{{cp.name}}</v-list-item-title>
+                                    <v-list-item-title>{{element.name}}</v-list-item-title>
                                 </v-list-item-content>
-                            </v-list-item>                        
-                        </v-list>
-                    </v-card-text>
-                </v-card>
+                                <v-list-item-action>
+                                  <v-icon color="primary" @change="deleteElement(element)" >delete_outline</v-icon>
+                                </v-list-item-action>
+                            </v-list-item>
+                        </div>                        
+                    </v-tab-item>
+                </v-tabs>
+                
+            </v-flex>
+             <v-flex lg3 offset-lg1>
+                 <v-text-field v-model="dieTypeName" :error-messages="dieTypeName ? [] : 'Введите название монитора'" 
+                                    label="Введите название монитора" outlined
+                 ></v-text-field>
             </v-flex>
         </v-layout>        
     </v-container>
 </template>
 <script>
-export default {
+import ElementCreation from './create-element.vue'
+export default {    
     data() {
         return {
             dieTypeName: "",
@@ -49,6 +77,10 @@ export default {
             selectedCodeProducts: []
 
         }
+    },
+
+    components: {
+        "create-element": ElementCreation
     },
 
     methods: {
@@ -61,6 +93,24 @@ export default {
 
         async getCodeProductsByDieTypeId() {
 
+        },
+
+        deleteElement(element) {
+            this.$store.commit("elements/deleteFromElements", element.name)
+        },
+
+        selectCodeProduct(codeproductId) {
+
+            this.selectedCodeProducts.includes(codeproductId) 
+                ? this.selectedCodeProducts = this.selectedCodeProducts.filter(x => x!=codeproductId) 
+                : this.selectedCodeProducts.push(codeproductId)
+           
+        }
+    },
+
+    computed: {
+        elements() {
+            return  this.$store.getters['elements/getElements']
         }
     },
 
