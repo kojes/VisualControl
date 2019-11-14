@@ -9,6 +9,9 @@ import VueLodash from 'vue-lodash'
 import Vuetify from 'vuetify'
 import Lightbox from 'vue-my-photos'
 import Vuelidate from 'vuelidate'
+import AsyncComputed from 'vue-async-computed'
+
+
 
 
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
@@ -17,6 +20,7 @@ import 'vuetify/dist/vuetify.min.css'
 
 Vue.component('lightbox', Lightbox)
 Vue.use(VueLodash)
+Vue.use(AsyncComputed)
 Vue.config.devtools = true
 Vue.config.performance = true
 Vue.use(VueSweetalert2)

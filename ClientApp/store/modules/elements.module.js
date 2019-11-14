@@ -10,7 +10,7 @@ export const elements = {
 
     mutations: {
       addtoElements(state, payload) {
-        state.elements = [...state.elements, {name: payload.name, comment: payload.comment, selectedType: payload.selectedType}]
+        state.elements = [...state.elements, {name: payload.name, comment: payload.comment, typeId: payload.typeId}]
       },
       deleteFromElements(state, payload) {
         state.elements = state.elements.filter(function(value) {

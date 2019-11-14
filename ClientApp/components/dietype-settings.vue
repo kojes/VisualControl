@@ -6,10 +6,8 @@
                 <v-tab key="create">
                     Создание нового монитора
                 </v-tab>
-                <v-tab-item key="create">
-                    <v-card>
-                        <create></create>
-                    </v-card>
+                <v-tab-item key="create">                   
+                    <create></create>                    
                 </v-tab-item>
                 <v-tab key="edit">
                     Редактирование монитора

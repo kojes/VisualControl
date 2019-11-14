@@ -4,23 +4,23 @@
       <v-col lg="12">
         <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="300">
           <template v-slot:activator="{ on }">
-            <v-btn color="green" outlined dark v-on="on">Создать новый элемент</v-btn>
+            <v-btn color="indigo" dark v-on="on">Создать новый элемент</v-btn>
           </template>
           <v-card>
             <v-row>
-              <v-col lg="6" class="pl-8">
+              <v-col lg="5" class="pl-8">
                 <v-text-field
-                  outlined
+                  
                   v-model="newElement.name"
                   :error-messages="validationErrors"
                   label="Название элемента"
                 ></v-text-field>
               </v-col>
-              <v-col lg="6" class="px-8">
+              <v-col lg="7" class="px-8">
                 <v-select
-                  outlined
+                  
                   :items="avElementTypes"
-                  v-model="newElement.selectedType"
+                  v-model="newElement.typeId"
                   no-data-text="Нет данных"
                   item-text="name"
                   item-value="id"
@@ -29,13 +29,13 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col lg="12" class="px-8">
-                <v-text-field outlined v-model="newElement.comment" label="Описание элемента"></v-text-field>
+            <v-col lg="12" class="px-8">
+                <v-text-field v-model="newElement.comment" label="Описание элемента"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col lg="6" offset-lg="6" class="pr-8">
-                <v-btn v-if="validationErrors.length === 0" block outlined color="success" @click="createElement()">Создать</v-btn>
+                <v-btn v-if="validationErrors.length === 0" block color="success" @click="createElement()">Создать</v-btn>
               </v-col>
             </v-row>
           </v-card>
@@ -49,7 +49,7 @@
 export default {
   data() {
     return {
-      newElement: {name: "TC1", comment: "Element1", selectedType: 0 },
+      newElement: {name: "TC1", comment: "Element1", typeId: 0 },
       avElementTypes: [],
       menu: false
     }
@@ -61,7 +61,7 @@ export default {
          await this.$http
             .get(`/api/elementtype/all`)
             .then(response => { this.avElementTypes = response.data
-                                this.newElement.selectedType = this.avElementTypes[0].id})
+                                this.newElement.typeId = this.avElementTypes[0].id})
             .catch(err => console.log(err))
     },
 

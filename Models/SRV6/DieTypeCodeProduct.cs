@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VueExample.Models.SRV6 
@@ -5,6 +6,7 @@ namespace VueExample.Models.SRV6
     [Table ("CodeProduct_DieType")]
     public class DieTypeCodeProduct 
     {
+        [Key]
         [Column("id")]
         public int Id { get; set; }
         [Column("id_cp")]
