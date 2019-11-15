@@ -27,7 +27,7 @@
                                     <div style="max-height: 300px" class="overflow-y-auto">
                                         <v-list-item v-for="cp in avCodeProducts" :key="cp.id" >
                                             <v-list-item-action>
-                                                <v-checkbox color="primary" @change="selectCodeProduct(cp)"></v-checkbox>
+                                                <v-checkbox v-model= "selectedCodeProducts" :value="cp.id" color="primary"></v-checkbox>
                                             </v-list-item-action>
                                             <v-list-item-content>
                                                 <v-list-item-title>{{cp.name}}</v-list-item-title>
@@ -114,7 +114,7 @@ export default {
             await this.$http({
                 method: "put",
                 url: `/api/dietype`, 
-                data: {name: dieTypeName, codeProductIdsList: selectedCodeProducts.map(s => s.id), elementsList: elements}, 
+                data: {name: dieTypeName, codeProductIdsList: selectedCodeProducts, elementsList: elements}, 
                 config: {
                     headers: {
                         'Accept': "application/json",
@@ -122,7 +122,13 @@ export default {
                     }
                 }
             })
-            .then(response =>  this.showSnackBar("Монитор успешно добавлен"))
+            .then(response => { 
+                this.showSnackBar(`Монитор ${response.data} успешно добавлен`)
+                this.dieTypeName = ""
+                this.selectedCodeProducts = []
+                this.$store.commit("elements/clearElements")
+            
+            })
             .catch(error => this.showSnackBar(error.response.data[0].message, "error"));  
         },            
 
@@ -130,13 +136,7 @@ export default {
             this.$store.commit("elements/deleteFromElements", element.name)
         },
 
-        selectCodeProduct(codeproductId) {
-
-            this.selectedCodeProducts.includes(codeproductId) 
-                ? this.selectedCodeProducts = this.selectedCodeProducts.filter(x => x!=codeproductId) 
-                : this.selectedCodeProducts.push(codeproductId)
-           
-        },
+       
 
         showSnackBar(text, color)
         {

@@ -18,14 +18,21 @@ namespace VueExample.Providers.Srv6
                 var dieType = new DieType{Name = dieTypeViewModel.Name};
                 db.DieTypes.Add(dieType);
                 await db.SaveChangesAsync();
+                var elementsList = new List<Element>();
                 foreach (var element in dieTypeViewModel.ElementsList)
                 {
                     var createdElement = new Element{Name = element.Name, Comment = element.Comment, TypeId = element.TypeId};
                     db.Elements.Add(createdElement);
-                    db.DieTypeElements.Add(new Entities.DieTypeElement{ElementId = createdElement.ElementId, DieTypeId = dieType.DieTypeId});
+                    elementsList.Add(createdElement);
+                    
                 }
                 await db.SaveChangesAsync();
 
+                foreach (var element in elementsList)
+                {
+                    db.DieTypeElements.Add(new Entities.DieTypeElement{ElementId = element.ElementId, DieTypeId = dieType.DieTypeId});
+                }
+                await db.SaveChangesAsync();
                 foreach (var idcp in dieTypeViewModel.CodeProductIdsList)
                 {
                     db.DieTypeCodeProducts.Add(new DieTypeCodeProduct{DieTypeId = dieType.DieTypeId, CodeProductId = idcp});

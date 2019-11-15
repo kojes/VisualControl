@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VueExample.Models.SRV6;
 
 namespace VueExample.Entities
 {
@@ -13,5 +14,7 @@ namespace VueExample.Entities
         public int ElementId { get; set; }
         [Column("id_dt")]
         public int DieTypeId { get; set; }
+        public Element Element { get; set; }
+        public DieType DieType { get; set; }
     }
 }

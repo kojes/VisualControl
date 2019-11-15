@@ -31,18 +31,7 @@ namespace VueExample.Contexts
 
         protected override void OnModelCreating (ModelBuilder modelBuilder) {
            
-            modelBuilder.Entity<DieTypeCodeProduct>()
-                .HasKey(t => new { t.DieTypeId, t.CodeProductId});                
-
-            modelBuilder.Entity<DieTypeCodeProduct>()
-                .HasOne(pt => pt.CodeProduct)
-                .WithMany(p => p.DieTypeCodeProducts)
-                .HasForeignKey(pt => pt.CodeProductId);
-                
-            modelBuilder.Entity<DieTypeCodeProduct>()
-                .HasOne(pt => pt.DieType)
-                .WithMany(p => p.DieTypeCodeProducts)
-                .HasForeignKey(pt => pt.DieTypeId);
+           
         }
         protected override void OnConfiguring (DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseSqlServer (@"data source = SRV6\SRV3; Initial Catalog = db_process; persist security info = True; user id = labuser; password = zxvitr78KK; MultipleActiveResultSets = True;");

@@ -16,6 +16,9 @@ export const elements = {
         state.elements = state.elements.filter(function(value) {
           return value.name !== payload
         })
+      },
+      clearElements(state) {
+        state.elements = []
       }
     }
   }

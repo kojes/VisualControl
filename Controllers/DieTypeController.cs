@@ -39,7 +39,7 @@ namespace VueExample.Controllers
         {           
             var dieTypeUpdatingViewModel = dieTypeUpdatingJObject.ToObject<DieTypeUpdatingViewModel>();
             var dieType = await _dieTypeProvider.Create(dieTypeUpdatingViewModel);
-            return Created("", dieType);
+            return Created("", dieType.Name);
         }
     }
 }
