@@ -5,12 +5,20 @@ export const elements = {
     },
   
     getters: {
-        getElements: state => state.elements    
+        getElements: state => [...state.elements]    
     },
 
     mutations: {
+      fillElements(state, payload) {
+        state.elements = [...payload]
+      },
       addtoElements(state, payload) {
-        state.elements = [...state.elements, {name: payload.name, comment: payload.comment, typeId: payload.typeId}]
+        state.elements = [...state.elements, {elementId: payload.elementId, name: payload.name, comment: payload.comment, typeId: payload.typeId, isAvaliableToDelete: true}]
+      },
+      updateElement(state, payload) {
+          let updatedElement = state.elements.find(x => x.elementId === payload.elementId)
+          updatedElement.name = payload.name
+          updatedElement.comment = payload.comment
       },
       deleteFromElements(state, payload) {
         state.elements = state.elements.filter(function(value) {

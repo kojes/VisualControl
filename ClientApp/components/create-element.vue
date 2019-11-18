@@ -47,16 +47,16 @@
 
 <script>
 export default {
+  props: ['mode'],
   data() {
     return {
-      newElement: {name: "TC1", comment: "Element1", typeId: 0 },
+      newElement: {name: "", comment: "", typeId: 0, isAvaliableToDelete: true},
       avElementTypes: [],
       menu: false
     }
   },
 
-  methods: {
-
+  methods: {    
     async initElementTypes() {
          await this.$http
             .get(`/api/elementtype/all`)
@@ -66,7 +66,14 @@ export default {
     },
 
     createElement() {
-        this.$store.commit("elements/addtoElements", this.newElement)
+        if(this.mode === "create")
+        {
+          this.$store.commit("elements/addtoElements", this.newElement)
+        }
+        if(this.mode === "update")
+        {
+           this.$emit('create-element', this.newElement)
+        }       
         this.menu = false
     }
   },

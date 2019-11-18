@@ -7,5 +7,6 @@ namespace VueExample.ViewModels
         public string Comment { get; set; }
         public string PhotoPath { get; set; }
         public int TypeId { get; set; }
+        public bool IsAvaliableToDelete { get; set; } = true;
     }
 }

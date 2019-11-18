@@ -12,10 +12,8 @@
                 <v-tab key="edit">
                     Редактирование монитора
                 </v-tab>
-                <v-tab-item key="edit">
-                    <v-card>
-                        <update></update>
-                    </v-card>
+                <v-tab-item key="edit">                  
+                    <update></update>                    
                 </v-tab-item>
             </v-tabs>
         </v-flex>

@@ -41,5 +41,33 @@ namespace VueExample.Controllers
             var dieType = await _dieTypeProvider.Create(dieTypeUpdatingViewModel);
             return Created("", dieType.Name);
         }
+
+        [HttpPost]
+        [Route("update")]
+        public async Task<IActionResult> Update([FromBody] JObject dieTypeJObject)
+        {
+            var dieTypeViewModel = dieTypeJObject.ToObject<DieTypeViewModel>();
+            var dieType = await _dieTypeProvider.Update(dieTypeViewModel);
+            return Ok(_mapper.Map<DieType, DieTypeViewModel>(dieType));
+        }
+
+        [HttpPost]
+        [Route("codeproduct/update-fk")]
+        public async Task<IActionResult> UpdateCodeProductsMap([FromBody] JObject DieTypeCodeProductJObject)
+        {
+            var dieTypeCodeProduct = DieTypeCodeProductJObject.ToObject<DieTypeCodeProduct>();
+            var tuple = await _dieTypeProvider.UpdateCodeProductsMap(dieTypeCodeProduct.DieTypeId, dieTypeCodeProduct.CodeProductId);
+            return tuple.Item2 == "ERROR" ? (IActionResult)NotFound() : (tuple.Item2 == "DELETED" ? Ok(tuple.Item1.Name) : (IActionResult)Created("", tuple.Item1.Name));
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(DieTypeUpdatingViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Route("cp-el/{id:int}")]
+        public async Task<IActionResult> GetCodeProductsAndElements([FromRoute] int id)
+        {
+            var dieTypeUpdatingViewModel = await _dieTypeProvider.GetCodeProductsAndElements(id);
+            return dieTypeUpdatingViewModel is null ? (IActionResult)NotFound() : Ok(dieTypeUpdatingViewModel);
+        }
     }
 }

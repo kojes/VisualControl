@@ -43,9 +43,9 @@
                     </v-tab>
                     <v-tab-item key="elements">   
                         <v-card elevation="8">
-                            <create-element></create-element>
+                            <create-element mode="created"></create-element>
                             <v-list two-line rounded style="max-height: 350px" class="overflow-y-auto">
-                                <v-subheader v-if="elements && elements.length > 0">Список элементов</v-subheader>
+                                <v-subheader v-if ="elements && elements.length > 0">Список элементов</v-subheader>
                                 <v-list-item v-for="element in elements" :key="element.name">                             
                                     <v-list-item-content>
                                         <v-list-item-title>{{element.name}}</v-list-item-title>
@@ -114,7 +114,7 @@ export default {
             await this.$http({
                 method: "put",
                 url: `/api/dietype`, 
-                data: {name: dieTypeName, codeProductIdsList: selectedCodeProducts, elementsList: elements}, 
+                data: {name: dieTypeName, codeProductIdsList: selectedCodeProducts, elementsList: elements.map(({elementId, ...x}) => x)}, 
                 config: {
                     headers: {
                         'Accept': "application/json",

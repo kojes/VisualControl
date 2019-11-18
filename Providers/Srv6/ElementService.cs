@@ -8,26 +8,60 @@ using VueExample.Providers.Srv6.Interfaces;
 using System.Collections.Generic;
 using VueExample.ResponseObjects;
 using VueExample.ViewModels;
+using AutoMapper;
 
 namespace VueExample.Providers.Srv6
 {
     public class ElementService : IElementService
     {
-        public Task<StandardResponseObject> AddToDieType(int elementId, int dieTypeId)
+        private readonly IMapper _mapper;
+        public ElementService(IMapper mapper)
         {
-            throw new System.NotImplementedException();
+            _mapper = mapper;
+        }
+        public async Task AddToDieType(int elementId, int dieTypeId)
+        {
+            using(var db = new Srv6Context())
+            {
+                db.DieTypeElements.Add(new Entities.DieTypeElement{ElementId = elementId, DieTypeId = dieTypeId});
+                await db.SaveChangesAsync();
+            }
         }
 
-        public Task<AfterDbManipulationObject<Element>> Create(ElementViewModel elementViewModel)
+        public async Task Delete(int id) 
         {
-            throw new System.NotImplementedException();
+            using(var db = new Srv6Context())
+            {
+                var dieTypeElements = await db.DieTypeElements.Where(x => x.ElementId == id).ToListAsync();
+                db.DieTypeElements.RemoveRange(dieTypeElements);
+                await db.SaveChangesAsync();
+                var element = await db.Elements.FirstOrDefaultAsync(x => x.ElementId == id);
+                db.Elements.Remove(element);
+                await db.SaveChangesAsync();
+            }
         }
 
-        public Task<AfterDbManipulationObject<Element>> Update(ElementViewModel elementViewModel)
+        public async Task<Element> Create(ElementViewModel elementViewModel)
         {
-            throw new System.NotImplementedException();
+            using(var db = new Srv6Context())
+            {
+               var element = _mapper.Map<ElementViewModel, Element>(elementViewModel);
+               await db.Elements.AddAsync(element);
+               await db.SaveChangesAsync();
+               return element;
+            }
         }
-
+        
+        public async Task<Element> Update(ElementViewModel elementViewModel)
+        {
+            using(var db = new Srv6Context())
+            {
+                var element = await db.Elements.FirstOrDefaultAsync(x => x.ElementId == elementViewModel.ElementId);
+                db.Entry(element).CurrentValues.SetValues(_mapper.Map<ElementViewModel, Element>(elementViewModel));
+                await db.SaveChangesAsync();
+                return element;
+            }
+        }
 
         public async Task<List<Element>> GetByDieType(int dieTypeId)
         {
@@ -105,5 +139,7 @@ namespace VueExample.Providers.Srv6
             }
             
         }
+
+       
     }
 }
