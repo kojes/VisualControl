@@ -49,6 +49,7 @@ export default {
     data() {
         return {       
             avElementTypes: [],
+            validationErrors: [],
             menu: false,
             editedElement: this.editedElement
         }
@@ -71,16 +72,28 @@ export default {
         }
   },
 
-  computed: {
-    validationErrors() {
-        if(!this.editedElement.name) {
-           return 'Введите название элемента'
+  watch: {
+    elementName: function(newVal, oldVal) {
+        this.validationErrors = []
+        if(!this.elementName) {
+           this.validationErrors = 'Введите название элемента'
         }
-        if(this.$store.state.elements.elements.filter(x => (x.name === this.editedElement.name && x.elementId !== this.editedElement.elementId)).length > 0)
+        if(this.elements.filter(x => (x.name === this.elementName && x.elementId !== this.editedElement.elementId)).length > 0)
         {
-           return 'Элемент с таким названием уже существует'
+           this.validationErrors = 'Элемент с таким названием уже существует'
         }
-        return []
+        
+    }
+  },
+
+  computed: {
+
+    elementName() {
+        return this.editedElement.name
+    },
+
+    elements() {
+        return this.$store.state.elements.elements
     }
   },
 

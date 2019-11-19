@@ -1,7 +1,7 @@
 <template>
   <v-container>
-  <v-layout row class="pt-8">           
-            <v-flex lg6>
+  <v-row class="pt-8">           
+            <v-col lg="6">
                 <v-tabs v-if="dieType" vertical background-color="indigo">
                     <v-tab key="cp">
                         Шаблоны
@@ -68,18 +68,24 @@
                     </v-tab-item>
                 </v-tabs>
                 
-            </v-flex>
-            <v-flex lg4 offset-lg1>
+            </v-col>
+            <v-col lg="4" offset-lg="1">
                 <v-select v-model="dieType"
                     :items="dieTypes"
                     no-data-text="Нет данных"
                     item-text="name"
                     item-value="id"
+                    outlined
                     label="Выберите монитор для редактирования"
                 ></v-select>                
-            </v-flex>
+            </v-col>
+            <v-col lg="1">
+                <v-btn fab small outlined color="primary">
+                    <v-icon>create</v-icon>
+                </v-btn>
+            </v-col>
            
-        </v-layout>
+        </v-row>
         <v-snackbar v-model="snackbar.visible"
                     :color="snackbar.color"
                     right
@@ -232,7 +238,7 @@ export default {
         async updateElement(element) {
             await this.$http({
                 method: "post",
-                url: `/api/element/update`, 
+                url: `/api/element/update `, 
                 data: element, 
                 config: {
                     headers: {
@@ -247,7 +253,7 @@ export default {
             })
             .catch(error => this.showSnackBar(error.response.data[0].message, "error"));
         },
-        
+
         deleteElementFromStore(elementName)
         {
             this.$store.commit("elements/deleteFromElements", elementName)
@@ -262,8 +268,7 @@ export default {
 
     },
 
-    watch: {
-        
+    watch: {        
         selectedProcess: async function(newVal, oldVal) {
             await this.$http
             .get(`/api/codeproduct/processid/${newVal}`)
@@ -288,7 +293,6 @@ export default {
             return this.$store.state.elements.elements
         }     
     },
-
 
     async mounted() {
         await this.getProcesses().then(() => this.selectedProcess = 333)    
