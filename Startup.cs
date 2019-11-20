@@ -103,6 +103,7 @@ namespace VueExample
             services.AddTransient<IColorService, ColorService>();
             services.AddTransient<IElementService, ElementService>();
             services.AddTransient<IElementTypeService, ElementTypeService>();
+            services.AddTransient<IFolderService, FolderService>();
             services.AddTransient<IDieTypeProvider, DieTypeProvider>();
             services.AddTransient<IDeviceProvider, DeviceProvider>();
             services.AddTransient<IMeasurementSetProvider, MeasurementSetProvider>();

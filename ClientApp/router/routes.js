@@ -13,6 +13,7 @@ import VerificationSettings from 'components/verification-settings'
 import IdmrVoc from 'components/idmr-voc'
 import DefectMassiveUploader from 'components/massive-uploader'
 import DieTypeSettings from 'components/dietype-settings'
+import Uploader from 'components/uploader-ng'
 // Service components
 import LoginPage from 'components/login-page'
 import RegistrationPage from 'components/registration-page'
@@ -36,6 +37,8 @@ export const routes = [
   { name: 'kurbatov', path: '/export-kurb', component: Kurbatov, display: 'Экспорт', nav: true }, 
   { name: 'idmrvoc', path: '/idmr-voc', component: IdmrVoc, display: 'voc', nav: true }, 
   { name: 'dietypesettings', path: '/dts', component: DieTypeSettings, display: 'dts', nav: true }, 
+  { name: 'uploader', path: '/uu', component: Uploader, display: 'uu', nav: true }, 
+
   //{ name: 'verificationsettings', path: '/vsettings', component: VerificationSettings, display: 'Редактирование параметров испытаний', nav: true }, 
 
   {
