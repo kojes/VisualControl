@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using VueExample.Entities;
 using VueExample.Models;
 using VueExample.Models.SRV6;
+using VueExample.Models.SRV6.Uploader;
 using Graphic = VueExample.Models.SRV6.Graphic;
 using MeasurementRecordingElement = VueExample.Models.SRV6.MeasurementRecordingElement;
 
@@ -20,6 +21,9 @@ namespace VueExample.Contexts
         public DbSet<DieGraphics> DieGraphics { get; set; }
         public DbSet<MeasurementRecording> MeasurementRecordings { get; set; }
         public DbSet<Graphic> Graphics { get; set; }
+        public DbSet<FileName> FileNames { get; set; }
+        public DbSet<GraphicName> GraphicNames { get; set; }
+        public DbSet<FileNameGraphic> FileNameGraphics { get; set; }
         public DbSet<DieParameterOld> DiesParameterOld { get; set; }
         public DbSet<Entities.DieTypeElement> DieTypeElements{ get; set; }
         public DbSet<DieTypeCodeProduct> DieTypeCodeProducts { get; set; }

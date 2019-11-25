@@ -14,6 +14,7 @@ import IdmrVoc from 'components/idmr-voc'
 import DefectMassiveUploader from 'components/massive-uploader'
 import DieTypeSettings from 'components/dietype-settings'
 import Uploader from 'components/uploader-ng'
+import UploaderFg from 'components/uploader-filegraphic'
 // Service components
 import LoginPage from 'components/login-page'
 import RegistrationPage from 'components/registration-page'
@@ -37,7 +38,11 @@ export const routes = [
   { name: 'kurbatov', path: '/export-kurb', component: Kurbatov, display: 'Экспорт', nav: true }, 
   { name: 'idmrvoc', path: '/idmr-voc', component: IdmrVoc, display: 'voc', nav: true }, 
   { name: 'dietypesettings', path: '/dts', component: DieTypeSettings, display: 'dts', nav: true }, 
-  { name: 'uploader', path: '/uu', component: Uploader, display: 'uu', nav: true }, 
+  { name: 'uploader', path: '/uu', component: Uploader, display: 'uu', nav: true },
+  { name: 'uploader-fg', path: '/ufg', component: UploaderFg, display: 'ufg', nav: true },
+  { name: 'uploader-cp', path: '/uu/:selectedCodeProductFolder', component: Uploader, display: 'uu', props: true }, 
+  { name: 'uploader-cpw', path: '/uu/:selectedCodeProductFolder/:selectedWaferFolder', component: Uploader, display: 'uu', props: true }, 
+  { name: 'uploader-cpwi', path: '/uu/:selectedCodeProductFolder/:selectedWaferFolder/:mrArray', component: Uploader, display: 'uu', props: true }, 
 
   //{ name: 'verificationsettings', path: '/vsettings', component: VerificationSettings, display: 'Редактирование параметров испытаний', nav: true }, 
 
