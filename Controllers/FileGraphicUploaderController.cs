@@ -59,7 +59,7 @@ namespace VueExample.Controllers
         [HttpDelete]
         [ProducesResponseType (StatusCodes.Status204NoContent)]
         [Route("graphicname/delete/{fileNameId:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int fileNameId, [FromBody] JObject graphicNameJObject)
+        public async Task<IActionResult> DeleteGraphicFromFileName([FromRoute] int fileNameId, [FromBody] JObject graphicNameJObject)
         {
             await _fileGraphicUploaderService.DeleteGraphicFromFileName(fileNameId, graphicNameJObject.ToObject<GraphicNameUploaderViewModel>());
             return NoContent();

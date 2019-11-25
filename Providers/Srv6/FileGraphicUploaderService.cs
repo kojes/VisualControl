@@ -52,7 +52,7 @@ namespace VueExample.Providers.Srv6
                 var graphicsList = fileNameViewModel.GraphicNames.Select(x => new GraphicName {Name = x.Name}).ToList();
                 db.GraphicNames.AddRange(graphicsList);
                 await db.SaveChangesAsync();
-                var fileNameGraphics = graphicsList.Select(x => new FileNameGraphic{GraphicNameId = x.Id, FileNameId = fileName.Id, Variant = fileNameViewModel.Variant});
+                var fileNameGraphics = graphicsList.Select(x => new FileNameGraphic{GraphicNameId = x.Id, FileNameId = fileName.Id, Variant = fileNameViewModel.GraphicNames.FirstOrDefault(g => g.Name == x.Name).Variant});
                 db.FileNameGraphics.AddRange(fileNameGraphics);
                 await db.SaveChangesAsync();
                 return fileName;

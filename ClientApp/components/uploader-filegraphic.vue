@@ -32,7 +32,7 @@
         </v-col>
         <v-col lg="6">
             <v-card v-show="selectedFileName" class="mx-auto">
-                <graphic-settings :mode="selectedFileName === 'create' ? 'creating' : 'updating'" :fileName="selectedFileName" :graphics="graphics"></graphic-settings>
+                <file-creating @file-created="fileCreated" @show-snackbar="showSnackBar" :processId="selectedProcessId" :fileNames="fileNames"></file-creating>
             </v-card>
         </v-col>
       </v-row>
@@ -51,7 +51,8 @@
 </template>
 
 <script>
-import GraphicSettings from './uploader-graphicsettings.vue'
+import FileCreating from './uploader-graphicsettings.vue'
+import FileUpdating from './uploader-fileupdating.vue'
 export default {
    
     data() {
@@ -60,12 +61,13 @@ export default {
             selectedProcessId: "",
             snackbar: {text: "", color: "indigo", visible: false},
             selectedFileName: "",
-            graphics: []  
+            graphics: [],
+            fileNames: []
         }
     },
 
     components : {
-        "graphic-settings": GraphicSettings
+        "file-creating": FileCreating
     },
 
     watch: {
@@ -110,6 +112,10 @@ export default {
                     this.showSnackBar("Процессы не найдены", "pink")
                 }
             })
+        },
+
+        fileCreated(fileName) {
+            this.fileNames.push(fileName)
         },
 
         showSnackBar(text, color)
