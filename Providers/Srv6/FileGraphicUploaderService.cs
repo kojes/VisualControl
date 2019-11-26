@@ -79,14 +79,14 @@ namespace VueExample.Providers.Srv6
             }
         }
 
-        public async Task<IList<GraphicName>> GetGraphicsByFileName(int fileNameId)
+        public async Task<IList<GraphicNameUploaderViewModel>> GetGraphicsByFileName(int fileNameId)
         {
             using(var db = new Srv6Context()) 
             {
                 return await db.FileNames.Join(db.FileNameGraphics, 
                                                c => c.Id,
                                                p => p.FileNameId,
-                                               (c,p) => p.GraphicName)
+                                               (c,p) => new GraphicNameUploaderViewModel{Id = p.GraphicNameId, Name = p.GraphicName.Name, Variant = p.Variant})
                                          .Where(x => x.Id == fileNameId)
                                          .ToListAsync();
             }

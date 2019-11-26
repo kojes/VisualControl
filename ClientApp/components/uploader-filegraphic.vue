@@ -31,8 +31,9 @@
             </v-card>
         </v-col>
         <v-col lg="6">
-            <v-card v-show="selectedFileName" class="mx-auto">
-                <file-creating @file-created="fileCreated" @show-snackbar="showSnackBar" :processId="selectedProcessId" :fileNames="fileNames"></file-creating>
+            <v-card v-if="selectedFileName" class="mx-auto">
+                <file-creating v-if="selectedFileName === 'create'" @file-created="fileCreated" @show-snackbar="showSnackBar" :processId="selectedProcessId" :fileNames="fileNames"></file-creating>
+                <file-updating v-else @show-snackbar="showSnackBar" :processId="selectedProcessId" :fileNameId="selectedFileName"></file-updating>
             </v-card>
         </v-col>
       </v-row>
@@ -67,7 +68,8 @@ export default {
     },
 
     components : {
-        "file-creating": FileCreating
+        "file-creating": FileCreating,
+        "file-updating": FileUpdating
     },
 
     watch: {

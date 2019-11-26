@@ -29,7 +29,7 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(List<GraphicName>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GraphicNameUploaderViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType (StatusCodes.Status404NotFound)]
         [Route("graphics/{fileNameId:int}")]
         public async Task<IActionResult> GetGraphicsByFileName(int fileNameId)
