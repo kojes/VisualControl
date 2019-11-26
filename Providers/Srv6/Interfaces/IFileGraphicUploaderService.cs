@@ -11,6 +11,7 @@ namespace VueExample.Providers.Srv6.Interfaces
         Task<IList<GraphicNameUploaderViewModel>> GetGraphicsByFileName(int graphicId);
         Task<FileName> CreateFileName(FileNameUploaderViewModel fileNameViewModel);
         Task<GraphicName> AddGraphicToFileName(int fileNameId, GraphicNameUploaderViewModel graphicNameUploaderViewModel);
+        Task DeleteFileName(int fileNameId, int processId);
         Task DeleteGraphicFromFileName(int fileNameId, GraphicNameUploaderViewModel graphicNameUploaderViewModel);
     }
 }

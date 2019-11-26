@@ -65,5 +65,15 @@ namespace VueExample.Controllers
             return NoContent();
         }
 
+        [HttpDelete]
+        [ProducesResponseType (StatusCodes.Status204NoContent)]
+        [Route("filename")]
+        public async Task<IActionResult> DeleteFileName([FromBody] JObject fileNameJObject)
+        {
+            var fileNameUploaderViewModel = fileNameJObject.ToObject<FileNameUploaderViewModel>();
+            await _fileGraphicUploaderService.DeleteFileName(fileNameUploaderViewModel.Id, fileNameUploaderViewModel.ProcessId);
+            return NoContent();
+        }
+
     }
 }

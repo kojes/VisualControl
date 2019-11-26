@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
         <v-col lg="6">
-            <v-text-field v-model="fileNameId" readonly label="Название файла"></v-text-field>
+            <v-text-field v-model="fileName.name" readonly label="Название файла"></v-text-field>
         </v-col>
          <v-col lg="5" offset-lg="1">
             <v-btn color="pink" block outlined @click="deleteFileName(fileName, processId)">Удалить файл</v-btn> 
@@ -31,7 +31,7 @@
                                             </v-row>
                                             <v-row>
                                                 <v-col lg="6" offset-lg="5" class="pe-8">
-                                                    <v-btn color="indigo" v-show="validateNewGraphic.length === 0" block @click="createGraphic(newGraphic, selectedVariant, fileNameId)">Создать график</v-btn> 
+                                                    <v-btn color="indigo" v-show="validateNewGraphic.length === 0" block @click="createGraphic(newGraphic, selectedVariant, fileName.id)">Создать график</v-btn> 
                                                 </v-col>
                                             </v-row>
                                         </v-card>
@@ -46,7 +46,7 @@
                                                 <v-list-item-title>{{graphic.name}}</v-list-item-title>
                                             </v-list-item-content>
                                             <v-list-item-action>
-                                                <v-btn icon color="pink" @click="deleteGraphic(graphic.name, fileNameId)"><v-icon>delete_outline</v-icon></v-btn>
+                                                <v-btn icon color="pink" @click="deleteGraphic(graphic, fileName.id)"><v-icon>delete_outline</v-icon></v-btn>
                                             </v-list-item-action>
                                         </v-list-item>
                                     </v-list-item-group>
@@ -72,7 +72,7 @@
                     <v-btn color="primary" block outlined @click="createVariant">Добавить вариант</v-btn> 
                 </v-col>
                 <v-col lg="2">
-                    <v-btn icon color="pink" @click="deleteVariant"><v-icon>delete_outline</v-icon></v-btn>
+                    <v-btn icon color="pink" @click="deleteVariant(graphics, fileName.id)"><v-icon>delete_outline</v-icon></v-btn>
                 </v-col>
             </v-row>            
         </v-col>
@@ -82,12 +82,13 @@
 
 <script>
 export default {
-    props: ["processId", "fileNameId"],
+    props: ["processId", "fileName"],
 
     data() {
         return {
             graphics: [],
             variants: [],
+            newGraphic: "",
             selectedVariant: ""          
         }
     },
@@ -106,12 +107,33 @@ export default {
         }
     },
 
+    watch: {
+        'fileName.id': {
+            immediate: true,
+            async handler(newVal, oldVal){
+                await this.$http
+                .get(`/api/filegraphicuploader/graphics/${newVal}`)
+                .then(response => { 
+                    this.graphics = response.data.map(x => ({id: x.id, name: x.name, variant: "Вариант " + x.variant}))
+                    this.variants = _.uniq(response.data.map(x => "Вариант " + x.variant))
+                    this.selectedVariant = this.variants[0]                    
+                            
+                })
+                .catch(error => {                
+                    if(error.response.status === 404) {
+                        this.$emit("show-snackbar", `Графики не найдены`, "pink") 
+                    }
+                })
+            }
+        }
+    },
+
     methods: {
          async deleteFileName(fileName, processId) {
            await this.$http({
                 method: "delete",
-                url: `/api/filegraphicuploader/filename/create`, 
-                data: {name: name , processId: processId, graphicNames: graphics.map(g => ({name: g.name, variant: +g.variant.split(' ')[1]}))}, 
+                url: `/api/filegraphicuploader/filename`, 
+                data: {id: fileName.id, processId: processId}, 
                 config: {
                     headers: {
                         'Accept': "application/json",
@@ -120,12 +142,8 @@ export default {
                 }
             })
             .then(response => { 
-                this.$emit("show-snackbar", "Новое имя файла успешно создано", "success") 
-                this.$emit("file-created", response.data) 
-                this.graphics = []
-                this.fileName = "" 
-                this.selectedVariant = "Вариант 1",
-                this.variants =  ["Вариант 1"]            
+                this.$emit("show-snackbar", `Файл ${fileName.name} успешно удален`, "success") 
+                this.$emit("file-deleted", fileName.id)          
             })
             .catch(error => this.$emit("show-snackbar", error.response.data[0].message, "pink"));  
         },
@@ -140,7 +158,7 @@ export default {
             await this.$http({
                 method: "put",
                 url: `/api/filegraphicuploader/graphicname/create/${fileNameId}`, 
-                data: graphic, 
+                data: {...graphic, variant: graphic.variant.split(' ')[1]}, 
                 config: {
                     headers: {
                         'Accept': "application/json",
@@ -151,18 +169,19 @@ export default {
             .then(response => { 
                 this.$emit("show-snackbar", `График ${newGraphic} успешно создан`, "success") 
                 this.menu = false
-                this.newGraphic = ""          
+                this.newGraphic = ""
+                this.graphics.push({...response.data, variant: selectedVariant})          
             })
             .catch(error => this.$emit("show-snackbar", error.response.data[0].message, "pink"));  
 
              
         },
 
-        async deleteGraphic(name, selectedVariant, fileNameId) {
+        async deleteGraphic(graphic, fileNameId) {
             await this.$http({
                 method: "delete",
                 url: `/api/filegraphicuploader/graphicname/delete/${fileNameId}`, 
-                data: {name: name, variant: selectedVariant}, 
+                data: {id: graphic.id, name: graphic.name, variant: graphic.variant.split(' ')[1]}, 
                 config: {
                     headers: {
                         'Accept': "application/json",
@@ -171,8 +190,8 @@ export default {
                 }
             })
             .then(response => { 
-                this.$emit("show-snackbar", `График ${name} успешно удален`, "success") 
-                this.graphics = this.graphics.filter(g => g.name !== name)    
+                this.$emit("show-snackbar", `График ${graphic.name} успешно удален`, "success") 
+                this.graphics = this.graphics.filter(g => g.id !== graphic.id)    
             })
             .catch(error => this.$emit("show-snackbar", error.response.data[0].message, "pink"));  
 
@@ -186,8 +205,13 @@ export default {
             this.selectedVariant = newVariant
         },
 ///add api
-        deleteVariant() {
+        deleteVariant(graphics, fileNameId) {
             if(this.variants.length > 1) {  
+
+                var graphicsVariant = graphics.filter(x => x.variant === this.selectedVariant)
+                graphicsVariant.forEach(g => {
+                    this.deleteGraphic(g, fileNameId)
+                })
                 this.variants = this.variants.filter(x => x !== this.selectedVariant)
                 this.graphics = this.graphics.filter(x => x.variant !== this.selectedVariant)
             }
@@ -197,18 +221,8 @@ export default {
     },
 
     async mounted() {
-        await this.$http
-            .get(`/api/filegraphicuploader/graphics/${this.fileNameId}`)
-            .then(response => { 
-                this.graphics = response.data.map(x => ({id: x.id, name: x.name, variant: "Вариант " + x.variant}))
-                this.variants = _.uniq(response.data.map(x => "Вариант " + x.variant))
-                this.selectedVariant = this.variants[0]                              
-            })
-            .catch(error => {                
-                if(error.response.status === 404) {
-                    this.$emit("show-snackbar", `Графики не найдены`, "pink") 
-                }
-            })
+       
+       
     }
 }
 </script>

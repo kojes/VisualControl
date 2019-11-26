@@ -16,17 +16,17 @@ namespace VueExample.Providers.Srv6
         {
             using (var db = new Srv6Context()) 
             {
-                var graphicName = db.GraphicNames.Join(db.FileNameGraphics.Where(x => x.Variant == graphicNameUploaderViewModel.Variant && x.FileNameId == fileNameId), 
+                var graphicName = await db.GraphicNames.Join(db.FileNameGraphics.Where(x => x.Variant == graphicNameUploaderViewModel.Variant && x.FileNameId == fileNameId), 
                                                        c => c.Id,
                                                        p => p.GraphicNameId,
-                                                       (c,p) => p.GraphicName);
+                                                       (c,p) => p.GraphicName).Where(x => x.Name == graphicNameUploaderViewModel.Name).FirstOrDefaultAsync();
                 if(graphicName is null)
                 {
                     var graphic = new GraphicName{Name = graphicNameUploaderViewModel.Name};
                     db.GraphicNames.Add(graphic);
                     await db.SaveChangesAsync();
                     db.FileNameGraphics.Add(new FileNameGraphic{FileNameId = fileNameId, 
-                                                                    GraphicNameId = graphicNameUploaderViewModel.Id, 
+                                                                    GraphicNameId = graphic.Id, 
                                                                     Variant = graphicNameUploaderViewModel.Variant});
                     await db.SaveChangesAsync();
                     return graphic;
@@ -59,6 +59,16 @@ namespace VueExample.Providers.Srv6
             }
         }
 
+        public async Task DeleteFileName(int fileNameId, int processId)
+        {
+            using(var db = new Srv6Context())
+            {
+                 FileName fileName = new FileName() { Id = fileNameId, ProcessId = processId };
+                 db.Entry(fileName).State = EntityState.Deleted;
+                 await db.SaveChangesAsync();
+            }
+        }
+
         public async Task DeleteGraphicFromFileName(int fileNameId, GraphicNameUploaderViewModel graphicNameUploaderViewModel)
         {
             using (var db = new Srv6Context()) 
@@ -83,12 +93,12 @@ namespace VueExample.Providers.Srv6
         {
             using(var db = new Srv6Context()) 
             {
-                return await db.FileNames.Join(db.FileNameGraphics, 
+                var graphicNameUploaderViewModelList =  await db.FileNames.Where(x => x.Id == fileNameId).Join(db.FileNameGraphics, 
                                                c => c.Id,
                                                p => p.FileNameId,
-                                               (c,p) => new GraphicNameUploaderViewModel{Id = p.GraphicNameId, Name = p.GraphicName.Name, Variant = p.Variant})
-                                         .Where(x => x.Id == fileNameId)
+                                               (c,p) => new GraphicNameUploaderViewModel{Id = p.GraphicNameId, Name = p.GraphicName.Name, Variant = p.Variant})                                         
                                          .ToListAsync();
+                return graphicNameUploaderViewModelList;
             }
         }
     }

@@ -33,7 +33,7 @@
         <v-col lg="6">
             <v-card v-if="selectedFileName" class="mx-auto">
                 <file-creating v-if="selectedFileName === 'create'" @file-created="fileCreated" @show-snackbar="showSnackBar" :processId="selectedProcessId" :fileNames="fileNames"></file-creating>
-                <file-updating v-else @show-snackbar="showSnackBar" :processId="selectedProcessId" :fileNameId="selectedFileName"></file-updating>
+                <file-updating v-else @show-snackbar="showSnackBar" @file-deleted="fileDeleted" :processId="selectedProcessId" :fileName="fileNames.find(x => x.id === selectedFileName)"></file-updating>
             </v-card>
         </v-col>
       </v-row>
@@ -75,6 +75,7 @@ export default {
     watch: {
         selectedProcessId: async function(newVal, oldVal) {
             this.selectedFileName = ""
+            this.fileNames = []
             await this.$http
             .get(`/api/filegraphicuploader/process/${newVal}`)
             .then(response => { 
@@ -85,19 +86,6 @@ export default {
                     this.showSnackBar("Имена файлов не найдены", "pink")
                 }
             })
-        },
-
-        selectedFileName: async function(newVal, oldVal) {
-            if(newVal && newVal !== "create") {
-                await this.$http
-                .get(`/api/filegraphicuploader/graphics/${newVal}`)
-                .then(response => { 
-                    this.graphics = response.data                              
-                })
-                .catch(error => {                
-                   
-                })
-            }
         }
     },
 
@@ -119,6 +107,11 @@ export default {
         fileCreated(fileName) {
             this.fileNames.push(fileName)
         },
+
+        fileDeleted(fileNameId) {
+            this.fileNames = this.fileNames.filter(x => x.id !== fileNameId)
+            this.selectedFileName = 'create'
+        },       
 
         showSnackBar(text, color)
         {
