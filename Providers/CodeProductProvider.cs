@@ -19,6 +19,14 @@ namespace VueExample.Providers
             }
         }
 
+        public async Task<CodeProduct> GetByName(string name) 
+        {
+            using (var applicationContext = new Srv6Context())
+            {
+                return await applicationContext.CodeProducts.FirstOrDefaultAsync(x => x.CodeProductName == name);
+            }
+        }
+
         public async Task<IList<CodeProduct>> GetByProcessId(int processId) 
         {
             using (var applicationContext = new Srv6Context())

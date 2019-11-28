@@ -15,6 +15,7 @@ import DefectMassiveUploader from 'components/massive-uploader'
 import DieTypeSettings from 'components/dietype-settings'
 import Uploader from 'components/uploader-ng'
 import UploaderFg from 'components/uploader-filegraphic'
+import UploaderFinal from 'components/uploader-final'
 // Service components
 import LoginPage from 'components/login-page'
 import RegistrationPage from 'components/registration-page'
@@ -22,8 +23,7 @@ import NotFound from 'components/error-404'
 
 export const routes = [
   { name: 'home', path: '/', component: HomePage, display: 'Начальный экран', nav: true, icon: 'home' },
-  {
-    name: 'defectuploader', path: '/defectuploader', component: DefectMassiveUploader, display: 'MassiveUploader', nav: true, icon: 'cloud_upload' },
+  { name: 'defectuploader', path: '/defectuploader', component: DefectMassiveUploader, display: 'MassiveUploader', nav: true, icon: 'cloud_upload' },
   { name: 'registration', path: '/registration', component: RegistrationPage },
   { name: 'login', path: '/login', component: LoginPage },
   { name: 'wafermap', path: '/wafermap', component: WaferMap, display: 'WaferMap', nav: true, icon: 'blur_circular' },
@@ -40,6 +40,7 @@ export const routes = [
   { name: 'dietypesettings', path: '/dts', component: DieTypeSettings, display: 'dts', nav: true }, 
   { name: 'uploader', path: '/uu', component: Uploader, display: 'uu', nav: true },
   { name: 'uploader-fg', path: '/ufg', component: UploaderFg, display: 'ufg', nav: true },
+  { name: 'uploader-final', path: '/uploading', component: UploaderFinal, props: true },
   { name: 'uploader-cp', path: '/uu/:selectedCodeProductFolder', component: Uploader, display: 'uu', props: true }, 
   { name: 'uploader-cpw', path: '/uu/:selectedCodeProductFolder/:selectedWaferFolder', component: Uploader, display: 'uu', props: true }, 
   { name: 'uploader-cpwi', path: '/uu/:selectedCodeProductFolder/:selectedWaferFolder/:mrArray', component: Uploader, display: 'uu', props: true }, 

@@ -1,18 +1,21 @@
 <template>
   <v-container>
       <v-row>
-          <v-col lg="3" offset-lg="1">
+          <v-col lg="2" offset-lg="1">
             <v-radio-group v-model="selectedCodeProductFolder" @change="clearMeasurementRecordings">
                 <v-radio v-for="cpf in codeProductFolders" :key="cpf.folderName" :value="cpf.folderName" :label="cpf.folderName"></v-radio>
             </v-radio-group>
           </v-col>
-          <v-col lg="3" offset-lg="1">
+          <v-col lg="2" offset-lg="1">
             <v-radio-group v-model="selectedWaferFolder" @change="selectedMeasurementRecordings = []">
                 <v-radio v-for="wf in waferFolders" :key="wf.folderName" :value="wf.folderName" :label="wf.folderName" ></v-radio>
             </v-radio-group>
           </v-col>
-          <v-col lg="3" offset-lg="1">
+          <v-col lg="2" offset-lg="1">
               <v-checkbox v-model="selectedMeasurementRecordings" v-for="mr in measurementRecordings" :key="mr" :label="mr" :value="mr"></v-checkbox>
+          </v-col>
+          <v-col lg="2">
+              <v-btn v-show="selectedCodeProductFolder && selectedWaferFolder && selectedMeasurementRecordings.length > 0" color="success" block @click="goToUploading(selectedCodeProductFolder, selectedWaferFolder, selectedMeasurementRecordings)">Перейти к загрузке</v-btn> 
           </v-col>
       </v-row>
        <v-snackbar v-model="snackbar.visible"
@@ -50,6 +53,17 @@ export default {
             .get(`/api/folder/folders-cp`)
             .then(response =>  this.codeProductFolders = response.data)
             .catch(err => console.log(err))
+        },
+
+        goToUploading(selectedCodeProductFolder, selectedWaferFolder, selectedMeasurementRecordings) {
+            this.$router.push({
+                name: 'uploader-final',
+                params: {
+                    codeProduct: selectedCodeProductFolder,
+                    wafer: selectedWaferFolder,
+                    measurementRecordings: selectedMeasurementRecordings
+                }
+            })
         },
 
         clearMeasurementRecordings() {

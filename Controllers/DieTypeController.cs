@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using VueExample.Models.SRV6;
+using VueExample.Providers;
 using VueExample.Providers.Srv6.Interfaces;
 using VueExample.ViewModels;
 
@@ -15,6 +16,7 @@ namespace VueExample.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IDieTypeProvider _dieTypeProvider;
+        private readonly CodeProductProvider codeProductProvider = new CodeProductProvider();
         public DieTypeController(IDieTypeProvider dieTypeProvider, IMapper mapper)
         {
             _mapper = mapper;
@@ -68,6 +70,16 @@ namespace VueExample.Controllers
         {
             var dieTypeUpdatingViewModel = await _dieTypeProvider.GetCodeProductsAndElements(id);
             return dieTypeUpdatingViewModel is null ? (IActionResult)NotFound() : Ok(dieTypeUpdatingViewModel);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(DieTypeViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Route("wafer/{waferId}")]
+        public async Task<IActionResult> GetByWaferId([FromRoute] string waferId)
+        {   
+            var dieTypes = await _dieTypeProvider.GetByCodeProductId((await codeProductProvider.GetByWaferId(waferId)).IdCp);
+            return dieTypes is null ? (IActionResult)NotFound() : Ok(dieTypes);
         }
     }
 }

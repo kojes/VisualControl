@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using VueExample.Models;
 using VueExample.Providers;
 using VueExample.Providers.Srv6.Interfaces;
@@ -49,6 +50,19 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<SimpleOperationUploaderViewModel>), StatusCodes.Status200OK)]
+        [Route("simpleoperation/{codeProductName}/{waferName}/{dietypeid:int}")]
+        public async Task<IActionResult> GetSimpleOperations([FromRoute] string codeProductName, [FromRoute] string waferName, [FromRoute] int dietypeid, [FromQuery] string measurementRecordingsJSON)
+        {
+            var simpleOperations = await _folderService.GetSimpleOperations(ExtraConfiguration.UploadingPath, 
+                                                                            codeProductName, 
+                                                                            waferName, 
+                                                                            dietypeid,
+                                                                            JsonConvert.DeserializeObject<List<string>>(measurementRecordingsJSON));
+            return Ok(simpleOperations);
+        }
+
+        [HttpGet]
         [ProducesResponseType(typeof(List<WaferFolderViewModel>), StatusCodes.Status200OK)]
         [Route("folders-wafer/{codeProductFolderName}")]
         public IActionResult GetWaferFolders([FromRoute] string codeProductFolderName)
@@ -75,7 +89,7 @@ namespace VueExample.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
         [Route("folders-idmr/{codeProductFolderName}/{wafer}")]
-        public IActionResult GetMeasurementRecording([FromRoute] string codeProductFolderName, string wafer)
+        public IActionResult GetMeasurementRecordings([FromRoute] string codeProductFolderName, string wafer)
         {
             var directoryPath = ExtraConfiguration.UploadingPath;
             var directoriesList = _folderService.GetAllMeasurementRecordingFolder(directoryPath, codeProductFolderName, wafer);

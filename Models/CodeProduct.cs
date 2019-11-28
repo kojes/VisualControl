@@ -11,7 +11,8 @@ namespace VueExample.Models
 {
     [Table("Code_product")]
     public class CodeProduct
-    {   [Key()]
+    {   
+        [Key]
         [Column("id_cp")]
         public int IdCp { get; set; }
         [Column("id_processlist")]

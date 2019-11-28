@@ -6,7 +6,6 @@ using VueExample.Contexts;
 using VueExample.Models.SRV6;
 using VueExample.Providers.Srv6.Interfaces;
 using System.Collections.Generic;
-using VueExample.ResponseObjects;
 using VueExample.ViewModels;
 using AutoMapper;
 

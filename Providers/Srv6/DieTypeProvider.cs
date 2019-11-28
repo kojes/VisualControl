@@ -126,5 +126,22 @@ namespace VueExample.Providers.Srv6
                 return new Tuple<CodeProductViewModel, string>(_mapper.Map<CodeProduct, CodeProductViewModel>(codeProduct), codeProduct is null ? "ERROR" : action);
             }
         }
+
+        public async Task<List<DieTypeViewModel>> GetByCodeProductId(int codeProductId)
+        {
+            using(var db = new Srv6Context())
+            {
+                 var dieTypesList = await db.DieTypes
+                                          .Join(db.DieTypeCodeProducts.Where(x => x.CodeProductId == codeProductId),
+                                                c => c.DieTypeId, 
+                                                p => p.DieTypeId, 
+                                                (c,p) => p.DieType)
+                                          .AsNoTracking()
+                                          .ToListAsync();
+                return _mapper.Map<List<DieType>, List<DieTypeViewModel>>(dieTypesList);
+            }
+            
+          
+        }
     }
 }

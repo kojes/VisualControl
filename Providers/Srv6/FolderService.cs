@@ -2,11 +2,22 @@ using System.Linq;
 using VueExample.Providers.Srv6.Interfaces;
 using System.Collections.Generic;
 using System.IO;
+using VueExample.ViewModels;
+using System.Threading.Tasks;
 
 namespace VueExample.Providers.Srv6
 {
     public class FolderService : IFolderService
     {
+        private readonly IElementService _elementService;
+        private readonly IFileGraphicUploaderService _fileGraphicUploaderService;
+        private readonly ProcessProvider processProvider = new ProcessProvider();
+        private readonly CodeProductProvider codeProductProvider = new CodeProductProvider();
+        public FolderService(IElementService elementService, IFileGraphicUploaderService fileGraphicUploaderService)
+        {
+            _elementService = elementService;
+            _fileGraphicUploaderService = fileGraphicUploaderService;
+        }
         public List<string> GetAllCodeProductInUploaderDirectory(string directoryPath)
         {
             var directoriesNameList = new List<string>();
@@ -46,7 +57,36 @@ namespace VueExample.Providers.Srv6
             return directoriesNameList;
         }
 
-
-
+        public async Task<List<SimpleOperationUploaderViewModel>> GetSimpleOperations(string directoryPath, string codeProductName, string waferName, int dieTypeId, List<string> measurementRecordings)
+        {
+            var simpleOperationList = new List<SimpleOperationUploaderViewModel>(); 
+            var fileNames = await _fileGraphicUploaderService.GetAllFileNamesByProcessId(processProvider.GetProcessIdByCodeProductId((await codeProductProvider.GetByWaferId(waferName)).IdCp));
+            foreach (var meas in measurementRecordings)
+            {
+                var directoriesArray = System.IO.Directory.GetDirectories($"{directoryPath}\\{codeProductName}\\meas\\{waferName}\\{meas}");
+                foreach (var directory in directoriesArray)
+                {
+                    var dirElementName = new DirectoryInfo(directory).Name;
+                    var simpleOperationArray = Directory.GetFiles($"{directoryPath}\\{codeProductName}\\meas\\{waferName}\\{meas}\\{dirElementName}", "*.csv", SearchOption.TopDirectoryOnly);
+                    foreach (var simpleOperationFileName in simpleOperationArray)
+                    {
+                        var simpleOperation = new SimpleOperationUploaderViewModel();
+                        simpleOperation.Name = $"{meas}_{dirElementName}";
+                        simpleOperation.Element = new ElementUploading{Name = dirElementName, ElementId = (await _elementService.GetByDieType(dieTypeId)).FirstOrDefault(x => x.Name == dirElementName)?.ElementId};
+                        simpleOperation.FileName = new FileNameUploaderViewModel{Name = simpleOperationFileName};
+                        var fileName = fileNames.FirstOrDefault(f => f.Name == simpleOperationFileName);
+                        if(fileName != null)
+                        {
+                            simpleOperation.FileName.Id = fileName.Id;
+                            simpleOperation.FileName.ProcessId = fileName.ProcessId;
+                            simpleOperation.FileName.GraphicNames = (await _fileGraphicUploaderService.GetGraphicsByFileName(fileName.Id)).ToList();
+                        }
+                        simpleOperationList.Add(simpleOperation);
+                    }
+                    
+                }           
+            }
+            return simpleOperationList;
+        }
     }
 }
