@@ -7,6 +7,7 @@ namespace VueExample.ViewModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Path { get; set; }
         public int ProcessId { get; set; }
         public List<GraphicNameUploaderViewModel> GraphicNames { get; set; }
         

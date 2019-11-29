@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using VueExample.ViewModels;
 using System.Threading.Tasks;
+using System;
 
 namespace VueExample.Providers.Srv6
 {
@@ -67,13 +68,15 @@ namespace VueExample.Providers.Srv6
                 foreach (var directory in directoriesArray)
                 {
                     var dirElementName = new DirectoryInfo(directory).Name;
-                    var simpleOperationArray = Directory.GetFiles($"{directoryPath}\\{codeProductName}\\meas\\{waferName}\\{meas}\\{dirElementName}", "*.csv", SearchOption.TopDirectoryOnly);
+                    var simpleOperationArray = Directory.EnumerateFiles($"{directoryPath}\\{codeProductName}\\meas\\{waferName}\\{meas}\\{dirElementName}", "*.*", SearchOption.TopDirectoryOnly)
+                                                        .Where(s => s.EndsWith(".csv") || s.EndsWith(".s2p"));                    
                     foreach (var simpleOperationFileName in simpleOperationArray)
                     {
-                        var simpleOperation = new SimpleOperationUploaderViewModel();
-                        simpleOperation.Name = $"{meas}_{dirElementName}";
-                        simpleOperation.Element = new ElementUploading{Name = dirElementName, ElementId = (await _elementService.GetByDieType(dieTypeId)).FirstOrDefault(x => x.Name == dirElementName)?.ElementId};
-                        simpleOperation.FileName = new FileNameUploaderViewModel{Name = simpleOperationFileName};
+                        var simpleOperation = new SimpleOperationUploaderViewModel{Guid = Guid.NewGuid().ToString()};
+                        simpleOperation.Name = $"{meas}";
+                        var element = (await _elementService.GetByDieType(dieTypeId)).FirstOrDefault(x => x.Name == dirElementName);
+                        simpleOperation.Element = new ElementUploading{Name = dirElementName, ElementId = element?.ElementId, Comment = element?.Comment};
+                        simpleOperation.FileName = new FileNameUploaderViewModel{Name = Path.GetFileName(simpleOperationFileName), Path = simpleOperationFileName};
                         var fileName = fileNames.FirstOrDefault(f => f.Name == simpleOperationFileName);
                         if(fileName != null)
                         {

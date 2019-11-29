@@ -3,6 +3,7 @@ namespace VueExample.ViewModels
 {
     public class SimpleOperationUploaderViewModel
     {
+        public string Guid { get; set; }
         public string Name { get; set; }
         public ElementUploading Element { get; set; }
         public FileNameUploaderViewModel FileName { get; set; }
@@ -14,6 +15,7 @@ namespace VueExample.ViewModels
     {
         public int? ElementId { get; set; }
         public string Name { get; set; }
+        public string Comment { get; set; }
 
     }
 
