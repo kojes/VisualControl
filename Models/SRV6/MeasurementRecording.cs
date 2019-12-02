@@ -12,6 +12,8 @@ namespace VueExample.Models.SRV6
         public string Name { get; set; }
         [Column("id_stage")]
         public int? StageId { get; set; }
+        [Column("id_bmr")]
+        public int? BmrId { get; set; }
         public ICollection<MeasurementRecordingElement> MeasurementRecordingElements { get; set; }
     }
 }

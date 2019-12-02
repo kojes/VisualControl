@@ -1,17 +1,74 @@
 <template>
   <v-container>
       <v-row>
-          <v-col lg="2">
-            <v-select   v-model="selectedMonitor"
+          <v-col class="aTop">     
+                <v-row>
+                    <v-select   
+                        v-model="selectedMonitor"
                         :items="monitors"
                         item-text="name"
-                        item-value="id"
-                        outlined
+                        item-value="id"                       
                         no-data-text="Нет данных"
                         label="Выберите монитор:">
-            </v-select>
+                    </v-select>
+                </v-row>     
+                <v-row>
+                    <v-text-field v-model="wafer" readonly label="Пластина:"></v-text-field> 
+                </v-row>
+                <v-row>
+                    <v-text-field v-model="codeProduct" readonly label="Шаблон:"></v-text-field> 
+                </v-row>
+                 <v-row>
+                    <v-btn v-if="readyToUploading" block color="success" @click="alert()">Загрузить</v-btn>
+                    <v-btn v-else @mouseover="errorHighlight= true" @mouseleave="errorHighlight= false" block outlined color="pink" @click="alert()">Загрузка невозможна</v-btn>
+                </v-row>   
+                <v-row>
+                    <v-col lg="12">
+                        <v-card class="mt-6" elevation="8" tile>
+                            <v-list>
+                                <v-subheader>Выбор этапов</v-subheader>                   
+                                <v-list-item v-for="measurementRecording in measurementRecordingsWithStage" :key="measurementRecording.id">                       
+                                    <v-list-item-content>
+                                        <v-tooltip top>
+                                            <template v-slot:activator="{ on }">
+                                                <v-chip v-on="on" label :color="measurementRecording.stage.name ? 'success' : 'pink'">
+                                                    {{measurementRecording.id}}
+                                                </v-chip>
+                                            </template>
+                                            <span v-if="measurementRecording.stage.name">{{measurementRecording.stage.name}}</span>
+                                            <span v-else>Этап не выбран</span>
+                                        </v-tooltip>
+                                    </v-list-item-content>
+                                    <v-list-item-icon>
+                                        <v-menu v-model="measurementRecording.stage.menu" :close-on-content-click="false" :nudge-width="300">
+                                            <template v-slot:activator="{ on }">
+                                                <v-icon v-on="on" color="deep-purple lighten-5">edit</v-icon>   
+                                            </template>
+                                            <v-card>
+                                                <v-row>
+                                                    <v-col lg="12" class="px-8">
+                                                          <v-select                  
+                                                                :items="stages"
+                                                                @change="stageChanged(measurementRecording)"
+                                                                v-model="measurementRecording.stage.id"
+                                                                no-data-text="Нет данных"
+                                                                item-text="stageName"
+                                                                item-value="stageId"
+                                                                label="Этап">
+                                                            </v-select>
+                                                    </v-col>
+                                                </v-row>                                                
+                                            </v-card>
+                                        </v-menu>                                                                           
+                                    </v-list-item-icon>
+                                </v-list-item>                    
+                            </v-list>
+                        </v-card>
+                    </v-col>                    
+                </v-row>          
+                     
           </v-col>
-          <v-col lg="10">
+          <v-col lg="10" offset-lg="2">
             <v-simple-table dark>
                 <template v-slot:default>
                     <thead>
@@ -22,48 +79,62 @@
                             <th class="text-left">Тип измерения</th>
                             <th class="text-center">Тип карты</th>
                             <th class="text-center">Комментарий</th>
-                            <th class="text-center">Статус загрузки</th>
-                            <th class="text-left"></th>
-                            
+                            <th class="text-center">Удалить</th>     
+                            <th class="text-left">Статус загрузки</th>
+                                                
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="operation in simpleOperations" :key="operation.guid">
+                        <tr v-bind:class="{ rotatingBorder: errorHighlight && !(operation.fileName.graphicNames && operation.element.elementId)}"  v-for="operation in simpleOperations" :key="operation.guid">
                             <td><v-chip label color="grey darken-2"> {{operation.name + '_' + operation.element.name}}</v-chip></td>
-                            <td><v-row>
-                                    <v-col lg="9" class="text-lg-center">                                        
-                                        <v-tooltip v-if="operation.element.elementId" bottom>
-                                            <template v-slot:activator="{ on }">
-                                                <v-chip v-on="on" label color="indigo">
-                                                    {{operation.element.name}}
-                                                </v-chip>
-                                            </template>
-                                            <span v-if="operation.element.comment">{{operation.element.comment}}</span>
-                                            <span v-else>Нет описания</span>
-                                        </v-tooltip>   
-                                        <v-tooltip v-else bottom>
-                                            <template v-slot:activator="{ on }">
-                                                <v-chip v-on="on" label color="pink">
-                                                    {{operation.element.name}}
-                                                </v-chip>
-                                            </template>
-                                            <span>Элемента не существует на этом мониторе. Нажмите плюс для создания</span>
-                                        </v-tooltip>          
-                                    </v-col>
-                                     <v-col lg="3" class="text-lg-left">
-                                        <create-element v-if="!operation.element.elementId" @show-snackbar="showSnackBar" @element-created="elementCreated" :name="operation.element.name" :dieTypeId="selectedMonitor"></create-element>                            
-                                    </v-col>
-                                </v-row>
-                            </td>
-                            <td>{{operation.fileName.name}}</td>
                             <td>
-                                <v-btn v-if="operation.fileName.graphicNames" icon color="success"><v-icon>done_outline</v-icon></v-btn>
-                                <v-btn v-else icon color="pink"><v-icon>warning</v-icon></v-btn>
-                            </td>
-                            <td><v-text-field v-model="operation.mapType" outlined label="Тип карты:"></v-text-field></td>
-                            <td><v-text-field v-model="operation.comment" outlined label="Комментарий:"></v-text-field></td>                           
-                            <td><v-progress-circular :rotate="360" :size="50" :width="7" :value="100" color="success">100</v-progress-circular></td>
-                            <td><v-btn icon color="pink" @click="deleteRow(operation.guid)"><v-icon>delete_outline</v-icon></v-btn></td>
+                                <v-row>
+                                        <v-col lg="9" class="text-lg-center">                                        
+                                            <v-tooltip v-if="operation.element.elementId" bottom>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-chip class="me-4" v-on="on" label color="indigo">
+                                                        {{operation.element.name}}
+                                                    </v-chip>
+                                                </template>
+                                                <span v-if="operation.element.comment">{{operation.element.comment}}</span>
+                                                <span v-else>Нет описания</span>
+                                            </v-tooltip>   
+                                            <v-tooltip v-else bottom>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-chip v-on="on" label color="pink">
+                                                        {{operation.element.name}}
+                                                    </v-chip>
+                                                </template>
+                                                <span>Элемента не существует на этом мониторе. Нажмите плюс для создания</span>
+                                            </v-tooltip>          
+                                        </v-col>
+                                        <v-col lg="3" class="text-lg-left">
+                                            <create-element v-if="!operation.element.elementId" @show-snackbar="showSnackBar" @element-created="elementCreated" :name="operation.element.name" :dieTypeId="selectedMonitor"></create-element>                            
+                                        </v-col>
+                                    </v-row>
+                                </td>
+                                <td>{{operation.fileName.name}}</td>
+                                <td v-if="operation.fileName.graphicNames">
+                                    <v-text-field v-if="operation.fileName.graphicNames.length === 1" class="mt-6" :value="operation.fileName.graphicNames[0]" readonly outlined></v-text-field>
+                                    <v-select v-else class="mt-6"
+                                        v-model="operation.fileName.selectedGraphicNames"
+                                        :items="operation.fileName.graphicNames"
+                                        outlined
+                                        no-data-text="Нет данных">
+                                    </v-select>
+                                </td>    
+                                <td v-else>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on }">
+                                            <v-icon v-on="on" color="pink">warning</v-icon>
+                                        </template>
+                                        <span>Тип измерения не найден</span>
+                                    </v-tooltip>                                     
+                                </td>                            
+                                <td><v-text-field class="mt-6" v-model="operation.mapType" outlined label="Тип карты:"></v-text-field></td>
+                                <td><v-text-field class="mt-6" v-model="operation.comment" outlined label="Комментарий:"></v-text-field></td>  
+                                <td><v-btn icon color="primary" @click="deleteRow(operation.guid)"><v-icon>delete_outline</v-icon></v-btn></td>                         
+                                <td><v-progress-circular :rotate="360" :size="50" :width="7" :value="100" color="success">100</v-progress-circular></td>                           
                         </tr>
                     </tbody>
                 </template>
@@ -92,8 +163,11 @@ export default {
 
     data() {
         return {
+            measurementRecordingsWithStage: [],
             selectedMonitor: "",
+            errorHighlight: false,
             simpleOperations: [],
+            stages: [],
             monitors: [],
             snackbar: {text: "", color: "indigo", visible: false}
         }
@@ -120,6 +194,15 @@ export default {
         }
     },
 
+    computed: {
+        userName() {
+            return this.$store.state.authentication.user.firstName + " " + this.$store.state.authentication.user.surname
+        },
+        readyToUploading() {
+            return this.simpleOperations.length > 0 && this.simpleOperations.every(so => so.fileName.graphicNames && so.element.elementId)
+        }
+    },
+
     methods: {
         async initMonitors() {
             await this.$http
@@ -129,6 +212,27 @@ export default {
                 this.selectedMonitor = this.monitors[0].id 
             })
             .catch(err => console.log(err)) ///err
+        },
+
+        async getAllStages(waferId) {
+            await this.$http
+            .get(`/api/stage/getstagesbywaferid?waferId=${waferId}`)
+            .then(response => {
+                this.stages = response.data
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+        },
+
+        stageChanged(measurementRecording) {
+            measurementRecording.stage.menu = false
+            measurementRecording.stage.name = this.stages.find(s => s.stageId === measurementRecording.stage.id).stageName
+            this.simpleOperations.forEach(so => {
+                if(so.name === measurementRecording.id) {
+                    so.stageId = measurementRecording.stage.id
+                }                
+            });
         },
 
         deleteRow(guid) {
@@ -151,10 +255,36 @@ export default {
 
     async mounted() {
         await this.initMonitors()
+        await this.getAllStages(this.wafer)
+        this.measurementRecordingsWithStage = this.measurementRecordings.map(x => ({id: x, stage: {id: 0, name: "", menu: false}}))
+
     }
 }
 </script>
 
-<style>
+<style scoped>
+    .aTop {       
+        position: fixed; 
+        top: 75px; 
+        max-width: 14.5%;
+    }
 
+    .rotatingBorder {
+        width: max-content;
+        background: linear-gradient(90deg, #e91e63 50%, transparent 50%), linear-gradient(90deg, #e91e63 50%, transparent 50%), linear-gradient(0deg, #e91e63 50%, transparent 50%), linear-gradient(0deg, #e91e63 50%, transparent 50%);
+        background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        background-size: 5px 2px, 5px 2px, 2px 5px, 2px 5px;
+        padding: 10px;
+        animation: border-dance 15s infinite linear;
+    }
+
+    @keyframes border-dance {
+        0% {
+            background-position: 0 0, 100% 100%, 0 100%, 100% 0;
+        }
+        100% {
+            background-position: 100% 0, 0 100%, 0 0, 100% 100%;
+        }
+    }
+    
 </style>

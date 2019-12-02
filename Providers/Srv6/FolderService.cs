@@ -76,13 +76,27 @@ namespace VueExample.Providers.Srv6
                         simpleOperation.Name = $"{meas}";
                         var element = (await _elementService.GetByDieType(dieTypeId)).FirstOrDefault(x => x.Name == dirElementName);
                         simpleOperation.Element = new ElementUploading{Name = dirElementName, ElementId = element?.ElementId, Comment = element?.Comment};
-                        simpleOperation.FileName = new FileNameUploaderViewModel{Name = Path.GetFileName(simpleOperationFileName), Path = simpleOperationFileName};
-                        var fileName = fileNames.FirstOrDefault(f => f.Name == simpleOperationFileName);
+                        simpleOperation.FileName = new FileNameUploaderUViewModel{Name = Path.GetFileName(simpleOperationFileName), Path = simpleOperationFileName};
+                        var fileName = fileNames.FirstOrDefault(f => f.Name == simpleOperation.FileName.Name.Split('.')[0]);
                         if(fileName != null)
                         {
                             simpleOperation.FileName.Id = fileName.Id;
                             simpleOperation.FileName.ProcessId = fileName.ProcessId;
-                            simpleOperation.FileName.GraphicNames = (await _fileGraphicUploaderService.GetGraphicsByFileName(fileName.Id)).ToList();
+                            var graphicNamesList = (await _fileGraphicUploaderService.GetGraphicsByFileName(fileName.Id)).ToList();
+                            var graphicNamesDict = new Dictionary<int, string>();
+                            foreach (var graphic in graphicNamesList)
+                            {
+                                if(graphicNamesDict.ContainsKey(graphic.Variant))
+                                {
+                                    graphicNamesDict[graphic.Variant] = graphicNamesDict[graphic.Variant] + ";" + graphic.Name;
+                                }
+                                else
+                                {
+                                    graphicNamesDict.Add(graphic.Variant, graphic.Name);
+                                }
+                            }
+                            simpleOperation.FileName.GraphicNames = graphicNamesDict.Values.ToList();
+                            simpleOperation.FileName.SelectedGraphicNames = simpleOperation.FileName.GraphicNames.FirstOrDefault();
                         }
                         simpleOperationList.Add(simpleOperation);
                     }
