@@ -20,6 +20,7 @@ namespace VueExample.Contexts
         public DbSet<Models.SRV6.DieType> DieTypes { get; set; }
         public DbSet<DieGraphics> DieGraphics { get; set; }
         public DbSet<MeasurementRecording> MeasurementRecordings { get; set; }
+        public DbSet<BigMeasurementRecording> BigMeasurementRecordings { get; set; }
         public DbSet<Graphic> Graphics { get; set; }
         public DbSet<FileName> FileNames { get; set; }
         public DbSet<GraphicName> GraphicNames { get; set; }

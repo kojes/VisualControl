@@ -20,7 +20,7 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IList<CodeProductViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CodeProductViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("getbywaferid")]
         public async Task<IActionResult> GetByWaferId([FromQuery] string waferId)

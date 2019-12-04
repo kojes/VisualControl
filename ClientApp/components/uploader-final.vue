@@ -16,10 +16,10 @@
                     <v-text-field v-model="wafer" readonly label="Пластина:"></v-text-field> 
                 </v-row>
                 <v-row>
-                    <v-text-field v-model="codeProduct" readonly label="Шаблон:"></v-text-field> 
+                    <v-text-field v-model="originalCodeProduct.name" readonly label="Шаблон:"></v-text-field> 
                 </v-row>
                  <v-row>
-                    <v-btn v-if="readyToUploading" block color="success" @click="alert()">Загрузить</v-btn>
+                    <v-btn v-if="readyToUploading" block color="success" @click="upload">Загрузить</v-btn>
                     <v-btn v-else @mouseover="errorHighlight= true" @mouseleave="errorHighlight= false" block outlined color="pink" @click="alert()">Загрузка невозможна</v-btn>
                 </v-row>   
                 <v-row>
@@ -134,7 +134,12 @@
                                 <td><v-text-field class="mt-6" v-model="operation.mapType" outlined label="Тип карты:"></v-text-field></td>
                                 <td><v-text-field class="mt-6" v-model="operation.comment" outlined label="Комментарий:"></v-text-field></td>  
                                 <td><v-btn icon color="primary" @click="deleteRow(operation.guid)"><v-icon>delete_outline</v-icon></v-btn></td>                         
-                                <td><v-progress-circular :rotate="360" :size="50" :width="7" :value="100" color="success">100</v-progress-circular></td>                           
+                                <td>
+                                    <v-icon v-if="operation.uploadStatus === 'done'" color="success">done_outline</v-icon>
+                                    <v-icon v-else-if="operation.uploadStatus === 'rejected'" color="pink">error_outline</v-icon>
+                                    <v-progress-circular v-else-if="operation.uploadStatus === 'pending'" indeterminate color="primary"></v-progress-circular>
+                                    <div v-else></div>
+                                </td>                           
                         </tr>
                     </tbody>
                 </template>
@@ -165,6 +170,7 @@ export default {
         return {
             measurementRecordingsWithStage: [],
             selectedMonitor: "",
+            originalCodeProduct: {},
             errorHighlight: false,
             simpleOperations: [],
             stages: [],
@@ -186,10 +192,10 @@ export default {
                 }
             })
             .then(response => {
-                this.simpleOperations = response.data
+                this.simpleOperations = response.data.map(d => ({ ...d, uploadStatus: '', shortLink: '' }))
             })
             .catch(error => {
-
+                this.showSnackBar("Ошибка при загрузке операций", "pink")
             })              
         }
     },
@@ -211,7 +217,7 @@ export default {
                 this.monitors = response.data
                 this.selectedMonitor = this.monitors[0].id 
             })
-            .catch(err => console.log(err)) ///err
+            .catch(err => this.showSnackBar("Ошибка при загрузке списка мониторов", "pink"))
         },
 
         async getAllStages(waferId) {
@@ -221,8 +227,53 @@ export default {
                 this.stages = response.data
             })
             .catch((error) => {
-                console.log(error)
+                this.showSnackBar("Ошибка при загрузке этапов", "pink")
             });
+        },
+
+        async getOriginalCodeProduct(waferId) {
+            await this.$http
+            .get(`/api/codeproduct/getbywaferid?waferId=${waferId}`)
+            .then(response => {
+                this.originalCodeProduct = response.data
+            })
+            .catch((error) => {
+                this.showSnackBar("Ошибка при загрузке шаблона", "pink")
+            });
+        },
+
+        async upload() {
+            this.simpleOperations.forEach(async so => {
+                so.uploadStatus = "pending"
+                await this.$http({
+                    method: "post",
+                    url: `/api/uploading`, 
+                    data: {operationName: `${so.name}_${so.element.name}`, 
+                           bigMeasurementName: so.name,
+                           stageId: so.stageId,
+                           elementId: so.element.elementId, 
+                           codeProductId: this.originalCodeProduct.id, 
+                           waferId: this.wafer,
+                           userName: this.userName,
+                           map: so.mapType,
+                           comment: so.comment,
+                           path: so.path,
+                           graphicNames: so.fileName.graphicNames.split(';') }, 
+                    config: {
+                        headers: {
+                            'Accept': "application/json",
+                            'Content-Type': "application/json"
+                        }
+                    }
+                })
+                .then(response => {
+                    so.uploadStatus = "done"
+                    so.shortLink = response.data
+                })
+                .catch(error => {
+                    so.uploadStatus = "rejected"
+                });
+            })
         },
 
         stageChanged(measurementRecording) {
@@ -255,6 +306,7 @@ export default {
 
     async mounted() {
         await this.initMonitors()
+        await this.getOriginalCodeProduct(this.wafer)
         await this.getAllStages(this.wafer)
         this.measurementRecordingsWithStage = this.measurementRecordings.map(x => ({id: x, stage: {id: 0, name: "", menu: false}}))
 

@@ -13,7 +13,7 @@ namespace VueExample.Providers.Srv6
              using(var db = new Srv6Context())
              {
                 return (await db.CodeProductStandartWafers.
-                              FirstOrDefaultAsync(x =>  x.Id ==  db.MapStandartWafers.FirstOrDefault(x => x.NewCode == code && x.MapName == map).Idfk)).Code;
+                              FirstOrDefaultAsync(x => x.Id == db.MapStandartWafers.FirstOrDefault(m => m.NewCode == code && m.MapName == map).Idfk)).Code;
              }
              
         }

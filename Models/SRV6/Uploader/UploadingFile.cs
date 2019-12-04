@@ -6,7 +6,8 @@ namespace VueExample.Models.SRV6.Uploader
     {
         public int? MeasurementRecordingId { get; set; }
         public string OperationName { get; set; }
-        public int StageId { get; set; }
+        public string BigMeasurementName { get; set; }
+        public int? StageId { get; set; }
         public int ElementId { get; set; }
         public int CodeProductId { get; set; }
         public string WaferId { get; set; }

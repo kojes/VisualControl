@@ -6,6 +6,7 @@ namespace VueExample.ViewModels
         public string Guid { get; set; }
         public string Name { get; set; }
         public int? StageId { get; set; }
+        public string Path { get; set; }
         public ElementUploading Element { get; set; }
         public FileNameUploaderUViewModel FileName { get; set; }
         public string MapType { get; set; } = String.Empty;

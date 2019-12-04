@@ -15,15 +15,30 @@ namespace VueExample.Providers.Srv6
     public class MeasurementRecordingService : RepositorySRV6<MeasurementRecording>
     {
 
-        public async Task<MeasurementRecording> Create(string name, int type, int? stageId = null) 
+        public async Task<MeasurementRecording> Create(string name, int type, int bigMeasurementRecordingId, int? stageId = null) 
         {
             using (Srv6Context srv6Context = new Srv6Context())
             {
-                var measurementRecording = new MeasurementRecording{Name = "оп." + name, Type = type, StageId = stageId};
+                var measurementRecording = new MeasurementRecording{Name = "оп." + name, MeasurementDateTime = DateTime.Now, Type = type, BigMeasurementRecordingId = bigMeasurementRecordingId, StageId = stageId};
                 srv6Context.MeasurementRecordings.Add(measurementRecording);
                 await srv6Context.SaveChangesAsync();
                 return measurementRecording;
             }  
+        }
+
+        public async Task<BigMeasurementRecording> GetOrAddBigMeasurement(string name, string waferId) 
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var bigMeasurementRecording = await srv6Context.BigMeasurementRecordings.FirstOrDefaultAsync(x => x.WaferId == waferId && x.Name == name);
+                if(bigMeasurementRecording is null)
+                {
+                    bigMeasurementRecording = new BigMeasurementRecording {Name = name, WaferId = waferId};
+                    srv6Context.Add(bigMeasurementRecording);
+                    await srv6Context.SaveChangesAsync();
+                }
+                return bigMeasurementRecording;
+            }
         }
 
         public async Task<FkMrP> CreateFkMrP(int measurementRecordingId, short parameterId, string waferId)

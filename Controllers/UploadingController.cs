@@ -9,16 +9,19 @@ using VueExample.Providers.Srv6.Interfaces;
 
 namespace VueExample.Controllers
 {
+    [Route("api/[controller]")]
     public class UploadingController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IUploaderService _uploaderService;
         private readonly ISRV6GraphicService _graphicService;
+        private readonly IElementService _elementService;
         private readonly MeasurementRecordingService _measurementRecordingService = new MeasurementRecordingService();
         private readonly IFolderService _folderService;
-        public UploadingController(IFolderService folderService, IUploaderService uploaderService, ISRV6GraphicService graphicService, IMapper mapper)
+        public UploadingController(IFolderService folderService, IUploaderService uploaderService, ISRV6GraphicService graphicService, IElementService elementService, IMapper mapper)
         {
             _uploaderService = uploaderService;
+            _elementService = elementService;
             _folderService = folderService;
             _graphicService = graphicService;
             _mapper = mapper;
@@ -29,18 +32,19 @@ namespace VueExample.Controllers
         public async Task<IActionResult> Upload([FromBody] JObject uploadingFileJObject)
         {
             var uploadingFile = uploadingFileJObject.ToObject<UploadingFile>();
+            var bigMeasurementRecording = await _measurementRecordingService.GetOrAddBigMeasurement(uploadingFile.BigMeasurementName, uploadingFile.WaferId);
             uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.GetByNameAndWaferId("оп." + uploadingFile.OperationName, uploadingFile.WaferId))?.Id;
             if (uploadingFile.MeasurementRecordingId is null)
             {
-                uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.Create(uploadingFile.OperationName, 2)).Id;
+                uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.Create(uploadingFile.OperationName, bigMeasurementRecording.Id, 2)).Id;
                 uploadingFile.IsNewMeasurement = true;
-            }
-            var type = uploadingFile.Graphics.FirstOrDefault().Type;
+            }           
             await _measurementRecordingService.CreateFkMrP((int)uploadingFile.MeasurementRecordingId, 247, uploadingFile.WaferId);
             foreach (var graphicName in uploadingFile.GraphicNames)
             {
                 uploadingFile.Graphics.Add(await _graphicService.GetByCodeProductAndName(uploadingFile.CodeProductId, graphicName));
             }
+            var type = uploadingFile.Graphics.FirstOrDefault().Type;
             if(type == 1)
             {
                 uploadingFile.Data = _folderService.GetDataFromLNRFile(uploadingFile.Path);
@@ -50,6 +54,12 @@ namespace VueExample.Controllers
                 uploadingFile.Data = _folderService.GetDataFromHSTGFile(uploadingFile.Path);
             }
             var link = await _uploaderService.Uploading(uploadingFile, type);
+            
+            if(uploadingFile.StageId != null)
+            {
+                await _measurementRecordingService.UpdateStage((int)uploadingFile.MeasurementRecordingId, (int)uploadingFile.StageId);
+            }
+            await _elementService.UpdateElementOnIdmr((int) uploadingFile.MeasurementRecordingId, uploadingFile.ElementId);
             return Ok(link);
         }
         

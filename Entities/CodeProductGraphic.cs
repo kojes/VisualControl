@@ -10,7 +10,7 @@ namespace VueExample.Entities
         [Key]
         [Column("id_fk")]
         public int Id { get; set; }
-        [Column("if_cp")]
+        [Column("id_cp")]
         public int? CodeProductId { get; set; }
         [Column("id_graphics")]
         public int? GraphicId { get; set; }       
