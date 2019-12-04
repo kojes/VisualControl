@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using VueExample.Contexts;
+using VueExample.Entities;
 using VueExample.Models.SRV6;
 using VueExample.Providers.Abstract;
 using VueExample.ResponseObjects;
@@ -21,6 +22,20 @@ namespace VueExample.Providers
             _mapper = mapper;
             _exportProvider = exportProvider;
         }
+
+        
+        public async Task<ShortLinkEntity> Create(string fullLink)
+        {
+            using(var db = new Srv6Context())
+            {
+                var guid = Guid.NewGuid();
+                var shortLink = new ShortLinkEntity{GeneratedId = guid, Link = fullLink, ShortLink = "http://srv6.svr.lan/FLink.aspx?l=" + guid };
+                db.ShortLinkEntities.Add(shortLink);
+                await db.SaveChangesAsync();
+                return shortLink;
+            }
+        }
+
         public async Task<AfterDbManipulationObject<ShortLinkInfoViewModel>> GetElementExportDetails(string shortLink)
         {
             var shortLinkViewModel = _mapper.Map<ShortLinkInfoViewModel>(GetFullUrlFromShortUrl(shortLink));        
@@ -67,7 +82,23 @@ namespace VueExample.Providers
             }
            
         }
-        private string Deobfuscate(string str)
+
+        public string Obfuscate(string str)
+        {
+            if (String.IsNullOrEmpty(str))
+            {
+                return String.Empty;
+            }
+            else
+            {
+                var bytes = Encoding.UTF8.GetBytes(str);
+                for (int i = 0; i < bytes.Length; i++) bytes[i] ^= 0x5a;
+                return Convert.ToBase64String(bytes);
+            }
+           
+
+        }
+        public string Deobfuscate(string str)
         {
             if (String.IsNullOrEmpty(str))
             {
@@ -80,6 +111,6 @@ namespace VueExample.Providers
                 return Encoding.UTF8.GetString(bytes);
             }            
         }
-        
+
     }
 }

@@ -63,6 +63,20 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
+        [Route("filedata/lnr")]
+        public IActionResult GetFileLNRData([FromQuery] string path)
+        {
+           return Ok(_folderService.GetDataFromLNRFile(path));
+        }
+
+        [HttpGet]
+        [Route("filedata/hstg")]
+        public IActionResult GetFileHSTGData([FromQuery] string path)
+        {
+           return Ok(_folderService.GetDataFromHSTGFile(path));
+        }
+
+        [HttpGet]
         [ProducesResponseType(typeof(List<WaferFolderViewModel>), StatusCodes.Status200OK)]
         [Route("folders-wafer/{codeProductFolderName}")]
         public IActionResult GetWaferFolders([FromRoute] string codeProductFolderName)

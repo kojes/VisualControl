@@ -5,6 +5,7 @@ using System.IO;
 using VueExample.ViewModels;
 using System.Threading.Tasks;
 using System;
+using VueExample.Models.SRV6.Uploader;
 
 namespace VueExample.Providers.Srv6
 {
@@ -56,6 +57,64 @@ namespace VueExample.Providers.Srv6
                 directoriesNameList.Add(dirName);
             }           
             return directoriesNameList;
+        }
+
+        public Dictionary<string, UploadingFileData> GetDataFromLNRFile(string path) 
+        {
+            var dataDictionary = new Dictionary<string, UploadingFileData>();
+            var parseString = String.Join<string>("$", File.ReadAllLines(path).ToList());
+            var codeDataList = parseString.Split(new[] { "Count," }, StringSplitOptions.None).ToList();
+            codeDataList.RemoveAt(0);
+            foreach (var codeData in codeDataList)
+            {
+                var uploaderFileData = new UploadingFileData();
+                var dataList = codeData.Split('$').ToList();
+                dataDictionary.Add(dataList[0], uploaderFileData);
+                var graphicNamesList = dataList[1].Split(',');
+                for (int i = 1; i < graphicNamesList.Length; i++)
+                {
+                    uploaderFileData.ValueLists.Add(graphicNamesList[i], new List<string>());
+                }
+                for (int i = 2; i < dataList.Count; i++)
+                {
+                    if(dataList[i] != String.Empty && dataList[i].FirstOrDefault() != 'S')
+                    {
+                        var dataArray = dataList[i].Split(',');
+                        uploaderFileData.AbscissList.Add(dataArray[0]);
+                        for (int j = 1; j < graphicNamesList.Length; j++)
+                        {
+                            uploaderFileData.ValueLists[graphicNamesList[j]].Add(dataArray[j]);
+                        }
+                    }
+                  
+                }
+            }
+            return dataDictionary;
+
+        }
+
+        public Dictionary<string, UploadingFileData> GetDataFromHSTGFile(string path) 
+        {
+            var dataDictionary = new Dictionary<string, UploadingFileData>();
+            var rawFileData = File.ReadAllLines(path).ToList();
+            rawFileData.RemoveAll(x => x == ",");
+            rawFileData.RemoveAll(x => x.Contains("Setup"));
+            var parseString = String.Join<string>("$", rawFileData) + "$";
+            var codeDataList = parseString.Split(new[] { "Count," }, StringSplitOptions.None).ToList();
+            codeDataList.RemoveAt(0);
+            foreach (var codeData in codeDataList)
+            {
+                var uploaderFileData = new UploadingFileData();
+                var dataList = codeData.Split('$').ToList();
+                dataDictionary.Add(dataList[0], uploaderFileData);
+                var graphicNamesList = dataList[1].Split(',');
+                var dataArray = dataList[2].Split(',');
+                for (int i = 0; i < graphicNamesList.Length; i++)
+                {
+                    uploaderFileData.ValueLists.Add(graphicNamesList[i], new List<string>{dataArray[i]});                  
+                }      
+            }
+            return dataDictionary;
         }
 
         public async Task<List<SimpleOperationUploaderViewModel>> GetSimpleOperations(string directoryPath, string codeProductName, string waferName, int dieTypeId, List<string> measurementRecordings)

@@ -10,6 +10,8 @@ namespace VueExample.Models.SRV6
         public int Id { get; set; }
         [Column("Name")]
         public string Name { get; set; }
+        [Column("Type")]
+        public int Type { get; set; }
         [Column("id_stage")]
         public int? StageId { get; set; }
         [Column("id_bmr")]

@@ -11,5 +11,7 @@ namespace VueExample.Models.SRV6
         public int Id { get; set; }
         [Column("Name")]
         public string Name { get; set; }
+        [Column("WaferId")]
+        public string WaferId { get; set; }
     }
 }

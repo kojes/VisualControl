@@ -96,6 +96,9 @@ namespace VueExample
             services.AddTransient<IDieProvider, DieProvider>();
             services.AddTransient<IMeasurementProvider, SimpleMeasurementProvider>();
             services.AddTransient<IGraphicProvider, BasicGraphicProvider>();
+            services.AddTransient<ISRV6GraphicService, GraphicService>();
+            services.AddTransient<IStandartWaferService, StandartWaferService>();
+            services.AddTransient<IUploaderService, UploaderService>();
             services.AddTransient<IDefectProvider, DefectProvider>();
             services.AddTransient<IPhotoProvider, PhotoProvider>();
             services.AddTransient<IFileGraphicUploaderService, FileGraphicUploaderService>();

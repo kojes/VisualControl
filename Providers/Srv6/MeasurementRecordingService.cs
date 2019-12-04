@@ -8,11 +8,44 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.SqlClient;
 using System;
 using System.Threading.Tasks;
+using VueExample.Entities;
 
 namespace VueExample.Providers.Srv6
 {
     public class MeasurementRecordingService : RepositorySRV6<MeasurementRecording>
     {
+
+        public async Task<MeasurementRecording> Create(string name, int type, int? stageId = null) 
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var measurementRecording = new MeasurementRecording{Name = "оп." + name, Type = type, StageId = stageId};
+                srv6Context.MeasurementRecordings.Add(measurementRecording);
+                await srv6Context.SaveChangesAsync();
+                return measurementRecording;
+            }  
+        }
+
+        public async Task<FkMrP> CreateFkMrP(int measurementRecordingId, short parameterId, string waferId)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var fkmrp = new FkMrP{MeasurementRecordingId = measurementRecordingId, WaferId = waferId, Id247 = parameterId};
+                srv6Context.Add(fkmrp);
+                await srv6Context.SaveChangesAsync();
+                return fkmrp;
+            }
+        }
+
+        public async Task CreateFkMrGraphics(FkMrGraphic fkMrGraphic) 
+        {
+            using(var db = new Srv6Context())
+            {
+                db.FkMrGraphics.Add(fkMrGraphic);
+                await db.SaveChangesAsync();
+            }
+        }
+
         public List<MeasurementRecording> GetByWaferId(string waferId)
         {
             var measurementRecordingsList = new List<MeasurementRecording>();
@@ -25,6 +58,15 @@ namespace VueExample.Providers.Srv6
                 }
             }
             return measurementRecordingsList;
+        }
+
+        public async Task<MeasurementRecording> GetByNameAndWaferId(string name, string waferId) 
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var mrList = await srv6Context.FkMrPs.Where(x => x.WaferId == waferId).ToListAsync();
+                return mrList.Select(measurementRecording => srv6Context.MeasurementRecordings.FirstOrDefault(x => x.Id == measurementRecording.MeasurementRecordingId)).FirstOrDefault(mr => mr != null && mr.Name == name);                
+            }
         }
 
         public int? GetStageId(int measurementRecordingId)
