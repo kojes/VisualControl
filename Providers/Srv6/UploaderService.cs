@@ -29,35 +29,34 @@ namespace VueExample.Providers.Srv6
             DateTime modifieddate = DateTime.Now;
             var diegraphicList = new List<DieGraphics>();
             var dieList = new List<string>();
+
             foreach (var data in uploadingFile.Data) 
             {
                 string code = data.Key;
-                if (!String.IsNullOrEmpty (uploadingFile.Map)) 
+                if (!String.IsNullOrEmpty(uploadingFile.Map)) 
                 {
                     code = await _standartWaferService.GetCodeFromStandartWafer(code, uploadingFile.Map);
                 }
-                var die = _dieProvider.GetByWaferIdAndCode(uploadingFile.WaferId, code);
+                var die = await _dieProvider.GetByWaferIdAndCode(uploadingFile.WaferId, code);
                 if (die != null) 
                 {
-                    dieList.Add(Convert.ToString(die.Id));
+                    dieList.Add(Convert.ToString(die.DieId));
                     if (uploadingFile.IsNewMeasurement) 
                     {
-                        await _dieProvider.CreateDieParameter(die.Id, (int) uploadingFile.MeasurementRecordingId);
+                        await _dieProvider.GetOrAddDieParameter(die.DieId, (int) uploadingFile.MeasurementRecordingId);
                     }
 
                     if (type == 1) 
                     {
-                        for (var i = 0; i < data.Value.ValueLists.FirstOrDefault().Value.Count; i++) 
+                        for (var i = 0; i < uploadingFile.Graphics.Count; i++) 
                         {
                             var ordinateList = new List<string>();
                             var abcissList = new List<string>();
-                            abcissList = data.Value.AbscissList.GetRange (0, data.Value.AbscissList.Count);
+                            abcissList = data.Value.AbscissList.GetRange(0, data.Value.AbscissList.Count);
 
-                            foreach (var point in data.Value.ValueLists) 
-                            {
-                                if (i <= point.Value.Count - 1) {
-                                    ordinateList.Add (point.Value[i]);
-                                }
+                            for (int j = 0; j < data.Value.AbscissList.Count; j++) 
+                            {                              
+                                ordinateList.Add(data.Value.ValueLists.ElementAt(i).Value[j]);                                
                             }
 
                             if (double.Parse(abcissList.FirstOrDefault(), CultureInfo.InvariantCulture) > double.Parse(abcissList.Last(), CultureInfo.InvariantCulture)) 
@@ -69,12 +68,12 @@ namespace VueExample.Providers.Srv6
                             var graphicstring = abcissList.Aggregate(String.Empty, (current, abc) => current + "*" + abc);
                             graphicstring = graphicstring + "X";
                             graphicstring = ordinateList.Aggregate(graphicstring, (current, ord) => current + "*" + ord);
-                            diegraphicList.Add (new DieGraphics 
+                            diegraphicList.Add(new DieGraphics 
                             {
-                                    DieId = die.Id,
-                                    GraphicId = uploadingFile.Graphics[i].Id,
-                                    MeasurementRecordingId = uploadingFile.MeasurementRecordingId,
-                                    ValueString = graphicstring
+                                DieId = die.DieId,
+                                GraphicId = uploadingFile.Graphics[i].Id,
+                                MeasurementRecordingId = uploadingFile.MeasurementRecordingId,
+                                ValueString = graphicstring
 
                             });
                         }
@@ -84,12 +83,12 @@ namespace VueExample.Providers.Srv6
                     {
                         for (int i = 0; i < uploadingFile.Graphics.Count; i++) 
                         {
-                            diegraphicList.Add (new DieGraphics 
+                            diegraphicList.Add(new DieGraphics 
                             {
-                                    DieId = die.Id,
+                                    DieId = die.DieId,
                                     GraphicId = uploadingFile.Graphics[i].Id,
                                     MeasurementRecordingId = uploadingFile.MeasurementRecordingId,
-                                    ValueString = code + "X" + (i == 0 ? Convert.ToString(data.Value.AbscissList[i]) : Convert.ToString(data.Value.ValueLists.FirstOrDefault().Value[i - 1]))
+                                    ValueString = code + "X" + Convert.ToString(data.Value.ValueLists.ElementAt(i).Value.FirstOrDefault())
                             });
                         }
                     }
@@ -99,7 +98,7 @@ namespace VueExample.Providers.Srv6
             await _dieValueService.CreateDieGraphics(diegraphicList);
             foreach (var graphic in uploadingFile.Graphics)
             {
-                await _measurementRecordingService.CreateFkMrGraphics (new FkMrGraphic 
+                await _measurementRecordingService.AddOrGetFkMrGraphics (new FkMrGraphic 
                 {
                         GraphicId = graphic.Id,
                         MeasurementRecordingId = uploadingFile.MeasurementRecordingId,

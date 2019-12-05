@@ -52,12 +52,18 @@ namespace VueExample.Providers.Srv6
             }
         }
 
-        public async Task CreateFkMrGraphics(FkMrGraphic fkMrGraphic) 
+        public async Task<FkMrGraphic> AddOrGetFkMrGraphics(FkMrGraphic fkMrGraphic) 
         {
             using(var db = new Srv6Context())
             {
-                db.FkMrGraphics.Add(fkMrGraphic);
-                await db.SaveChangesAsync();
+                var newFkMrGraphic = await db.FkMrGraphics.FirstOrDefaultAsync(x => x.MeasurementRecordingId == fkMrGraphic.MeasurementRecordingId
+                                                                                 && x.GraphicId == fkMrGraphic.GraphicId);
+                if(newFkMrGraphic is null)
+                {
+                    db.FkMrGraphics.Add(fkMrGraphic);
+                    await db.SaveChangesAsync();
+                } 
+                return newFkMrGraphic;              
             }
         }
 

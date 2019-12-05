@@ -36,9 +36,12 @@ namespace VueExample.Controllers
             uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.GetByNameAndWaferId("оп." + uploadingFile.OperationName, uploadingFile.WaferId))?.Id;
             if (uploadingFile.MeasurementRecordingId is null)
             {
-                uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.Create(uploadingFile.OperationName, bigMeasurementRecording.Id, 2)).Id;
-                uploadingFile.IsNewMeasurement = true;
-            }           
+                uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.Create(uploadingFile.OperationName, 2, bigMeasurementRecording.Id, uploadingFile.StageId)).Id;              
+            } 
+            else
+            {
+                uploadingFile.IsNewMeasurement = false;
+            }         
             await _measurementRecordingService.CreateFkMrP((int)uploadingFile.MeasurementRecordingId, 247, uploadingFile.WaferId);
             foreach (var graphicName in uploadingFile.GraphicNames)
             {
@@ -53,15 +56,9 @@ namespace VueExample.Controllers
             {
                 uploadingFile.Data = _folderService.GetDataFromHSTGFile(uploadingFile.Path);
             }
-            var link = await _uploaderService.Uploading(uploadingFile, type);
-            
-            if(uploadingFile.StageId != null)
-            {
-                await _measurementRecordingService.UpdateStage((int)uploadingFile.MeasurementRecordingId, (int)uploadingFile.StageId);
-            }
+            var link = await _uploaderService.Uploading(uploadingFile, type);          
             await _elementService.UpdateElementOnIdmr((int) uploadingFile.MeasurementRecordingId, uploadingFile.ElementId);
             return Ok(link);
         }
-        
     }
 }

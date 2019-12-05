@@ -15,7 +15,7 @@ namespace VueExample.Models.SRV6.Uploader
         public string Map { get; set; }
         public string Comment { get; set; }
         public string Path { get; set; }
-        public bool IsNewMeasurement { get; set; } = false;
+        public bool IsNewMeasurement { get; set; } = true;
         public Dictionary<string, UploadingFileData> Data { get; set; }
         public List<Graphic> Graphics { get; set; } = new List<Graphic>();
         public List<string> GraphicNames { get; set; }

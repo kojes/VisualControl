@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VueExample.Entities;
 using VueExample.Models;
 using VueExample.Repository;
 
@@ -9,6 +10,6 @@ namespace VueExample.Providers
     {
         List<Die> GetDiesByWaferId(string waferId);
         Task<Die> GetByWaferIdAndCode(string waferId, string code);
-        Task CreateDieParameter(int dieId, int measurementRecordingId, int parameterId = 247, string value = "0");
+        Task<DieParameterOld> GetOrAddDieParameter(long dieId, int measurementRecordingId, int parameterId = 247, string value = "0");
     }
 }

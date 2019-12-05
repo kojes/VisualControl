@@ -12,13 +12,18 @@ namespace VueExample.Providers
 {
     public class DieProvider : RepositorySRV6<Die>, IDieProvider
     {
-        public async Task CreateDieParameter(int dieId, int measurementRecordingId, int parameterId = 247, string value = "0")
+        public async Task<DieParameterOld> GetOrAddDieParameter(long dieId, int measurementRecordingId, int parameterId = 247, string value = "0")
         {
             using (var db = new Srv6Context()) 
             {
-                var dieParameter = new DieParameterOld{DieId = dieId, MeasurementRecordingId = measurementRecordingId, Id247 = parameterId, Value = value};
-                db.DiesParameterOld.Add(dieParameter);
-                await db.SaveChangesAsync();
+                var dieParameter = await  db.DiesParameterOld.FirstOrDefaultAsync(x => x.MeasurementRecordingId == measurementRecordingId && x.DieId == dieId && x.Id247 == parameterId);
+                if(dieParameter is null)
+                {
+                    dieParameter = new DieParameterOld{DieId = dieId, MeasurementRecordingId = measurementRecordingId, Id247 = parameterId, Value = value};
+                    db.DiesParameterOld.Add(dieParameter);
+                    await db.SaveChangesAsync();
+                }
+                return dieParameter;
             }
         }
 

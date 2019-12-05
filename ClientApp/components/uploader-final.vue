@@ -135,10 +135,31 @@
                                 <td><v-text-field class="mt-6" v-model="operation.comment" outlined label="Комментарий:"></v-text-field></td>  
                                 <td><v-btn icon color="primary" @click="deleteRow(operation.guid)"><v-icon>delete_outline</v-icon></v-btn></td>                         
                                 <td>
-                                    <v-icon v-if="operation.uploadStatus === 'done'" color="success">done_outline</v-icon>
-                                    <v-icon v-else-if="operation.uploadStatus === 'rejected'" color="pink">error_outline</v-icon>
-                                    <v-progress-circular v-else-if="operation.uploadStatus === 'pending'" indeterminate color="primary"></v-progress-circular>
-                                    <div v-else></div>
+                                    <v-chip v-if="operation.uploadStatus === 'done'" color="success" text-color="white" >
+                                        <v-avatar left>
+                                            <v-icon>check_circle_outline</v-icon>
+                                        </v-avatar>
+                                        Загружено
+                                    </v-chip>
+                                    <v-chip v-else-if="operation.uploadStatus === 'rejected'" color="pink" text-color="white" >
+                                        <v-avatar left>
+                                            <v-icon>error_outline</v-icon>
+                                        </v-avatar>
+                                        Ошибка при загрузке
+                                    </v-chip>
+                                    <v-chip v-else-if="operation.uploadStatus === 'pending'" color="primary" text-color="white" >
+                                        <v-avatar left>
+                                            <v-progress-circular size="16" indeterminate color="white"></v-progress-circular>
+                                        </v-avatar>
+                                        Загрузка
+                                    </v-chip>
+                                    
+                                    <v-chip v-else color="cyan lighten-2" text-color="white">
+                                        <v-avatar left>
+                                            <v-icon>schedule</v-icon>
+                                        </v-avatar>
+                                        Ожидает загрузки
+                                    </v-chip>
                                 </td>                           
                         </tr>
                     </tbody>
@@ -243,7 +264,8 @@ export default {
         },
 
         async upload() {
-            this.simpleOperations.forEach(async so => {
+            for (let index = 0; index < this.simpleOperations.length; index++) {
+                let so = this.simpleOperations[index];
                 so.uploadStatus = "pending"
                 await this.$http({
                     method: "post",
@@ -258,7 +280,7 @@ export default {
                            map: so.mapType,
                            comment: so.comment,
                            path: so.path,
-                           graphicNames: so.fileName.graphicNames.split(';') }, 
+                           graphicNames: so.fileName.selectedGraphicNames.split(';') }, 
                     config: {
                         headers: {
                             'Accept': "application/json",
@@ -272,8 +294,10 @@ export default {
                 })
                 .catch(error => {
                     so.uploadStatus = "rejected"
-                });
-            })
+                });           
+                                
+            }
+              
         },
 
         stageChanged(measurementRecording) {
