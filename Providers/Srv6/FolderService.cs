@@ -22,6 +22,7 @@ namespace VueExample.Providers.Srv6
         }
         public List<string> GetAllCodeProductInUploaderDirectory(string directoryPath)
         {
+            directoryPath = GetTruePath(directoryPath);
             var directoriesNameList = new List<string>();
             var directoriesArray = System.IO.Directory.GetDirectories(directoryPath);
             foreach (var directory in directoriesArray)
@@ -35,6 +36,7 @@ namespace VueExample.Providers.Srv6
 
         public List<string> GetAllWaferInCodeProductFolder(string directoryPath, string codeProductFolderName)
         {
+            directoryPath = GetTruePath(directoryPath);
             var directoriesNameList = new List<string>();
             var directoriesArray = System.IO.Directory.GetDirectories($"{directoryPath}\\{codeProductFolderName}\\meas");
             foreach (var directory in directoriesArray)
@@ -48,6 +50,7 @@ namespace VueExample.Providers.Srv6
 
         public List<string> GetAllMeasurementRecordingFolder(string directoryPath, string codeProductFolderName, string waferFolderName)
         {
+            directoryPath = GetTruePath(directoryPath);
             var directoriesNameList = new List<string>();
             var directoriesArray = System.IO.Directory.GetDirectories($"{directoryPath}\\{codeProductFolderName}\\meas\\{waferFolderName}");
             foreach (var directory in directoriesArray)
@@ -61,6 +64,7 @@ namespace VueExample.Providers.Srv6
 
         public Dictionary<string, UploadingFileData> GetDataFromLNRFile(string path) 
         {
+            path = GetTruePath(path);
             var dataDictionary = new Dictionary<string, UploadingFileData>();
             var parseString = String.Join<string>("$", File.ReadAllLines(path).ToList());
             var codeDataList = parseString.Split(new[] { "Count," }, StringSplitOptions.None).ToList();
@@ -95,6 +99,7 @@ namespace VueExample.Providers.Srv6
 
         public Dictionary<string, UploadingFileData> GetDataFromHSTGFile(string path) 
         {
+            path = GetTruePath(path);
             var dataDictionary = new Dictionary<string, UploadingFileData>();
             var rawFileData = File.ReadAllLines(path).ToList();
             rawFileData.RemoveAll(x => x == ",");
@@ -120,6 +125,7 @@ namespace VueExample.Providers.Srv6
         public async Task<List<SimpleOperationUploaderViewModel>> GetSimpleOperations(string directoryPath, string codeProductName, string waferName, int dieTypeId, List<string> measurementRecordings)
         {
             var simpleOperationList = new List<SimpleOperationUploaderViewModel>(); 
+            directoryPath = GetTruePath(directoryPath);
             var fileNames = await _fileGraphicUploaderService.GetAllFileNamesByProcessId(processProvider.GetProcessIdByCodeProductId((await codeProductProvider.GetByWaferId(waferName)).IdCp));
             foreach (var meas in measurementRecordings)
             {
@@ -165,5 +171,13 @@ namespace VueExample.Providers.Srv6
             }
             return simpleOperationList;
         }
+
+        private string GetTruePath(string path)
+        {
+            const string _path = @"\\Srv1\\Common\";
+            path = path.Replace(@"T:\\", _path);
+            return path;
+        }
+        
     }
 }

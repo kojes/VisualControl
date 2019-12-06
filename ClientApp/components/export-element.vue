@@ -1,50 +1,50 @@
 <template>
    <v-container>
-        <v-layout row>
-            <v-flex lg3>
+        <v-row>
+            <v-col lg="3">
                 <v-text-field   v-model="operation.number" 
                                 :error-messages="$v.$dirty && !$v.operation.number.required ? [operation.errorMessage] : []" 
                                 @change="validateElement()" label="Номер операции:"  outlined>
                 </v-text-field>             
-            </v-flex>
-            <v-flex lg3>
+            </v-col>
+            <v-col lg="3">
                 <v-text-field   v-model="element.name" 
                                 :error-messages="$v.$dirty && !$v.element.name.required ? [element.errorMessage] : []" 
                                 @change="validateElement()" label="Название элемента:" outlined>
                 </v-text-field>          
-            </v-flex>
-             <v-flex lg3>
+            </v-col>
+             <v-col lg="3">
                 <v-btn v-if="!isElementReady" large block outlined color="pink">Элемент заполнен некорректно</v-btn>
                 <v-btn v-else large block outlined color="green" >Элемент заполнен корректно</v-btn>       
-            </v-flex>
-             <v-flex lg1 offset-lg2>                
+            </v-col>
+             <v-col lg="3" offset-lg="2">                
                 <v-menu
                     v-model="menu"
                     :close-on-content-click="false"
                     :nudge-width="300"
                     offset-x>                
                      <template v-slot:activator="{ on }">
-                        <v-btn outline fab dark small color="primary" v-on="on">
+                        <v-btn outlined fab dark small color="primary" v-on="on">
                             <v-icon dark color="primary">perm_data_setting</v-icon>
                         </v-btn>                    
                     </template>
                     <v-card>      
                        <v-card-text>
-                        <v-layout row>
+                        <v-row>
                             <v-switch
                                 v-model="element.isAddedToCommonWorksheet"
                                 color='primary'
                                 :label="element.isAddedToCommonWorksheet ? `Включить в сводную таблицу` : `Не включать в сводную таблицу`">
                             </v-switch>
-                        </v-layout>  
-                         <v-layout row>
-                           <v-flex lg11 offset-lg1>
+                        </v-row>  
+                         <v-row>
+                           <v-col lg="11" offset-lg="1">
                                 <v-text-field v-model="operation.waferId" label="Номер пластины:" readonly>
                                 </v-text-field>     
-                           </v-flex>                   
-                        </v-layout>
-                         <v-layout row>                          
-                            <v-flex  lg11 offset-lg1>
+                           </v-col>                   
+                        </v-row>
+                         <v-row>                          
+                            <v-col lg="11" offset-lg="1">
                                 <v-textarea v-if="operation.avStages.length === 0" v-model="operation.stageName" label="Название этапа:" readonly no-resize>
                                 </v-textarea>  
                                 <v-select v-else v-model="operation.stageName"
@@ -52,29 +52,29 @@
                                                   no-data-text="Нет данных"
                                                   item-value="stageName"
                                                   item-text="stageName"
-                                                  outline
+                                                  outlined
                                                   label="Выберите параметр:">
                                 </v-select>     
-                            </v-flex>                                                         
-                         </v-layout>
+                            </v-col>                                                         
+                         </v-row>
                        </v-card-text>                    
                     </v-card>
                 </v-menu>                 
-            </v-flex>   
-             <v-flex lg1>
+            </v-col>   
+             <v-col lg="1">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                            <v-btn outline fab dark small color="primary" v-on="on" @click="getAutoIdmrSingle()">
+                            <v-btn outlined fab dark small color="primary" v-on="on" @click="getAutoIdmrSingle()">
                                 <v-icon dark color="primary">brightness_auto</v-icon>
                             </v-btn>
                     </template>
                     <span>Автозаполнение</span>
                 </v-tooltip>   
-             </v-flex>
+             </v-col>
                
-         </v-layout>
-         <v-layout row>
-            <v-flex lg12>
+         </v-row>
+         <v-row>
+            <v-col lg="12">
                 <v-stepper v-model="e1">
                     <v-stepper-header>
                         <template v-for="(parameter, index) in parameters">
@@ -95,8 +95,8 @@
                             :step="index + 1">
                             <div>
                                 
-                                    <v-layout class="pa-4" row>
-                                        <v-flex lg3>
+                                    <v-row class="pa-4">
+                                        <v-col lg="3">
                                             <v-text-field class="pt-4" v-model="parameter.parameterName.value" 
                                                             :error-messages="parameter.parameterName.isValidDirty 
                                                                              &&!parameter.parameterName.isValid 
@@ -104,8 +104,8 @@
                                                                              : []" 
                                                             @change="validateParameter(parameter)" outlined label="Буквенное обозначение:">
                                             </v-text-field>
-                                        </v-flex>
-                                        <v-flex lg6 offset-lg1>
+                                        </v-col>
+                                        <v-col lg="6" offset-lg="1">
                                             <v-text-field   v-model="parameter.russianParameterName.value" 
                                                             :error-messages="parameter.russianParameterName.isValidDirty 
                                                                              &&!parameter.russianParameterName.isValid 
@@ -113,33 +113,33 @@
                                                                              : []" 
                                                             @change="validateParameter(parameter)" outlined label="Наименование:">
                                             </v-text-field>
-                                        </v-flex>          
-                                        <v-flex lg1 offset-lg1>
+                                        </v-col>          
+                                        <v-col lg="1" offset-lg="1">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on }">
-                                                    <v-btn outline fab dark small color="primary" v-on="on" @click="cleanParameter(parameter)">
+                                                    <v-btn outlined fab dark small color="primary" v-on="on" @click="cleanParameter(parameter)">
                                                         <v-icon dark color="primary">autorenew</v-icon>
                                                     </v-btn>
                                                 </template>
                                             <span>Очистить параметр</span>
                                         </v-tooltip>   
-                                        </v-flex>
-                                    </v-layout>
-                                    <v-layout class="pa-4" row v-if="!parameter.shortLink.success">
-                                        <v-flex lg3>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="pa-4" v-if="!parameter.shortLink.success">
+                                        <v-col lg="3">
                                             <v-text-field   v-model="parameter.shortLink.value" 
                                                             :error-messages="$v.$dirty && !parameter.shortLink.success ? [parameter.shortLink.errorMessage] : []" 
                                                             outlined label="Короткая ссылка:" @change="shortLinkHandler($event, index)">
                                             </v-text-field>
-                                        </v-flex>                                               
-                                    </v-layout>
-                                    <v-layout class="pa-4" row v-else>
-                                        <v-flex lg3>
+                                        </v-col>                                               
+                                    </v-row>
+                                    <v-row class="pa-4" v-else>
+                                        <v-col lg="3">
                                             <v-text-field v-model="parameter.waferId" 
                                                           readonly label="Номер пластины:">
                                             </v-text-field>                                     
-                                        </v-flex>
-                                        <v-flex lg8 offset-lg1>
+                                        </v-col>
+                                        <v-col lg="8" offset-lg="1">
                                             <v-select   v-model="parameter.selectedStatParameter"
                                                         :items="parameter.statParameterArray"
                                                         no-data-text="Нет данных"
@@ -147,16 +147,16 @@
                                                         v-on:change="changeDividerId(parameter)"
                                                         label="Выберите параметр:">
                                             </v-select>
-                                        </v-flex>
-                                    </v-layout>
-                                    <v-layout class="pa-4" row v-if="parameter.shortLink.success">
-                                        <v-flex lg3>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row class="pa-4" v-if="parameter.shortLink.success">
+                                        <v-col lg="3">
                                              <v-select  v-if="measurementRecordings.length > 1" v-model="parameter.measurementRecording"
                                                         :items="measurementRecordings"
                                                         no-data-text="Нет данных"
                                                         item-value="id"
                                                         item-text="name"
-                                                        outline
+                                                        outlined
                                                         v-on:change="changeMeasurementRecording(parameter)"
                                                         label="Выберите номер операции:">
                                             </v-select>
@@ -165,8 +165,8 @@
                                                            readonly label="Номер операции:">
                                             </v-text-field>
                                              <p>ID операции: {{parameter.measurementRecording}}</p>
-                                        </v-flex>
-                                         <v-flex lg3 offset-lg1>
+                                        </v-col>
+                                         <v-col lg="3" offset-lg="1">
                                             <v-select   v-model="parameter.dividerId"
                                                         :items="dividers"
                                                         no-data-text="Нет данных"
@@ -177,8 +177,8 @@
                                                         label="Выберите приведение:">
                                             </v-select>
                                             <p v-if="parameter.dividerId">Коэффициент приведения: {{parameter.divider}}</p>
-                                        </v-flex>
-                                        <v-flex lg2 offset-lg1>
+                                        </v-col>
+                                        <v-col lg="2" offset-lg="1">
                                             <v-text-field   v-model="parameter.bounds.lower.value" 
                                                             :error-messages="parameter.bounds.lower.isValidDirty 
                                                                              &&!parameter.bounds.lower.isValid 
@@ -186,8 +186,8 @@
                                                                              : []" 
                                                             @change="validateParameter(parameter)" outlined label="Нижняя граница:">
                                             </v-text-field>
-                                        </v-flex>
-                                        <v-flex lg2>
+                                        </v-col>
+                                        <v-col lg="2">
                                             <v-text-field   v-model="parameter.bounds.upper.value" 
                                                             :error-messages="parameter.bounds.upper.isValidDirty 
                                                                              &&!parameter.bounds.upper.isValid 
@@ -195,9 +195,8 @@
                                                                              : []" 
                                                             @change="validateParameter(parameter)" outlined label="Верхняя граница:">
                                             </v-text-field>
-                                        </v-flex>
-                                          
-                                    </v-layout>
+                                        </v-col>                                          
+                                    </v-row>
                                 
                             
                             <v-tooltip v-if="index > 0" bottom>
@@ -238,9 +237,9 @@
                     </v-tooltip>               
                </div>
             </v-stepper>
-          </v-flex>
-         </v-layout>        
-        <v-layout row>
+          </v-col>
+         </v-row>        
+        <v-row>
             <v-dialog v-model="deleteParameterDialog" persistent max-width="400">
                <v-card>
                     <v-card-title class="headline">Удаление</v-card-title>
@@ -252,7 +251,7 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-        </v-layout>
+        </v-row>
     </v-container>
 </template>
 

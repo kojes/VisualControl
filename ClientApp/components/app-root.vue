@@ -7,7 +7,7 @@
                            app>
         <v-toolbar flat class="transparent">
           <v-list>
-            <v-list-item avatar>
+            <v-list-item>
               <v-list-item-avatar>
                 <avatar :username="username"
                         :size="40">
