@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using VueExample.Contexts;
 using System.Linq;
@@ -52,6 +51,16 @@ namespace VueExample.Providers.Srv6
             }
         }
 
+        public async Task<bool> IsExistFkMrGraphics(int measurementRecordingId, int graphicId) 
+        {
+            using(var db = new Srv6Context())
+            {
+                 return await db.FkMrGraphics.AnyAsync(x => x.MeasurementRecordingId == measurementRecordingId
+                                                                                 && x.GraphicId == graphicId);
+            }
+           
+        }
+
         public async Task<FkMrGraphic> AddOrGetFkMrGraphics(FkMrGraphic fkMrGraphic) 
         {
             using(var db = new Srv6Context())
@@ -102,10 +111,10 @@ namespace VueExample.Providers.Srv6
         {
             using (Srv6Context srv6Context = new Srv6Context())
             {
-                 var waferIdSqlParameter = new SqlParameter("waferId", waferId);
-                 var stageNameSqlParameter = new SqlParameter("stageName", stageName);
-                 var elementIdSqlParameter = new SqlParameter("elementId", elementId);
-                 return srv6Context.MeasurementRecordings.FromSql("EXECUTE select_mr_by_stagename_waferid_elementid @waferId, @elementId, @stageName", waferIdSqlParameter, elementIdSqlParameter, stageNameSqlParameter).ToList();
+                var waferIdSqlParameter = new SqlParameter("waferId", waferId);
+                var stageNameSqlParameter = new SqlParameter("stageName", stageName);
+                var elementIdSqlParameter = new SqlParameter("elementId", elementId);
+                return srv6Context.MeasurementRecordings.FromSql("EXECUTE select_mr_by_stagename_waferid_elementid @waferId, @elementId, @stageName", waferIdSqlParameter, elementIdSqlParameter, stageNameSqlParameter).ToList();
             }
         }
 

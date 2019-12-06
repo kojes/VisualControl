@@ -9,16 +9,14 @@
           <v-card>
             <v-row>
               <v-col lg="5" class="pl-8">
-                <v-text-field
-                  
+                <v-text-field                  
                   v-model="newElement.name"
                   :error-messages="validationErrors"
                   label="Название элемента"
                 ></v-text-field>
               </v-col>
               <v-col lg="7" class="px-8">
-                <v-select
-                  
+                <v-select                  
                   :items="avElementTypes"
                   v-model="newElement.typeId"
                   no-data-text="Нет данных"
@@ -29,10 +27,15 @@
               </v-col>
             </v-row>
             <v-row>
-            <v-col lg="12" class="px-8">
-                <v-text-field v-model="newElement.comment" label="Описание элемента"></v-text-field>
+              <v-col lg="12" class="px-8">
+                <v-text-field v-model="newElement.docName" label="Название в документации"></v-text-field>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col lg="12" class="px-8">
+                <v-text-field v-model="newElement.comment" label="Описание элемента"></v-text-field>
+              </v-col>
+            </v-row>           
             <v-row>
               <v-col lg="6" offset-lg="6" class="pr-8">
                 <v-btn v-if="validationErrors.length === 0" block color="success" @click="createElement()">Создать</v-btn>
@@ -50,7 +53,7 @@ export default {
   props: ['mode'],
   data() {
     return {
-      newElement: {name: "", comment: "", typeId: 0, isAvaliableToDelete: true},
+      newElement: {name: "", comment: "", docName: "", typeId: 0, isAvaliableToDelete: true},
       avElementTypes: [],
       menu: false
     }

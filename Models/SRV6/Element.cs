@@ -19,6 +19,8 @@ namespace VueExample.Models.SRV6
         public int? TypeId { get; set; }
         [Column("PhotoPath")]
         public string PhotoPath { get; set; }
+        [Column("DocName")]
+        public string DocName { get; set; }
         public ICollection<MeasurementRecordingElement> MeasurementRecordingElements { get; set; }
     }
 }

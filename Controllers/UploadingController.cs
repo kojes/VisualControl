@@ -60,5 +60,22 @@ namespace VueExample.Controllers
             await _elementService.UpdateElementOnIdmr((int) uploadingFile.MeasurementRecordingId, uploadingFile.ElementId);
             return Ok(link);
         }
+
+        [HttpPost]
+        [Route("checkUploadingStatus")]
+        public async Task<IActionResult> CheckUploadingStatus([FromBody] JObject uploadingFileJObject)
+        {
+            var uploadingFile = uploadingFileJObject.ToObject<UploadingFile>();
+            var measurementRecording = await _measurementRecordingService.GetByNameAndWaferId("оп." + uploadingFile.OperationName, uploadingFile.WaferId);
+            var graphic = await _graphicService.GetByCodeProductAndName(uploadingFile.CodeProductId, uploadingFile.GraphicNames.FirstOrDefault());
+            if(measurementRecording is null || graphic is null)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return await _measurementRecordingService.IsExistFkMrGraphics(measurementRecording.Id, graphic.Id) ? Ok() : (IActionResult)NoContent();
+            }    
+        }
     }
 }

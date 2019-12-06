@@ -13,7 +13,8 @@ export const elements = {
         state.elements = [...payload]
       },
       addtoElements(state, payload) {
-        state.elements = [...state.elements, {elementId: payload.elementId, name: payload.name, comment: payload.comment, typeId: payload.typeId, isAvaliableToDelete: true}]
+        state.elements = [...state.elements, {elementId: payload.elementId, name: payload.name, comment: payload.comment, docName: payload.docName,
+                                              typeId: payload.typeId, isAvaliableToDelete: true}]
       },
       updateElement(state, payload) {
           let updatedElement = state.elements.find(x => x.elementId === payload.elementId)

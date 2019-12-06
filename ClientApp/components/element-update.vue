@@ -27,6 +27,11 @@
               </v-col>
             </v-row>
             <v-row>
+                <v-col lg="12" class="px-8">
+                  <v-text-field v-model="editedElement.docName" label="Название в документации"></v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
             <v-col lg="12" class="px-8">
                 <v-text-field v-model="editedElement.comment" label="Описание элемента"></v-text-field>
               </v-col>

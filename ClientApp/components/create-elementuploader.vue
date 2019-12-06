@@ -25,9 +25,14 @@
                         </v-row>
                         <v-row>
                             <v-col lg="12" class="px-8">
-                                <v-text-field v-model="comment" label="Описание элемента"></v-text-field>
+                                <v-text-field v-model="docName" label="Название в документации"></v-text-field>
                             </v-col>
                         </v-row>
+                        <v-row>
+                            <v-col lg="12" class="px-8">
+                                <v-text-field v-model="comment" label="Описание элемента"></v-text-field>
+                            </v-col>
+                        </v-row>                        
                         <v-row>
                             <v-col lg="6" offset-lg="6" class="pr-8">
                                 <v-btn block color="success" @click="createElement(name, dieTypeId)">Создать элемент</v-btn>
@@ -48,6 +53,7 @@ export default {
     data() {
         return {
             typeId: "",
+            docName: "",
             comment: "",
             avElementTypes: [],
             menu: false
@@ -60,7 +66,7 @@ export default {
             await this.$http({
                 method: "put",
                 url: `/api/element`, 
-                data: {name: name, comment: this.comment, typeId: this.typeId}, 
+                data: {name: name, comment: this.comment, typeId: this.typeId, docName: this.docName}, 
                 config: {
                     headers: {
                         'Accept': "application/json",

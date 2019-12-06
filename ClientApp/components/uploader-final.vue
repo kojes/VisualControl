@@ -135,7 +135,7 @@
                                 <td><v-text-field class="mt-6" v-model="operation.comment" outlined label="Комментарий:"></v-text-field></td>  
                                 <td><v-btn icon color="primary" @click="deleteRow(operation.guid)"><v-icon>delete_outline</v-icon></v-btn></td>                         
                                 <td>
-                                    <v-chip v-if="operation.uploadStatus === 'done'" color="success" text-color="white" >
+                                    <v-chip v-if="operation.uploadStatus === 'done'" color="success" text-color="white" @click="copyShortLinkToClipboard(operation.shortLink)">
                                         <v-avatar left>
                                             <v-icon>check_circle_outline</v-icon>
                                         </v-avatar>
@@ -147,19 +147,30 @@
                                         </v-avatar>
                                         Ошибка при загрузке
                                     </v-chip>
-                                    <v-chip v-else-if="operation.uploadStatus === 'pending'" color="primary" text-color="white" >
+                                    <v-chip v-else-if="operation.uploadStatus === 'pending'" color="indigo" text-color="white" >
                                         <v-avatar left>
-                                            <v-progress-circular size="16" indeterminate color="white"></v-progress-circular>
+                                            <v-progress-circular size="16" width="3" indeterminate color="white"></v-progress-circular>
                                         </v-avatar>
                                         Загрузка
                                     </v-chip>
-                                    
-                                    <v-chip v-else color="cyan lighten-2" text-color="white">
+                                    <v-chip v-else-if="operation.uploadStatus === 'already'" color="teal" text-color="white" >
+                                         <v-avatar left>
+                                            <v-icon>check_circle_outline</v-icon>
+                                        </v-avatar>
+                                        Уже загружено
+                                    </v-chip>                                    
+                                    <v-chip v-else-if="operation.uploadStatus === 'initial'" color="cyan lighten-2" text-color="white">
                                         <v-avatar left>
                                             <v-icon>schedule</v-icon>
                                         </v-avatar>
                                         Ожидает загрузки
                                     </v-chip>
+                                    <v-chip v-else color="indigo" text-color="white" >
+                                        <v-avatar left>
+                                            <v-progress-circular size="16" width="3" indeterminate color="white"></v-progress-circular>
+                                        </v-avatar>
+                                        Обновление статуса
+                                    </v-chip>       
                                 </td>                           
                         </tr>
                     </tbody>
@@ -214,9 +225,10 @@ export default {
             })
             .then(response => {
                 this.simpleOperations = response.data.map(d => ({ ...d, uploadStatus: '', shortLink: '' }))
+                this.checkUploadingStatus(this.simpleOperations)
             })
             .catch(error => {
-                this.showSnackBar("Ошибка при загрузке операций", "pink")
+                this.showSnackBar("Ошибка при загрузке операций")
             })              
         }
     },
@@ -238,7 +250,7 @@ export default {
                 this.monitors = response.data
                 this.selectedMonitor = this.monitors[0].id 
             })
-            .catch(err => this.showSnackBar("Ошибка при загрузке списка мониторов", "pink"))
+            .catch(err => this.showSnackBar("Ошибка при загрузке списка мониторов"))
         },
 
         async getAllStages(waferId) {
@@ -248,7 +260,7 @@ export default {
                 this.stages = response.data
             })
             .catch((error) => {
-                this.showSnackBar("Ошибка при загрузке этапов", "pink")
+                this.showSnackBar("Ошибка при загрузке этапов")
             });
         },
 
@@ -259,28 +271,57 @@ export default {
                 this.originalCodeProduct = response.data
             })
             .catch((error) => {
-                this.showSnackBar("Ошибка при загрузке шаблона", "pink")
+                this.showSnackBar("Ошибка при загрузке шаблона")
             });
         },
 
         async upload() {
             for (let index = 0; index < this.simpleOperations.length; index++) {
-                let so = this.simpleOperations[index];
-                so.uploadStatus = "pending"
+                let so = this.simpleOperations[index]
+                if(so.uploadStatus !== "already")
+                {
+                    so.uploadStatus = "pending"
+                    await this.$http({
+                        method: "post",
+                        url: `/api/uploading`, 
+                        data: {operationName: `${so.name}_${so.element.name}`, 
+                            bigMeasurementName: so.name,
+                            stageId: so.stageId,
+                            elementId: so.element.elementId, 
+                            codeProductId: this.originalCodeProduct.id, 
+                            waferId: this.wafer,
+                            userName: this.userName,
+                            map: so.mapType,
+                            comment: so.comment,
+                            path: so.path,
+                            graphicNames: so.fileName.selectedGraphicNames.split(';')}, 
+                        config: {
+                            headers: {
+                                'Accept': "application/json",
+                                'Content-Type': "application/json"
+                            }
+                        }
+                    })
+                    .then(response => {
+                        so.uploadStatus = "done"
+                        so.shortLink = response.data
+                    })
+                    .catch(error => {
+                        so.uploadStatus = "rejected"
+                    });           
+                }
+            }
+        },
+
+        async checkUploadingStatus(simpleOperations) {
+            simpleOperations.forEach(async so => {
                 await this.$http({
                     method: "post",
-                    url: `/api/uploading`, 
+                    url: `/api/uploading/checkUploadingStatus`, 
                     data: {operationName: `${so.name}_${so.element.name}`, 
-                           bigMeasurementName: so.name,
-                           stageId: so.stageId,
-                           elementId: so.element.elementId, 
                            codeProductId: this.originalCodeProduct.id, 
-                           waferId: this.wafer,
-                           userName: this.userName,
-                           map: so.mapType,
-                           comment: so.comment,
-                           path: so.path,
-                           graphicNames: so.fileName.selectedGraphicNames.split(';') }, 
+                           waferId: this.wafer,                           
+                           graphicNames: so.fileName.selectedGraphicNames ? so.fileName.selectedGraphicNames.split(';') : []}, 
                     config: {
                         headers: {
                             'Accept': "application/json",
@@ -289,15 +330,20 @@ export default {
                     }
                 })
                 .then(response => {
-                    so.uploadStatus = "done"
-                    so.shortLink = response.data
+                    if(response.status === 204)
+                    {
+                        so.uploadStatus = "initial"
+                    }
+                    if(response.status === 200)
+                    {
+                        so.uploadStatus = "already"
+                    }
                 })
-                .catch(error => {
-                    so.uploadStatus = "rejected"
-                });           
-                                
-            }
-              
+            })    
+        },
+
+        copyShortLinkToClipboard(shortLink) {
+
         },
 
         stageChanged(measurementRecording) {
