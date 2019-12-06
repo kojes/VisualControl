@@ -11,8 +11,8 @@ namespace VueExample.Controllers
     [Route("api/[controller]/[action]")]
     public class StageController: Controller
     {
-        private ProcessProvider processProvider = new ProcessProvider();
-        private StageProvider stageProvider = new StageProvider();
+        private readonly ProcessProvider processProvider = new ProcessProvider();
+        private readonly StageProvider stageProvider = new StageProvider();
 
         [HttpGet]
         public IActionResult GetStagesByCodeProductId([FromQuery(Name = "codeproductid")] int codeProductId)
@@ -30,6 +30,14 @@ namespace VueExample.Controllers
             }
             
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStagesByWaferId([FromQuery(Name = "waferId")] string waferId) 
+        {
+            var stageList = await stageProvider.GetStagesByWaferId(waferId); 
+            return stageList.Count > 0 ? Ok(stageList) : (IActionResult)NotFound();
+        }
+
 
         [HttpGet]
         public IActionResult GetById([FromQuery(Name = "stageId")] int stageId)

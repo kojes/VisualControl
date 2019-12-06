@@ -12,7 +12,6 @@
             <v-flex lg2>               
                 <v-menu
                     v-model="menu"
-                    :close-on-content-click="false"
                     :nudge-width="200"
                     offset-x>
                 <template v-slot:activator="{ on }">
@@ -29,7 +28,7 @@
                         <v-text-field v-model="waferId" :error-messages="waferId ? [] : 'Введите название пластины'" 
                             label="Номер пластины"
                         ></v-text-field>
-                         <v-btn color="primary" outline @click="">Заполнить шаблон</v-btn>
+                         <v-btn color="primary" outline @click="getAutoIdmr()">Заполнить шаблон</v-btn>
                        </v-card-text>                    
                     </v-card>
                 </v-menu>
@@ -61,9 +60,8 @@
                         :step="index + 1">
                         <v-card>
                             <v-card-text>
-                               <export-element :waferId="waferId" :key.sync="element.key" :parameters.sync="element.parameters" :dividers="dividers" 
-                                               :operation.sync="element.operation" :element.sync="element.element" 
-                                               :done.sync="element.done"></export-element>
+                               <export-element :ref="element.key" :key.sync="element.key" :parameters.sync="element.parameters" :dividers="dividers" 
+                                               :operation.sync="element.operation" :element.sync="element.element"></export-element>
                             </v-card-text>
                         </v-card>                                        
                     </v-stepper-content>
@@ -145,6 +143,14 @@
                 </v-card>
             </v-dialog>
         </v-layout>
+        <v-dialog
+      v-model="dialog"
+      max-width="1000"
+    >
+      <div v-for="element in autoIdmrStatus" :key="element.key">
+        <p>{{element.element + " " + element.operation + " " + element.done}}</p>
+      </div>
+    </v-dialog>
     </v-container>
 </template>
 
@@ -166,7 +172,8 @@ export default {
            initialDialog: true,
            deleteDialog: false,
            exportDialog: false,
-           elementsVM: []
+           elementsVM: [],
+           dialog: false
         }
     },
     components:
@@ -178,18 +185,38 @@ export default {
         readyToExport: function () {     
            return this.$store.getters['exportkurb/isReadyForExport']
         },
-        currentDate: function () {
-            let today = new Date()
-            let dd = String(today.getDate()).padStart(2, '0')
-            let mm = String(today.getMonth() + 1).padStart(2, '0')
-            let yyyy = today.getFullYear()
-            return dd + '.' + mm + '.' + yyyy  
+        autoIdmrStatus : function () {
+            return this.$store.getters['exportkurb/elementsAutoIdmrStatus']
         }
 
     },
     methods:
     {
-        async exportK() {
+       async getAutoIdmr() {
+           
+           this.$store.commit("exportkurb/clearAutoIdmr")
+           this.dialog = true
+           this.$store.commit("exportkurb/initAutoIdmr", {elements: this.elements.map(function(e) {return {key: e.key, operation: e.operation.number, element: e.element.name, done: 'loading'}})})
+           this.elements.forEach(e => {
+               const {key, stageName} = e
+               e.operation.waferId = this.waferId
+               this.$refs[key][0].getAutoIdmr(this.waferId, stageName)
+           })
+           await this.getAvStages(this.waferId, this.elements)           
+           
+       },
+
+       async getAvStages(waferId, elements) {
+        await   this.$http
+                .get(`/api/stage/GetStagesByWaferId?waferId=${waferId}`)
+                .then(response => {
+                    elements.forEach(e => e.operation.avStages = response.data)
+                })
+                .catch((error) => {
+                            
+                });
+       },
+       async exportK() {
             const response = await this.$http({
                 method: "post",
                 url: `/api/export/create-kurb`, 
@@ -209,6 +236,7 @@ export default {
                 link.setAttribute('download', this.filename + '.xlsx');
                 document.body.appendChild(link);
                 link.click();
+                this.exportDialog = false
             });
         },
         async selectPattern() {
@@ -243,14 +271,13 @@ export default {
                         parameterNameStat: p.selectedStatParameter,
                         dividerId: p.dividerId,
                         divider: p.divider,
-                        measurementRecordingId: p.measurementRecording.id
+                        measurementRecordingId: p.measurementRecording
                     }
                     return pVm                                       
                 })  
                 x.isAddedToCommonWorksheet = x.element.isAddedToCommonWorksheet
                 x.elementName = x.element.name               
                 x.operationNumber = x.operation.number
-                delete x.done
                 delete x.operation
                 delete x.element
                 return x
@@ -266,7 +293,7 @@ export default {
                         parameterName: {value: p.parameterName, isValidDirty: false, isValid: true},
                         russianParameterName: {value: p.russianParameterName, isValidDirty: false, isValid: true},
                         waferId: "",
-                        measurementRecording: {id: "0", name: "Неизвестно"},
+                        measurementRecording: 0,
                         selectedStatParameter: p.parameterNameStat,
                         bounds: {lower: {value: p.lower, isValidDirty: false, isValid: true, errorMessages: []}, 
                                 upper: {value: p.upper, isValidDirty: false, isValid: true, errorMessages: []}},     
@@ -274,12 +301,11 @@ export default {
                         divider: p.divider.toFixed(3),      
                         statParameterArray: [],
                         shortLink: {value: "", success: "", errorMessage: ""},
-                        done: false
                     }
                     return pVm
                                        
                 })  
-                x.operation = {number: x.operationNumber, errorMessage: "Введите номер операции"},
+                x.operation = {number: x.operationNumber, waferId: "", stageName: x.stageName, avStages: [], errorMessage: "Введите номер операции"},
                 x.element = {name: x.elementName, isAddedToCommonWorksheet: x.isAddedToCommonWorksheet, errorMessage: "Введите название элемента"},                
                 x.key = `f${(~~(Math.random()*1e8)).toString(16)}`
                 delete x.operationNumber
