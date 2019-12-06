@@ -9,19 +9,19 @@
 
               <v-text-field v-model="login"
                             label="Логин"
-                            outline
+                            outlined
                             readonly>
 
               </v-text-field>
              
             </v-flex>
             <v-flex>
-              <v-btn outline to="\login" color="teal">Я уже зарегистрирован в системе</v-btn>
+              <v-btn outlined to="\login" color="teal">Я уже зарегистрирован в системе</v-btn>
             </v-flex>
             <v-flex lg4 offset-lg4>
               <v-text-field v-model="password"
                             type="password"
-                            outline
+                            outlined
                             label="Пароль"
                             :error-messages="passwordErrors"
                             required
@@ -34,7 +34,7 @@
               <v-text-field v-model="firstname"
                             :error-messages="firstnameErrors"
                             label="Имя"
-                            outline
+                            outlined
                             required
                             @input="$v.firstname.$touch()"
                             @blur="$v.firstname.$touch()">
@@ -44,7 +44,7 @@
               <v-text-field v-model="surname"
                             :error-messages="surnameErrors"
                             label="Фамилия"
-                            outline
+                            outlined
                             required
                             @input="$v.surname.$touch()"
                             @blur="$v.surname.$touch()">
@@ -53,7 +53,7 @@
             <v-flex lg4 offset-lg4>
               <v-text-field v-model="email"
                             :error-messages="emailErrors"
-                            outline
+                            outlined
                             label="Адрес электронной почты"
                             required
                             @input="$v.email.$touch()"
@@ -61,7 +61,7 @@
               </v-text-field>
             </v-flex>
             <v-flex lg4 offset-lg5>
-               <v-btn outline @click.native="registerAttempt">Зарегистрироваться в системе</v-btn>
+               <v-btn outlined @click.native="registerAttempt">Зарегистрироваться в системе</v-btn>
             </v-flex>
             
           </v-layout>
@@ -70,7 +70,7 @@
                 top>
       {{ snackbarText }}
       <v-btn color="pink"
-             flat
+             text
              @click="errorSnackbar = false">
         Закрыть
       </v-btn>

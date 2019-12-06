@@ -9,7 +9,6 @@ namespace VueExample.Models.SRV6
         public int DieTypeId { get; set; }
         [Column("Name")]
         public string Name { get; set; }
-        public ICollection<DieTypeElement> DieTypeElements { get; set; }
         public List<DieTypeCodeProduct> DieTypeCodeProducts { get; set; }
     }
 }

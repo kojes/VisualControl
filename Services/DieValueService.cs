@@ -18,6 +18,15 @@ namespace VueExample.Services
     {
        
         private readonly GraphicService _graphicService = new GraphicService();
+        public async Task CreateDieGraphics(List<DieGraphics> dieGraphics)
+        {
+            using(var db = new Srv6Context())
+            {
+                db.AddRange(dieGraphics);
+                await db.SaveChangesAsync();
+            }
+        }
+
         public Dictionary<string, List<DieValue>> GetDieValuesByMeasurementRecording(int measurementRecordingId)
         {
             var dieGraphicsList = new List<DieGraphics>();
@@ -54,15 +63,10 @@ namespace VueExample.Services
                         foreach (var item in afterParseDictionary)
                         {
                             dieValueDictionary.TryAdd(item.Key, new List<DieValue>());
-                            dieValueDictionary[item.Key].Add(item.Value);
-                            
+                            dieValueDictionary[item.Key].Add(item.Value);                            
                         }
-                    }
-
-                   
-                });
-               
-               
+                    }                   
+                });               
             });
 
            return dieValueDictionary;

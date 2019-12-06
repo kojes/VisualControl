@@ -38,6 +38,7 @@ namespace VueExample.Controllers
             return stageList.Count > 0 ? Ok(stageList) : (IActionResult)NotFound();
         }
 
+        
 
         [HttpGet]
         public IActionResult GetById([FromQuery(Name = "stageId")] int stageId)

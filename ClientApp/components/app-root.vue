@@ -7,41 +7,64 @@
                            app>
         <v-toolbar flat class="transparent">
           <v-list>
-            <v-list-tile avatar>
-              <v-list-tile-avatar>
+            <v-list-item avatar>
+              <v-list-item-avatar>
                 <avatar :username="username"
                         :size="40">
                 </avatar>
-              </v-list-tile-avatar>
+              </v-list-item-avatar>
 
-              <v-list-tile-content>
-                <v-list-tile-title>{{username}}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              <v-list-item-content>
+                <v-list-item-title>{{username}}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
 
           </v-list>
 
         </v-toolbar>
         <v-divider class="pt-0"></v-divider>
-        <v-list v-for="(route, index) in routes.filter(x=>x.nav === true)" :key="index">
+        <v-list nav dense>
+          <v-list-group>
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title>Загрузка измерений</v-list-item-title>
+              </v-list-item-content>
+            </template>
 
-          <v-list-tile ripple :to="route.path">
-            <v-list-tile-action>
+            <v-list-item
+              v-for="r in routes.filter(x=>x.nav === true && x.uploadingArea === true)" :to="r.path"
+              :key="r.path">
+               <v-list-item-action>
+                <v-icon>{{r.icon}}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title v-text="r.display"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+      </v-list>
+        <v-list nav dense v-for="(route, index) in routes.filter(x=>x.nav === true && x.uploadingArea !== true)" :key="index">
+
+          <v-list-item ripple :to="route.path">
+            <v-list-item-action>
               <v-icon>{{route.icon}}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{route.display}}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{route.display}}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
         </v-list>
+
+        
+
       </v-navigation-drawer>
-      <v-toolbar v-if="auth" color="indigo" fixed app>
+      <v-app-bar v-if="auth" color="indigo" fixed app>
         <v-toolbar-side-icon v-if="auth" @click.stop="drawer = !drawer"><v-icon>drag_indicator</v-icon></v-toolbar-side-icon>
         <v-toolbar-title>Система контроля за измерениями 2.0</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn to="/login" dark outline>Выйти из системы </v-btn>
-      </v-toolbar>
+        <v-btn to="/login" dark outlined>Выйти из системы </v-btn>
+      </v-app-bar>
       <v-content>
 
         <v-container fluid>

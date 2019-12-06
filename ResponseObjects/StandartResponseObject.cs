@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace VueExample.ResponseObjects
 {
-    internal class StandardResponseObject
+    public class StandardResponseObject
     {
         public string Body { get; set; }
         public string ResponseType { get; set; }

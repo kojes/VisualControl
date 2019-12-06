@@ -12,7 +12,7 @@
       <v-flex lg4>
         <v-card dark color="info">
           <v-card-text>
-            <v-btn outline color="primary" @click="getFolderDefects()">Проверить папку</v-btn>
+            <v-btn outlined color="primary" @click="getFolderDefects()">Проверить папку</v-btn>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -34,8 +34,8 @@
             <v-autocomplete v-model="selectedStage"
                             :items="stages"
                             no-data-text="Нет данных"
-                            box
-                            outline
+                            filled
+                            outlined
                             label="Название этапа">
             </v-autocomplete>
           </v-card-text>
@@ -65,7 +65,7 @@
     <v-snackbar v-model="errorSnackbar" top>
       {{ snackbarText }}
       <v-btn color="pink"
-             flat
+             text
              @click="errorSnackbar = false">
         Закрыть
       </v-btn>

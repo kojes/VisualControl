@@ -13,7 +13,7 @@
       <v-flex d-flex lg4>
         <v-layout justify-center column>
           <v-flex d-flex>
-            <v-tabs color="indigo" dark slider-color="primary" icons-and-text>
+            <v-tabs background-color="indigo" dark slider-color="primary" icons-and-text>
               <v-tab href="#wafer">
                 Выбор пластины
                 <v-icon>table_chart</v-icon>
@@ -39,8 +39,8 @@
                         no-data-text="Нет данных"
                         item-text="waferId"
                         item-value="waferId"
-                        box
-                        outline
+                        filled
+                        outlined
                         label="Номер пластины"
                       ></v-autocomplete>
                       <v-select
@@ -49,8 +49,8 @@
                         no-data-text="Нет данных"
                         item-text="name"
                         item-value="id"
-                        box
-                        outline
+                        filled
+                        outlined
                         label="Выберите измерение"
                       ></v-select>
                     </v-layout>
@@ -74,16 +74,16 @@
                           multiple
                         >
                           <template v-slot:prepend-item>
-                            <v-list-tile ripple @click="selectAllGraphics">
-                              <v-list-tile-action>
+                            <v-list-item ripple @click="selectAllGraphics">
+                              <v-list-item-action>
                                 <v-icon
                                   :color="selectedGraphics.length > 0 ? 'primary' : ''"
                                 >{{ selectedGraphicsIcon }}</v-icon>
-                              </v-list-tile-action>
-                              <v-list-tile-content>
-                                <v-list-tile-title>Выбрать все</v-list-tile-title>
-                              </v-list-tile-content>
-                            </v-list-tile>
+                              </v-list-item-action>
+                              <v-list-item-content>
+                                <v-list-item-title>Выбрать все</v-list-item-title>
+                              </v-list-item-content>
+                            </v-list-item>
                             <v-divider class="mt-2"></v-divider>
                           </template>
                           <template slot="selection" slot-scope="{ item, index }">
@@ -100,8 +100,8 @@
                           no-data-text="Нет данных"
                           item-text="name"
                           item-value="dividerK"
-                          box
-                          outline
+                          filled
+                          outlined
                           label="Выберите приведение к мм"
                         ></v-select>
                       </v-flex>
@@ -124,7 +124,7 @@
                           :value="dirtyCells.statPercentage"
                           color="primary"
                         >{{ dirtyCells.statPercentage + "%" }}</v-progress-circular>
-                        <v-btn outline color="primary" @click="delDirtyCells(dirtyCells.statList)">
+                        <v-btn outlined color="primary" @click="delDirtyCells(dirtyCells.statList)">
                           <v-icon>cached</v-icon>
                         </v-btn>
                       </v-card-text>
@@ -144,7 +144,7 @@
                           color="indigo lighten-4"
                         >{{ dirtyCells.fixedPercentage + "%" }}</v-progress-circular>
                         <v-btn
-                          outline
+                          outlined
                           color="indigo lighten-4"
                           @click="delDirtyCells(dirtyCells.fixedList)"
                         >
@@ -185,7 +185,7 @@
             >{{ Math.ceil((selectedDies.length / avbSelectedDies.length)*100) + "%" }}</v-progress-circular>
           </v-card-text>
           <v-card-actions>
-            <v-btn outline color="primary" @click="selectAllDies()">Выбрать все кристаллы</v-btn>
+            <v-btn outlined color="primary" @click="selectAllDies()">Выбрать все кристаллы</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>

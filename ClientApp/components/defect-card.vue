@@ -33,7 +33,7 @@
         </v-layout>
 
 
-        <v-tabs color="indigo"
+        <v-tabs background-color="indigo"
                 dark
                 slider-color="primary"
                 icons-and-text>

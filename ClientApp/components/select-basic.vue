@@ -39,7 +39,7 @@
             class="numberinput"
             v-on:keypress="isNumber(event)"
             v-model.number="settings.axisY.max"
-            outline
+            outlined
           ></v-text-field>
 
            <v-text-field
@@ -48,7 +48,7 @@
             v-on:keypress="isNumber(event)"
             v-model.number="settings.axisY.min"
             class="numberinput"
-            outline
+            outlined
           ></v-text-field>
 
           </v-flex>
@@ -68,7 +68,7 @@
             label="Цвет фона:"
             disabled
             v-model="settings.colors.backgroundColor"
-            outline
+            outlined
           ></v-text-field>
           </v-flex>
           <v-flex lg4 offset-lg1>
@@ -82,7 +82,7 @@
             label="Цвет текста:"
             disabled
             v-model="settings.colors.textColor"
-            outline
+            outlined
           ></v-text-field>
           </v-flex>
           <v-flex lg4 offset-lg1>
@@ -96,7 +96,7 @@
             label="Цвет сетки:"
             disabled
             v-model="settings.colors.gridColor"
-            outline
+            outlined
           ></v-text-field>
           </v-flex>
           <v-flex lg4 offset-lg1>
@@ -131,7 +131,7 @@
       <v-list class="pa-1">
         <v-divider></v-divider>
          <v-btn
-              outline
+              outlined
               class="btn btn-primary"
               v-on:click="saveSettings"
             >Сохранить настройки</v-btn>
@@ -147,8 +147,8 @@
               no-data-text="Нет данных"
               item-text="name"
               item-value="facilityId"
-              box
-              outline
+              filled
+              outlined
               label="Название установки:"
             ></v-select>
           </v-flex>
@@ -160,8 +160,8 @@
               no-data-text="Нет данных"
               item-text="processName"
               item-value="processId"
-              box
-              outline
+              filled
+              outlined
               label="Название процесса:"
             ></v-select>
           </v-flex>
@@ -172,8 +172,8 @@
               no-data-text="Нет данных"
               item-text="codeProductName"
               item-value="idCp"
-              box
-              outline
+              filled
+              outlined
               label="Название шаблона:"
             ></v-select>
           </v-flex>
@@ -187,20 +187,20 @@
               no-data-text="Нет данных"
               item-text="name"
               item-value="measuredDeviceId"
-              box
-              outline
+              filled
+              outlined
               label="Название измеряемого устройства:"
             ></v-select>
           </v-flex>
           <v-flex lg4>
-            <v-select
+            <v-select 
               v-model="selectedMeasurement"
               :items="measurements.filter(x => x.measuredDeviceId === selectedMeasuredDevice)"
               no-data-text="Нет данных"
               item-text="name"
               item-value="measurementId"
-              box
-              outline
+              filled
+              outlined
               label="Название измерения:"
             ></v-select>
           </v-flex>
@@ -229,8 +229,8 @@
               no-data-text="Нет данных"
               item-text="address"
               item-value="deviceId"
-              box
-              outline
+              filled
+              outlined
               label="Прибор:"
             ></v-select>
           </v-flex>
@@ -239,8 +239,8 @@
               v-model="selectedPort"
               :items="ports"
               no-data-text="Нет данных"
-              box
-              outline
+              filled
+              outlined
               label="Порт:"
             ></v-select>
           </v-flex>
@@ -254,28 +254,28 @@
               no-data-text="Нет данных"
               item-text="russianName"
               item-value="graphicId"
-              box
-              outline
+              filled
+              outlined
               label="Характеристика:"
             ></v-select>
 
             <label for="graphicSelect"></label>
           </v-flex>
           <v-flex lg6>
-            <v-text-field :value="selectedMaterial.name" label="Материал" append-outer-icon="cached" outline readonly @click:append-outer="editMaterial"></v-text-field>
+            <v-text-field :value="selectedMaterial.name" label="Материал" append-outer-icon="cached" outlined readonly @click:append-outer="editMaterial"></v-text-field>
           </v-flex>
         </v-layout>
         <v-layout row>
           <v-flex lg6>
             <v-btn
-              outline
+              outlined
               id="newgraphicButton"
               class="btn btn-primary"
               v-on:click="getPoints"
             >Построить график</v-btn>
 
             <v-btn
-              outline
+              outlined
               id="addgraphicButton"
               class="btn btn-success"
               v-on:click="getPoints"
@@ -288,7 +288,7 @@
                
               v-if="measurementSets.filter(x => !x.isGenerated).length > 0"
               class="btn btn-primary"
-              outline
+              outlined
               @click="dialogAddToMeasurementSet=true"
             >Добавить к серии</v-btn>
                 </v-flex>
@@ -301,20 +301,23 @@
       <v-flex lg4>
         <v-card>
           <v-toolbar color="indigo" dark>
-            <v-select
-              v-model="selectedMeasurementSet.id"
-              :items="measurementSets"
-              no-data-text="Нет данных"
-              item-text="name"
-              item-value="measurementSetId"
-              label="Название серии измерений:"
-            ></v-select>
+            <div class="pt-8">
+              <v-select
+                outlined
+                v-model="selectedMeasurementSet.id"
+                :items="measurementSets"
+                no-data-text="Нет данных"
+                item-text="name"
+                item-value="measurementSetId"
+                label="Название серии измерений:"
+              ></v-select>
+            </div>
           </v-toolbar>
 
-          <v-list style="max-height: 500px" class="scroll-y" two-line>
+          <v-list rounded style="max-height: 500px" class="overflow-y-auto" two-line>
             <template v-for="item in selectedAtomics">
-              <v-list-tile :key="item.atomicMeasurementId" ripple>
-              <v-list-tile-action>
+              <v-list-item :key="item.atomicMeasurementId" ripple>
+              <v-list-item-action>
               <div v-if="item.isOnline">
                   <span class="ringringOnline"></span>
                   <span class="circleOnline"></span>
@@ -322,15 +325,15 @@
               <div v-else>
                   <span class="circleDead"></span>
               </div>
-              </v-list-tile-action>
+              </v-list-item-action>
             
-                <v-list-tile-content>
-                  <v-list-tile-title>Измерение: {{ item.measurementName }}</v-list-tile-title>
-                  <v-list-tile-sub-title class="text--primary">Прибор: {{ item.deviceName }} Порт: {{ item.portNumber }}</v-list-tile-sub-title>
+                <v-list-item-content>
+                  <v-list-item-title>{{ item.measurementName }}</v-list-item-title>
+                  <v-list-item-subtitle class="text--primary">Прибор: {{ item.deviceName }} Порт: {{ item.portNumber }}</v-list-item-subtitle>
                  
-                </v-list-tile-content>
+                </v-list-item-content>
 
-                <v-list-tile-content>
+                <v-list-item-content>
                 
                   <div v-if="item.isOnline">
 
@@ -346,33 +349,33 @@
               
   
             
-              </v-list-tile-content>
+              </v-list-item-content>
 
-                <v-list-tile-action>
+                <v-list-item-action>
                   <v-icon v-if="measurementSets.length > 0 && !measurementSets.find(x => x.measurementSetId === selectedMeasurementSet.id).isGenerated"
                     color="primary"
                     @click="deleteFromSet(item.atomicMeasurementId)"
                   >delete_outline</v-icon>
-                </v-list-tile-action>
-              </v-list-tile>
+                </v-list-item-action>
+              </v-list-item>
             </template>
           </v-list>
         </v-card>
         <v-btn
           v-if="selectedAtomics.length > 0"
-          outline
+          outlined
           class="btn btn-primary"
           v-on:click="getPointsFromMeasurementSet"
         >Построить серию</v-btn>
 
           <v-btn
-          outline
+          outlined
           class="btn btn-primary"
           v-on:click="getMeasurementStatistics"
         >Статистика по серии</v-btn>
 
         <v-btn
-          outline
+          outlined
           class="btn btn-primary"
           v-on:click="addNewMeasurementSet"
         >Добавить новую серию</v-btn>
@@ -381,7 +384,7 @@
       
 
         <v-btn
-          outline
+          outlined
           v-if="measurementSets.length > 0 && !measurementSets.find(x => x.measurementSetId == selectedMeasurementSet.id).isGenerated"
           class="btn btn-primary"
           v-on:click="deleteThisMeasurementSet"
@@ -403,7 +406,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn v-if="selectedMeasurementSetInDialog.length > 0" class="btn btn-primary" outline @click="addToMeasurementSet">Добавить</v-btn>
+                <v-btn v-if="selectedMeasurementSetInDialog.length > 0" class="btn btn-primary" outlined @click="addToMeasurementSet">Добавить</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -425,7 +428,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn class="btn btn-primary" outline @click="editMaterial">Изменить</v-btn>
+                <v-btn class="btn btn-primary" outlined @click="editMaterial">Изменить</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -459,7 +462,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn  color="primary" outline @click="addNewMeasurementSet">Добавить</v-btn>
+              <v-btn  color="primary" outlined @click="addNewMeasurementSet">Добавить</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -470,7 +473,7 @@
             <v-card-text>Вы действительно хотите удалить серию?</v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="pink" outline @click="deleteThisMeasurementSet">Удалить</v-btn>
+              <v-btn color="pink" outlined @click="deleteThisMeasurementSet">Удалить</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -518,31 +521,31 @@
             <v-card-title><h4>Испытание: {{ props.item.measurementName }}</h4></v-card-title>
             <v-divider></v-divider>
             <v-list dense>
-              <v-list-tile>
-                <v-list-tile-content>Прибор:</v-list-tile-content>
-                <v-list-tile-content class="align-end">Название: {{ props.item.deviceName }} Порт:{{ props.item.portNumber }}</v-list-tile-content>
-              </v-list-tile>           
+              <v-list-item>
+                <v-list-item-content>Прибор:</v-list-item-content>
+                <v-list-item-content class="align-end">Название: {{ props.item.deviceName }} Порт:{{ props.item.portNumber }}</v-list-item-content>
+              </v-list-item>           
               
-              <v-list-tile>
-                <v-list-tile-content>Значение в начале испытания:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.firstValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
+              <v-list-item>
+                <v-list-item-content>Значение в начале испытания:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.firstValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-item-content>
+              </v-list-item>
 
-              <v-list-tile>
-                <v-list-tile-content>Текущее значение:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.lastValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
+              <v-list-item>
+                <v-list-item-content>Текущее значение:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{  parseFloat(props.item.lastValue).toFixed(6) }} {{ props.item.graphicUnit }}</v-list-item-content>
+              </v-list-item>
 
 
-               <v-list-tile>
-                <v-list-tile-content>Падение за время испытания:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ parseFloat(props.item.commonDifference).toFixed(6) * -1 }} {{ props.item.graphicUnit }}</v-list-tile-content>
-              </v-list-tile>
+               <v-list-item>
+                <v-list-item-content>Падение за время испытания:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{ parseFloat(props.item.commonDifference).toFixed(6) * -1 }} {{ props.item.graphicUnit }}</v-list-item-content>
+              </v-list-item>
 
-                <v-list-tile>
-                <v-list-tile-content>Изменение в процентах:</v-list-tile-content>
-                <v-list-tile-content class="align-end yellow--text text--darken-2">{{ ((parseFloat(props.item.commonDifference) / parseFloat(props.item.firstValue)) * 100).toFixed(2) }} %</v-list-tile-content>
-              </v-list-tile>
+                <v-list-item>
+                <v-list-item-content>Изменение в процентах:</v-list-item-content>
+                <v-list-item-content class="align-end yellow--text text--darken-2">{{ ((parseFloat(props.item.commonDifference) / parseFloat(props.item.firstValue)) * 100).toFixed(2) }} %</v-list-item-content>
+              </v-list-item>
            
             </v-list>
           </v-card>
@@ -554,7 +557,7 @@
 
     <v-snackbar v-model="snackbar" top>
       {{ snackbarText }}
-      <v-btn color="pink" flat @click="snackbar = false">Закрыть</v-btn>
+      <v-btn color="pink" text @click="snackbar = false">Закрыть</v-btn>
     </v-snackbar>
 
  

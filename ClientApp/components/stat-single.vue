@@ -14,7 +14,7 @@
                 :value="mode === `stat` ? dirtyCellsStatPercentage : dirtyCellsFixedPercentage"
                 :color="mode === `stat` ? 'primary' : 'indigo lighten-4'"
               >{{  mode === `stat` ? dirtyCellsStatPercentage + '%' : dirtyCellsFixedPercentage + '%' }}</v-progress-circular>
-              <v-btn flat icon :color="mode === `stat` ? 'primary' : 'indigo lighten-4'" @click="delDirtyCells(dirtyCells)">
+              <v-btn text icon :color="mode === `stat` ? 'primary' : 'indigo lighten-4'" @click="delDirtyCells(dirtyCells)">
                 <v-icon>cached</v-icon>
               </v-btn>
               <v-switch
@@ -37,13 +37,13 @@
     >
      <v-card>
         <v-list>
-          <v-list-tile avatar>
-            <v-list-tile-avatar>
+          <v-list-item avatar>
+            <v-list-item-avatar>
               <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John">
-            </v-list-tile-avatar>
+            </v-list-item-avatar>
 
            
-          </v-list-tile>
+          </v-list-item>
         </v-list>
 
         
@@ -112,7 +112,7 @@
                             :color= "mode === `stat` ? 'primary' : 'indigo lighten-4'"
                           >{{ mode === `stat` ? Math.ceil((1.0 - props.item.dirtyCells.statPercentage) * 100) + '%' : Math.ceil((1.0 - props.item.dirtyCells.fixedPercentage) * 100) + '%' }}</v-progress-circular>
 
-                          <v-btn flat icon :color="mode === `stat` ? 'primary' : 'indigo lighten-4'" @click="delDirtyCells(props.item.dirtyCells)">
+                          <v-btn text icon :color="mode === `stat` ? 'primary' : 'indigo lighten-4'" @click="delDirtyCells(props.item.dirtyCells)">
                             <v-icon>cached</v-icon>
                           </v-btn>
                         </td>

@@ -28,17 +28,17 @@
                         <v-text-field v-model="waferId" :error-messages="waferId ? [] : 'Введите название пластины'" 
                             label="Номер пластины"
                         ></v-text-field>
-                         <v-btn color="primary" outline @click="getAutoIdmr()">Заполнить шаблон</v-btn>
+                         <v-btn color="primary" outlined @click="getAutoIdmr()">Заполнить шаблон</v-btn>
                        </v-card-text>                    
                     </v-card>
                 </v-menu>
   
             </v-flex>
-            <v-flex lg3>
-                <v-btn v-if="readyToExport" color="green" @click="exportDialog = true">
+            <v-flex lg4>
+                <v-btn block v-if="readyToExport" color="green" @click="exportDialog = true">
                     Экспорт
                 </v-btn>
-                <v-btn v-else outline color="pink">
+                <v-btn block v-else outlined color="pink">
                     Для экспорта необходимо заполнить все элементы
                 </v-btn>       
             </v-flex>          
@@ -76,8 +76,8 @@
                     <v-card-text>Вы действительно хотите удалить элемент?</v-card-text>
                     <v-spacer></v-spacer>
                     <v-card-actions>
-                        <v-btn color="pink" flat @click="deleteElement()">Удалить</v-btn>
-                        <v-btn color="indigo" flat @click="deleteDialog = false">Отмена</v-btn>
+                        <v-btn color="pink" text @click="deleteElement()">Удалить</v-btn>
+                        <v-btn color="indigo" text @click="deleteDialog = false">Отмена</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -118,20 +118,20 @@
                     </v-card-text>
                     <v-spacer></v-spacer>
                     <v-card-actions>
-                        <v-btn v-if="filename" color="green" flat @click="exportK()">Сформировать файл</v-btn>
-                        <v-btn color="pink" flat @click="exportDialog = false">Отмена</v-btn>
+                        <v-btn v-if="filename" color="green" text @click="exportK()">Сформировать файл</v-btn>
+                        <v-btn color="pink" text @click="exportDialog = false">Отмена</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
         </v-layout>
          <v-layout row>
             <v-dialog v-model="initialDialog" persistent max-width="400">
-               <v-card>
+               <v-card class="mx-auto">
                     <v-card-text>
-                       <v-select    v-model="selectedPattern"
+                       <v-select class="pt-8" v-model="selectedPattern"
                                     :items="patterns"
                                     no-data-text="Нет данных"
-                                    outline
+                                    outlined
                                     label="Выберите начальный шаблон:">
                         </v-select>
                     </v-card-text>
@@ -356,3 +356,4 @@ export default {
         background-color: #303030;
     }
 </style>
+

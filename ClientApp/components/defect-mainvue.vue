@@ -5,7 +5,7 @@
       <v-flex lg6 >
         <v-autocomplete v-model="selectedWafer"
                         :items="wafers"
-                        box
+                        filled
                         :label="`Выберите пластину для просмотра дефектов`">
 
         </v-autocomplete>
