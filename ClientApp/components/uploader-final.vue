@@ -19,8 +19,12 @@
                     <v-text-field v-model="originalCodeProduct.name" readonly label="Шаблон:"></v-text-field> 
                 </v-row>
                  <v-row>
-                    <v-btn v-if="readyToUploading" block color="success" @click="upload">Загрузить</v-btn>
-                    <v-btn v-else @mouseover="errorHighlight = true" @mouseleave="errorHighlight= false" block outlined color="pink" @click="alert()">Загрузка невозможна</v-btn>
+                  
+                    <v-btn v-if="!readyToUploading" @mouseover="errorHighlight = true" @mouseleave="errorHighlight = false" block outlined color="pink">Загрузка невозможна</v-btn>
+                    <v-btn v-else-if="simpleOperations.every(x=>x.uploadStatus==='already')" block color="teal">Измерения уже загружены</v-btn>
+                    <v-btn v-else-if="simpleOperations.filter(x => x.uploadStatus==='initial').length === 0" block color="indigo">Обновление статуса загрузки</v-btn>
+                    <v-btn v-else block color="success" @click="upload">{{`Загрузить ${simpleOperations.filter(x => x.uploadStatus==='initial').length} измерений`}}</v-btn>
+
                 </v-row>   
                 <v-row>
                     <v-col lg="12">
@@ -47,7 +51,8 @@
                                             <v-card>
                                                 <v-row>
                                                     <v-col lg="12" class="px-8">
-                                                          <v-select                  
+                                                            <v-text-field v-if="stageCreationMode" v-model="newStageName" label="Название этапа:"></v-text-field> 
+                                                            <v-select v-else          
                                                                 :items="stages"
                                                                 @change="stageChanged(measurementRecording)"
                                                                 v-model="measurementRecording.stage.id"
@@ -57,7 +62,13 @@
                                                                 label="Этап">
                                                             </v-select>
                                                     </v-col>
-                                                </v-row>                                                
+                                                </v-row>  
+                                                <v-row>
+                                                    <v-col lg="10" offset-lg="2" class="px-8">
+                                                        <v-btn v-if="stageCreationMode" block color="success" @click="createStage(measurementRecording)">Добавить этап в БД</v-btn>
+                                                        <v-btn v-else block color="indigo" @click="stageCreationMode=true">Добавить новый этап</v-btn>
+                                                    </v-col>
+                                                </v-row>                                              
                                             </v-card>
                                         </v-menu>                                                                           
                                     </v-list-item-icon>
@@ -201,9 +212,11 @@ export default {
     data() {
         return {
             measurementRecordingsWithStage: [],
+            newStageName: "",
             selectedMonitor: "",
             originalCodeProduct: {},
             errorHighlight: false,
+            stageCreationMode: false,
             simpleOperations: [],
             stages: [],
             monitors: [],
@@ -260,7 +273,7 @@ export default {
                 this.stages = response.data
             })
             .catch((error) => {
-                this.showSnackBar("Ошибка при загрузке этапов")
+                
             });
         },
 
@@ -273,6 +286,30 @@ export default {
             .catch((error) => {
                 this.showSnackBar("Ошибка при загрузке шаблона")
             });
+        },
+
+        async createStage(measurementRecording) {
+            let codeProductId = this.originalCodeProduct.id
+            let stageName = this.newStageName
+            await this.$http({
+                    method: "put",
+                    url: `/api/stage/create/name/${stageName}/codeProductId/${codeProductId}`, 
+                    config: {
+                    headers: {
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
+                    }
+                }
+            })
+            .then(response => {
+                this.stageCreationMode = false
+                this.newStageName = ""
+                this.stages.push(response.data)
+                measurementRecording.stage.id = response.data.stageId
+                this.stageChanged(measurementRecording)
+                this.showSnackBar("Этап добавлен к текущему проекту")
+            })            
+
         },
 
         async upload() {

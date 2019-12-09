@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VueExample.Models
@@ -5,6 +6,7 @@ namespace VueExample.Models
     [Table("Stage")]
     public class Stage
     {
+        [Key]
         [Column("id_stage")]
         public int StageId { get; set; }
         [Column("StageName")]

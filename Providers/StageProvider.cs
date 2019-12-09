@@ -10,6 +10,17 @@ namespace VueExample.Providers
 {
     public class StageProvider : RepositorySRV6<Stage>
     {
+        public async Task<Stage> Create(string name, int processId) 
+        {
+            using (var srv6Context = new Srv6Context())
+            {
+                var newStage = new Stage{StageName = name, ProcessId = processId};
+                srv6Context.Stages.Add(newStage);
+                await srv6Context.SaveChangesAsync();
+                return newStage;
+            }
+        }
+
         public List<Stage> GetStagesByProcessId(int processId)
         {
             using (var srv6Context = new Srv6Context())
