@@ -39,6 +39,16 @@ namespace VueExample.Providers.Srv6
             }
         }
 
+        public async Task CopyFileNamesToAnotherProcess(int sourceProcessId, int destProcessId)
+        {
+            var fileNamesList = await GetAllFileNamesByProcessId(sourceProcessId);
+            foreach (var fileName in fileNamesList)
+            {
+                var graphicNamesList = await GetGraphicsByFileName(fileName.Id);
+                var newFileName = await CreateFileName(new FileNameUploaderViewModel{Name = fileName.Name, ProcessId = destProcessId, GraphicNames = graphicNamesList.ToList()});               
+            }
+        }
+
         public async Task<FileName> CreateFileName(FileNameUploaderViewModel fileNameViewModel)
         {
             using (var db = new Srv6Context()) 

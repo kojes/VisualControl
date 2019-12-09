@@ -56,6 +56,15 @@ namespace VueExample.Controllers
             return CreatedAtAction("", graphic);
         }
 
+        [HttpPut]
+        [ProducesResponseType (StatusCodes.Status201Created)]
+        [Route("copytoanotherprocess/source/{sourceProcessId:int}/dest/{destProcessId:int}")]
+        public async Task<IActionResult> CopyFileNamesToAnotherProcess([FromRoute] int sourceProcessId, [FromRoute] int destProcessId)
+        {
+            await _fileGraphicUploaderService.CopyFileNamesToAnotherProcess(sourceProcessId, destProcessId);
+            return CreatedAtAction("","");
+        }
+
         [HttpDelete]
         [ProducesResponseType (StatusCodes.Status204NoContent)]
         [Route("graphicname/delete/{fileNameId:int}")]

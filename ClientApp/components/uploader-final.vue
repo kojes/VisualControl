@@ -20,7 +20,7 @@
                 </v-row>
                  <v-row>
                     <v-btn v-if="readyToUploading" block color="success" @click="upload">Загрузить</v-btn>
-                    <v-btn v-else @mouseover="errorHighlight= true" @mouseleave="errorHighlight= false" block outlined color="pink" @click="alert()">Загрузка невозможна</v-btn>
+                    <v-btn v-else @mouseover="errorHighlight = true" @mouseleave="errorHighlight= false" block outlined color="pink" @click="alert()">Загрузка невозможна</v-btn>
                 </v-row>   
                 <v-row>
                     <v-col lg="12">
