@@ -51,7 +51,7 @@
                                             <v-card>
                                                 <v-row>
                                                     <v-col lg="12" class="px-8">
-                                                            <v-text-field v-if="stageCreationMode" v-model="newStageName" label="Название этапа:"></v-text-field> 
+                                                            <v-text-field v-if="stageCreationMode" v-model="newStageName" :error-messages="newStageValidation" label="Название этапа:"></v-text-field> 
                                                             <v-select v-else          
                                                                 :items="stages"
                                                                 @change="stageChanged(measurementRecording)"
@@ -65,7 +65,7 @@
                                                 </v-row>  
                                                 <v-row>
                                                     <v-col lg="10" offset-lg="2" class="px-8">
-                                                        <v-btn v-if="stageCreationMode" block color="success" @click="createStage(measurementRecording)">Добавить этап в БД</v-btn>
+                                                        <v-btn v-if="stageCreationMode" v-show="!newStageValidation" block color="success" @click="createStage(measurementRecording)">Добавить этап в БД</v-btn>
                                                         <v-btn v-else block color="indigo" @click="stageCreationMode=true">Добавить новый этап</v-btn>
                                                     </v-col>
                                                 </v-row>                                              
@@ -252,6 +252,13 @@ export default {
         },
         readyToUploading() {
             return this.simpleOperations.length > 0 && this.simpleOperations.every(so => so.fileName.graphicNames && so.element.elementId)
+        },
+        newStageValidation() {
+            if(!this.newStageName)
+                return "Введите название этапа"
+            if(this.stages.some(x => x.stageName === this.newStageName))
+                return "Такое название уже существует"
+            return ""
         }
     },
 
