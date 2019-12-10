@@ -1,6 +1,6 @@
 <template>
   <v-container grid-list-lg>
-    <v-layout wrap row>
+    <v-row>
         <v-btn
               fixed
               dark
@@ -12,7 +12,7 @@
             >
               <v-icon>settings</v-icon>
             </v-btn>
-      <v-flex lg8>
+      <v-col lg="8">
            <v-navigation-drawer
       v-model="drawer"
       fixed
@@ -27,12 +27,9 @@
 
        <v-list>
        
-        <v-layout>
-          <v-flex lg10 offset-lg1>
-            <v-checkbox v-model="settings.axisY.strictMinMax" label="Ручная установка границ оси Y"></v-checkbox>
-            
-                   
-           
+        <v-row>
+          <v-col lg="10" offset-lg="1">
+            <v-checkbox v-model="settings.axisY.strictMinMax" label="Ручная установка границ оси Y"></v-checkbox>      
           <v-text-field
             label="Максимум:"
             :disabled="!settings.axisY.strictMinMax"
@@ -51,8 +48,8 @@
             outlined
           ></v-text-field>
 
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
     
       </v-list>
 
@@ -62,47 +59,47 @@
       </v-list>
 
         <v-list>
-          <v-layout row>
-          <v-flex lg6 offset-lg1>
-           <v-text-field
-            label="Цвет фона:"
-            disabled
-            v-model="settings.colors.backgroundColor"
-            outlined
-          ></v-text-field>
-          </v-flex>
-          <v-flex lg4 offset-lg1>
-           <swatches v-model="settings.colors.backgroundColor" colors="text-advanced" popover-to="left"></swatches>
-          </v-flex>
-          </v-layout>
+          <v-row>
+            <v-col lg="6" offset-lg="1">
+            <v-text-field
+              label="Цвет фона:"
+              disabled
+              v-model="settings.colors.backgroundColor"
+              outlined
+            ></v-text-field>
+            </v-col>
+            <v-col lg="4" offset-lg="1">
+            <swatches v-model="settings.colors.backgroundColor" colors="text-advanced" popover-to="left"></swatches>
+            </v-col>
+          </v-row>
 
-        <v-layout row>
-          <v-flex lg6 offset-lg1>
+        <v-row>
+          <v-col lg="6" offset-lg="1">
            <v-text-field
             label="Цвет текста:"
             disabled
             v-model="settings.colors.textColor"
             outlined
           ></v-text-field>
-          </v-flex>
-          <v-flex lg4 offset-lg1>
+          </v-col>
+          <v-col lg="4" offset-lg="1">
            <swatches v-model="settings.colors.textColor" colors="text-advanced" popover-to="left"></swatches>
-          </v-flex>
-          </v-layout>
+          </v-col>
+          </v-row>
 
-           <v-layout row>
-           <v-flex lg6 offset-lg1>
+           <v-row>
+           <v-col lg="6" offset-lg="1">
            <v-text-field
             label="Цвет сетки:"
             disabled
             v-model="settings.colors.gridColor"
             outlined
           ></v-text-field>
-          </v-flex>
-          <v-flex lg4 offset-lg1>
+          </v-col>
+          <v-col lg="4" offset-lg="1">
            <swatches v-model="settings.colors.gridColor" colors="text-advanced" popover-to="left"></swatches>
-          </v-flex>     
-        </v-layout>
+          </v-col>     
+        </v-row>
 
         </v-list>
 
@@ -112,8 +109,8 @@
       </v-list>
 
       <v-list>
-        <v-layout>
-          <v-flex lg10 offset-lg1>
+        <v-row>
+          <v-col lg="10" offset-lg="1">
         <v-checkbox v-model="settings.smoothing.require" label="Сглаживание"></v-checkbox>
         <v-slider
           v-model="settings.smoothing.power"
@@ -124,8 +121,8 @@
           :min="2"
           :step="2"
         ></v-slider>
-        </v-flex>
-        </v-layout>
+        </v-col>
+        </v-row>
       </v-list>
 
       <v-list class="pa-1">
@@ -138,8 +135,8 @@
        </v-list>
    
     </v-navigation-drawer>
-        <v-layout row>
-           <v-flex lg4>          
+        <v-row>
+           <v-col lg="4">          
          
             <v-select
               v-model="selectedFacility"
@@ -151,8 +148,8 @@
               outlined
               label="Название установки:"
             ></v-select>
-          </v-flex>
-          <v-flex lg4>          
+          </v-col>
+          <v-col lg="4">          
          
             <v-select
               v-model="selectedProcess"
@@ -164,8 +161,8 @@
               outlined
               label="Название процесса:"
             ></v-select>
-          </v-flex>
-          <v-flex lg4>
+          </v-col>
+          <v-col lg="4">
             <v-select
               v-model="selectedCodeProduct"
               :items="codeproducts.filter(x => x.processId === selectedProcess)"
@@ -176,11 +173,11 @@
               outlined
               label="Название шаблона:"
             ></v-select>
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
 
-        <v-layout row>
-          <v-flex lg4>
+        <v-row>
+          <v-col lg="4">
             <v-select
               v-model="selectedMeasuredDevice"
               :items="measureddevices.filter(x => x.codeProductId === selectedCodeProduct)"
@@ -191,8 +188,8 @@
               outlined
               label="Название измеряемого устройства:"
             ></v-select>
-          </v-flex>
-          <v-flex lg4>
+          </v-col>
+          <v-col lg="4">
             <v-select 
               v-model="selectedMeasurement"
               :items="measurements.filter(x => x.measuredDeviceId === selectedMeasuredDevice)"
@@ -203,8 +200,8 @@
               outlined
               label="Название измерения:"
             ></v-select>
-          </v-flex>
-          <v-flex class="justify-center" lg4>
+          </v-col>
+          <v-col class="justify-center" lg="4">
               <v-tooltip right>
               <template v-slot:activator="{ on }">               
                  <v-chip label :color="onlineStatusColor" text-color="white" dark v-on="on">
@@ -218,11 +215,11 @@
               <v-divider></v-divider>
               <span>{{"Время испытания в часах: " + Math.ceil(selectedOnlineStatus.fullTimeInSeconds / 3600)}}</span>
             </v-tooltip>
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
 
-        <v-layout row>
-          <v-flex lg6>
+        <v-row>
+          <v-col lg="6">
             <v-select
               v-model="selectedDevice"
               :items="devices"
@@ -233,8 +230,8 @@
               outlined
               label="Прибор:"
             ></v-select>
-          </v-flex>
-          <v-flex lg6>
+          </v-col>
+          <v-col lg="6">
             <v-select
               v-model="selectedPort"
               :items="ports"
@@ -243,11 +240,11 @@
               outlined
               label="Порт:"
             ></v-select>
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
 
-        <v-layout row>
-          <v-flex lg6>
+        <v-row>
+          <v-col lg="6">
             <v-select
               v-model="selectedGraphic"
               :items="graphics"
@@ -260,13 +257,13 @@
             ></v-select>
 
             <label for="graphicSelect"></label>
-          </v-flex>
-          <v-flex lg6>
+          </v-col>
+          <v-col lg="6">
             <v-text-field :value="selectedMaterial.name" label="Материал" append-outer-icon="cached" outlined readonly @click:append-outer="editMaterial"></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex lg6>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col lg="6">
             <v-btn
               outlined
               id="newgraphicButton"
@@ -282,8 +279,8 @@
             >Добавить измерение к графику</v-btn>
 
           
-          </v-flex>
-           <v-flex lg3>
+          </v-col>
+           <v-col lg="3">
                <v-btn 
                
               v-if="measurementSets.filter(x => !x.isGenerated).length > 0"
@@ -291,14 +288,14 @@
               outlined
               @click="dialogAddToMeasurementSet=true"
             >Добавить к серии</v-btn>
-                </v-flex>
-                   <v-flex lg3>
+                </v-col>
+                   <v-col lg="3">
             
            
-           </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex lg4>
+           </v-col>
+        </v-row>
+      </v-col>
+      <v-col lg="4">
         <v-card>
           <v-toolbar color="indigo" dark>
             <div class="pt-8">
@@ -477,10 +474,10 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex lg12>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col lg="12">
         <div id="chart">
           <component
             :is="currentChart"
@@ -491,11 +488,11 @@
           ></component>
         </div>
        
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
 
-    <v-layout row>
-      <v-flex lg12>
+    <v-row>
+      <v-col lg="12">
        <v-data-iterator
        v-if="selectedMeasurementSet.statistics.length > 0"
       :items="selectedMeasurementSet.statistics"
@@ -515,7 +512,7 @@
         </v-toolbar>
       </template>
       <template v-slot:item="props">
-        <v-flex lg3> 
+        <v-col lg="3"> 
           
           <v-card>
             <v-card-title><h4>Испытание: {{ props.item.measurementName }}</h4></v-card-title>
@@ -549,11 +546,11 @@
            
             </v-list>
           </v-card>
-        </v-flex>
+        </v-col>
       </template>
     </v-data-iterator>
-    </v-flex>
-    </v-layout>
+    </v-col>
+    </v-row>
 
     <v-snackbar v-model="snackbar" top>
       {{ snackbarText }}
