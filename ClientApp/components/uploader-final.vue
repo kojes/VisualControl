@@ -21,9 +21,9 @@
                  <v-row>
                   
                     <v-btn v-if="!readyToUploading" @mouseover="errorHighlight = true" @mouseleave="errorHighlight = false" block outlined color="pink">Загрузка невозможна</v-btn>
-                    <v-btn v-else-if="simpleOperations.every(x=>x.uploadStatus==='already')" block color="teal">Измерения уже загружены</v-btn>
+                    <v-btn v-else-if="simpleOperations.every(x=> x.uploadStatus==='already' || x.uploadStatus === 'done')" block color="success">Измерения загружены</v-btn>
                     <v-btn v-else-if="simpleOperations.filter(x => x.uploadStatus==='initial').length === 0" block color="indigo">Обновление статуса загрузки</v-btn>
-                    <v-btn v-else block color="success" @click="upload">{{`Загрузить ${simpleOperations.filter(x => x.uploadStatus==='initial').length} измерений`}}</v-btn>
+                    <v-btn v-else block color="teal" @click="upload">{{`Загрузить ${simpleOperations.filter(x => x.uploadStatus==='initial').length} измерений`}}</v-btn>
 
                 </v-row>   
                 <v-row>

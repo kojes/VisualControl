@@ -109,7 +109,7 @@ export default {
                 await this.$http
                 .get(`/api/folder/folders-idmr/${codeProductFolderName}/${newVal}`)
                 .then(response =>  {
-                    this.measurementRecordings = response.data.sort((a,b) => (Number(a.match(/(\d+)/g)[0]) - Number((b.match(/(\d+)/g)[0]))))            
+                    this.measurementRecordings = response.data          
                 })
                 .catch(error => {                
                     if(error.response.status === 500) {

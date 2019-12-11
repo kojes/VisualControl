@@ -102,8 +102,7 @@
         </v-row>
 
         </v-list>
-
-         <v-list>
+        <v-list>
         <v-chip>Сглаживание</v-chip>
         <v-divider></v-divider>
       </v-list>
