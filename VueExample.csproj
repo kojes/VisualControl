@@ -3,6 +3,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
     <GenerateProgramFile>false</GenerateProgramFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

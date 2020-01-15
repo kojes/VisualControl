@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using VueExample.Providers.ChipVerification.Abstract;
 using VueExample.ViewModels;
 
@@ -50,17 +51,34 @@ namespace VueExample.Controllers
             return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(result.TObject);
         }
 
+    /// <remarks>
+    /// Sample
+    ///
+    /// measuredDeviceViewModel: 
+    /// {
+    ///     name: string,
+    ///     codeProductId: int,
+    ///     waferId: string
+    /// }
+    /// </remarks>  
         [HttpPut]
-        [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(MeasuredDeviceViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ResponseObjects.Error), StatusCodes.Status409Conflict)]
         [Route("")]
-        public async Task<IActionResult> Create([FromBody] Newtonsoft.Json.Linq.JObject deviceViewModel)
+        public async Task<IActionResult> Create([FromBody] JObject measuredDeviceViewModel)
         {
-            var result = await _measuredDeviceProvider.Create(deviceViewModel.ToObject<MeasuredDeviceViewModel>());
+            var result = await _measuredDeviceProvider.Create(measuredDeviceViewModel.ToObject<MeasuredDeviceViewModel>());
             return result.HasErrors ? (IActionResult)Conflict(result.GetErrors()) : (IActionResult)CreatedAtAction("Create", _mapper.Map<MeasuredDeviceViewModel>(result.TObject));           
         }
 
 
-
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Route("wafer/{waferId}/code/{code}")]
+        public async Task<IActionResult> Delete([FromRoute] string waferId, [FromRoute] string code)
+        {
+            await _measuredDeviceProvider.Delete(waferId, code);
+            return NoContent();
+        }
     }
 }

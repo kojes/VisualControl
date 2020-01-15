@@ -62,6 +62,16 @@ namespace VueExample.Controllers
             var result = await _deviceProvider.GetByAddress(address);
             return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(_mapper.Map<DeviceViewModel>(result.TObject));
         }
+    /// <remarks>
+    /// Sample
+    ///
+    /// DeviceViewModel: 
+    /// {
+    ///     name: string,
+    ///     address: string,
+    ///     model: string
+    /// }
+    /// </remarks> 
 
         [HttpPut]
         [ProducesResponseType(typeof(DeviceViewModel), StatusCodes.Status201Created)]

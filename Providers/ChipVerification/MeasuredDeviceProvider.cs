@@ -40,6 +40,14 @@ namespace VueExample.Providers.ChipVerification
             return obj;
         }
 
+        public async Task Delete(string waferId, string code)
+        {
+            var deleted = await _applicationContext.MeasuredDevice.FirstOrDefaultAsync(x => x.Name == code && x.WaferId == waferId);
+            _applicationContext.MeasuredDevice.Remove(deleted);
+            await _applicationContext.SaveChangesAsync();
+
+        }
+
         public async Task<AfterDbManipulationObject<List<MeasuredDeviceViewModel>>> GetAll()
         {
             var obj = new AfterDbManipulationObject<List<MeasuredDeviceViewModel>>();

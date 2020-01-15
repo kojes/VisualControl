@@ -23,6 +23,19 @@ namespace VueExample.Controllers
             _measurementProvider = measurementProvider;                   
         }
 
+    /// <remarks>
+    /// Sample
+    ///
+    /// MeasurementViewModel: 
+    /// {
+    ///      name: string,
+    ///      materialId: int,
+    ///      measuredDeviceId: int,
+    ///      facilityId: int,
+    ///      intervalInSeconds: int
+    /// }
+    /// </remarks> 
+
         [HttpPut]
         [ProducesResponseType(typeof(MeasurementViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<ResponseObjects.Error>), StatusCodes.Status409Conflict)]

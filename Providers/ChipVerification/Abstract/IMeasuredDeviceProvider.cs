@@ -12,6 +12,7 @@ namespace VueExample.Providers.ChipVerification.Abstract
         Task<AfterDbManipulationObject<MeasuredDevice>> Create(MeasuredDeviceViewModel measuredDeviceViewModel);
         Task<AfterDbManipulationObject<MeasuredDevice>> GetByWaferIdAndCode(string waferId, string code);
         Task<AfterDbManipulationObject<MeasuredDevice>> GetById(int measuredDeviceId);
+        Task Delete(string waferId, string code);
                 
     }
 }

@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -72,6 +75,7 @@ namespace VueExample
                         ValidateAudience = false
                     };
                 });
+                
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v0.2.2", new Info
@@ -80,6 +84,9 @@ namespace VueExample
                     Title = "SVR_API",
                     Description = "SVR_MES_19_API_0.2.2"
                 });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         
 

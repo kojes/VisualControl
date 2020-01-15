@@ -26,5 +26,23 @@ namespace VueExample.Controllers
             var result = await _deviceTypeProvider.GetAll();
             return result.HasErrors ? (IActionResult)NotFound(result.GetErrors()) : (IActionResult)Ok(result.TObject);
         }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(DeviceTypeViewModel), StatusCodes.Status201Created)]
+        [Route("")]
+        public async Task<IActionResult> Create([FromBody] DeviceTypeViewModel deviceTypeViewModel)
+        {
+           var device =  await _deviceTypeProvider.Create(deviceTypeViewModel);
+           return Ok(device);
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Route("modelName/{modelName}")]
+        public async Task<IActionResult> Delete([FromRoute] string modelName)
+        {
+            await _deviceTypeProvider.Delete(modelName);
+            return NoContent();
+        }
     }
 }
