@@ -143,7 +143,10 @@ namespace VueExample.Providers.Srv6
                         var element = (await _elementService.GetByDieType(dieTypeId)).FirstOrDefault(x => x.Name == dirElementName);
                         simpleOperation.Element = new ElementUploading{Name = dirElementName, ElementId = element?.ElementId, Comment = element?.Comment};
                         simpleOperation.FileName = new FileNameUploaderUViewModel{Name = Path.GetFileName(simpleOperationFileName)};
-                        var fileName = fileNames.FirstOrDefault(f => f.Name == simpleOperation.FileName.Name.Split('.')[0]);
+                        var fileNameWithoutExpansion = simpleOperation.FileName.Name.Contains('.') 
+                                                       ? simpleOperation.FileName.Name.Substring(0, simpleOperation.FileName.Name.Length - simpleOperation.FileName.Name.Split('.').Last().Length - 1) 
+                                                       : String.Empty;
+                        var fileName = fileNames.FirstOrDefault(f => f.Name == fileNameWithoutExpansion);
                         if(fileName != null)
                         {
                             simpleOperation.FileName.Id = fileName.Id;
@@ -163,6 +166,10 @@ namespace VueExample.Providers.Srv6
                             }
                             simpleOperation.FileName.GraphicNames = graphicNamesDict.Values.ToList();
                             simpleOperation.FileName.SelectedGraphicNames = simpleOperation.FileName.GraphicNames.FirstOrDefault();
+                        }
+                        else
+                        {
+                            1.GetHashCode();
                         }
                         simpleOperationList.Add(simpleOperation);
                     }
