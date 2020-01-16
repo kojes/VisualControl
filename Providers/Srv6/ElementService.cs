@@ -139,6 +139,10 @@ namespace VueExample.Providers.Srv6
             
         }
 
-       
+        public async Task<Element> GetByDieTypeIdAndName(int dieTypeId, string name)
+        {
+            var elementList = await GetByDieType(dieTypeId);
+            return elementList.Count > 0 ? elementList.FirstOrDefault(x => x.Name == name) : new Element();
+        }
     }
 }

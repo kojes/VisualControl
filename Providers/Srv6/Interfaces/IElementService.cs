@@ -12,6 +12,7 @@ namespace VueExample.Providers.Srv6.Interfaces
         Task Delete(int id);
         Task AddToDieType(int elementId, int dieTypeId);
         Task<Element> GetById(int elementId);
+        Task<Element> GetByDieTypeIdAndName(int dieTypeId, string name);
         Task<Element> GetByNameAndWafer(string name, string waferId);
         Task<List<Element>> GetByDieType(int dieTypeId);
         Task<List<Element>> GetByIdmr(int idmr);

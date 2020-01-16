@@ -36,7 +36,7 @@ namespace VueExample.Controllers
             uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.GetByNameAndWaferId("оп." + uploadingFile.OperationName, uploadingFile.WaferId))?.Id;
             if (uploadingFile.MeasurementRecordingId is null)
             {
-                uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.Create(uploadingFile.OperationName, 2, bigMeasurementRecording.Id, uploadingFile.StageId)).Id;              
+                uploadingFile.MeasurementRecordingId = (await _measurementRecordingService.GetOrCreate(uploadingFile.OperationName, 2, bigMeasurementRecording.Id, uploadingFile.StageId)).Id;              
             } 
             else
             {

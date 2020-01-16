@@ -9,6 +9,13 @@ namespace VueExample.ViewModels
         public ElementViewModel Element { get; set; }
     }
 
+    public class MeasurementRecordingWithBigMeasurementViewModel
+    {
+        public int BmrId { get; set; }
+        public string Name { get; set; }
+        public int? StageId { get; set; }
+    }
+
     public class StageFullViewModel 
     {
         public int Id { get; set; }
@@ -21,6 +28,7 @@ namespace VueExample.ViewModels
         public int StageId { get; set; }
         public int MeasurementRecordingId { get; set; }    
     }
+    
 
     public class ElementMeasurementRecordingChunkViewModel 
     {

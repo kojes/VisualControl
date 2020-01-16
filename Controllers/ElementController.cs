@@ -49,6 +49,15 @@ namespace VueExample.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ElementViewModel), StatusCodes.Status201Created)]
+        [Route(("dietypeid/{id:int}/name/{name}"))]
+        public async Task<IActionResult> GetByDieTypeAndName([FromRoute] int id, [FromRoute] string name)
+        {
+            var element = await _elementService.GetByDieTypeIdAndName(id, name);
+            return element.ElementId == 0 ? (IActionResult)NotFound() : Ok(_mapper.Map<Element, ElementViewModel>(element));      
+        }
+
+        [HttpGet]
         [Route(("dietype/{id:int}"))]
         public async Task<IActionResult> GetByDieType([FromRoute] int id)
         {

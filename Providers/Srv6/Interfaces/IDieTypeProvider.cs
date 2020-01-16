@@ -9,6 +9,7 @@ namespace VueExample.Providers.Srv6.Interfaces
     public interface IDieTypeProvider
     {
         Task<List<DieType>> GetAll();
+        Task<DieType> GetByName(string name);
         Task<DieTypeUpdatingViewModel> GetCodeProductsAndElements(int id);
         Task<DieType> Create(DieTypeUpdatingViewModel dieTypeViewModel);
         Task<DieType> Update(DieTypeViewModel dieTypeViewModel);

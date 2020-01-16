@@ -143,5 +143,14 @@ namespace VueExample.Providers.Srv6
             
           
         }
+
+        public async Task<DieType> GetByName(string name)
+        {
+            using(var db = new Srv6Context())
+            {
+                var dieType =  await db.DieTypes.FirstOrDefaultAsync( x => x.Name == name);
+                return dieType is null ? new DieType() : dieType;
+            }
+        }
     }
 }

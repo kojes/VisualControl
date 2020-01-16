@@ -21,7 +21,7 @@ namespace VueExample.Controllers
         private readonly StageProvider _stageProvider = new StageProvider();
         private readonly IElementService _elementService;
         private readonly IExportProvider _exportProvider;
-         private readonly IMapper _mapper;   
+        private readonly IMapper _mapper;   
        
         public MeasurementRecordingController(IElementService elementService, IMapper mapper, IExportProvider exportProvider)
         {
@@ -39,6 +39,18 @@ namespace VueExample.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(MeasurementRecording), StatusCodes.Status201Created)]
+        [Route("getorcreate")]
+        public async Task<IActionResult> GetOrCreate([FromBody] MeasurementRecordingWithBigMeasurementViewModel measurementRecordingWithBigMeasurementViewModel)
+        {
+            var measurementRecording = await measurementRecordingService.GetOrCreate(measurementRecordingWithBigMeasurementViewModel.Name, 
+                                                                                2, 
+                                                                                measurementRecordingWithBigMeasurementViewModel.BmrId, 
+                                                                                measurementRecordingWithBigMeasurementViewModel.StageId);
+            return Ok(measurementRecording);
+        }
+
+        [HttpPost]
         [ProducesResponseType(typeof(MeasurementRecording), StatusCodes.Status200OK)]
         [Route("update-stage")]
         public async Task<IActionResult> UpdateStage([FromBody] StageMeasurementRecordingChunkViewModel stageMeasurementRecordingChunkViewModel)
@@ -47,6 +59,16 @@ namespace VueExample.Controllers
                                                                                      stageMeasurementRecordingChunkViewModel.StageId);
             return Ok(measurementRecording);
         }
+
+        
+        [HttpPost]
+        [ProducesResponseType(typeof(BigMeasurementRecording), StatusCodes.Status200OK)]
+        [Route("bmr/getorcreate")]
+        public async Task<IActionResult> GetOrAddBigMeasurement([FromBody] BigMeasurementRecordingViewModel bigMeasurementRecordingViewModel)
+        {
+            var bigMeasurementRecording = await measurementRecordingService.GetOrAddBigMeasurement(bigMeasurementRecordingViewModel.Name, bigMeasurementRecordingViewModel.WaferId);
+            return Ok(bigMeasurementRecording);
+        }  
 
         [HttpGet]
         [ProducesResponseType(typeof(List<StageFullViewModel>), StatusCodes.Status200OK)]
@@ -89,6 +111,8 @@ namespace VueExample.Controllers
             return Ok(measurementRecordingService.GetById(id));
         }
 
+        
+
         [HttpGet]
         [ProducesResponseType(typeof(List<MeasurementRecordingViewModel>), StatusCodes.Status200OK)]
         [Route("getbyelement")]
@@ -107,9 +131,6 @@ namespace VueExample.Controllers
                                                               avStatisticParameters = await _exportProvider.GetStatisticsNameByMeasurementId(measurementRecording.Id)});
             }
             return mrList.Count == 0 ? (IActionResult)NotFound() : Ok(mrList);
-        }
-
-
-        
+        }        
     }
 }

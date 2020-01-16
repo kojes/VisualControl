@@ -14,13 +14,20 @@ namespace VueExample.Providers.Srv6
     public class MeasurementRecordingService : RepositorySRV6<MeasurementRecording>
     {
 
-        public async Task<MeasurementRecording> Create(string name, int type, int bigMeasurementRecordingId, int? stageId = null) 
+        public async Task<MeasurementRecording> GetOrCreate(string name, int type, int bigMeasurementRecordingId, int? stageId = null) 
         {
             using (Srv6Context srv6Context = new Srv6Context())
             {
-                var measurementRecording = new MeasurementRecording{Name = "оп." + name, MeasurementDateTime = DateTime.Now, Type = type, BigMeasurementRecordingId = bigMeasurementRecordingId, StageId = stageId};
-                srv6Context.MeasurementRecordings.Add(measurementRecording);
-                await srv6Context.SaveChangesAsync();
+                var measurementRecording = await GetByBmrIdAndName(bigMeasurementRecordingId, "оп." + name);
+
+                if(measurementRecording is null)
+                {
+                    var newMeasurementRecording = new MeasurementRecording{Name = "оп." + name, MeasurementDateTime = DateTime.Now, Type = type, BigMeasurementRecordingId = bigMeasurementRecordingId, StageId = stageId};
+                    srv6Context.MeasurementRecordings.Add(newMeasurementRecording);
+                    await srv6Context.SaveChangesAsync();
+                    return newMeasurementRecording;
+                }
+              
                 return measurementRecording;
             }  
         }
@@ -104,6 +111,14 @@ namespace VueExample.Providers.Srv6
             using (Srv6Context srv6Context = new Srv6Context())
             {
                 return srv6Context.MeasurementRecordings.FirstOrDefault(x => x.Id == measurementRecordingId).StageId;
+            }
+        }
+
+        public async Task<MeasurementRecording> GetByBmrIdAndName(int bmrId, string name)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                return await srv6Context.MeasurementRecordings.FirstOrDefaultAsync(x => x.Name == name && x.BigMeasurementRecordingId == bmrId);
             }
         }
 

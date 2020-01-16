@@ -33,6 +33,16 @@ namespace VueExample.Controllers
             return dieTypeList.Count > 0 ? Ok(_mapper.Map<List<DieType>, List<DieTypeViewModel>>(dieTypeList)) : (IActionResult)NotFound();
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(DieTypeViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Route("name/{name}")]
+        public async Task<IActionResult> GetByName([FromRoute] string name)
+        {
+            var dieType = await _dieTypeProvider.GetByName(name);
+            return dieType.DieTypeId == 0 ? (IActionResult)NotFound() : Ok(_mapper.Map<DieType, DieTypeViewModel>(dieType));
+        }
+
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
