@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VueExample.Contexts;
 using VueExample.Models;
+using VueExample.Providers.Srv6.Interfaces;
 using VueExample.Repository;
 
 namespace VueExample.Providers
 {
-    public class StageProvider : RepositorySRV6<Stage>
+    public class StageProvider : IStageProvider
     {
         public async Task<Stage> Create(string name, int processId) 
         {
@@ -21,11 +22,21 @@ namespace VueExample.Providers
             }
         }
 
-        public List<Stage> GetStagesByProcessId(int processId)
+        public Task<List<Stage>> GetAll()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<Stage> GetById(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<List<Stage>> GetStagesByProcessId(int processId)
         {
             using (var srv6Context = new Srv6Context())
             {
-                return srv6Context.Stages.Where(x => x.ProcessId == processId && x.CodeProductId == null).ToList();
+                return await srv6Context.Stages.Where(x => x.ProcessId == processId && x.CodeProductId == null).ToListAsync();
             }
         }
         public async Task<List<Stage>> GetStagesByWaferId(string waferId)

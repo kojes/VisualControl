@@ -84,7 +84,7 @@ namespace VueExample.Controllers
             {
                 stagesFullViewModelList.Add(new StageFullViewModel{
                     Id = stage,
-                    Name = stage == 0 ? "Этап не выбран" : (await _stageProvider.GetByIdAsync(stage)).StageName,
+                    Name = stage == 0 ? "Этап не выбран" : (await _stageProvider.GetById(stage)).StageName,
                     MeasurementRecordingList = new List<MeasurementRecordingWithStageAndElementViewModel>()
                 });
             }

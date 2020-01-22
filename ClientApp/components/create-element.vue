@@ -69,7 +69,7 @@ export default {
     },
 
     createElement() {
-        if(this.mode === "create")
+        if(this.mode === "created")
         {
           this.$store.commit("elements/addtoElements", this.newElement)
         }

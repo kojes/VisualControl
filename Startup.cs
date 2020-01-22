@@ -117,6 +117,7 @@ namespace VueExample
             services.AddTransient<IFolderService, FolderService>();
             services.AddTransient<IDieTypeProvider, DieTypeProvider>();
             services.AddTransient<IDeviceProvider, DeviceProvider>();
+            services.AddTransient<IStageProvider, StageProvider>();
             services.AddTransient<IMeasurementSetProvider, MeasurementSetProvider>();
             services.AddTransient<IAtomicMeasurementProvider, AtomicMeasurementProvider>();
             services.AddTransient<IMaterialProvider, MaterialProvider>();
