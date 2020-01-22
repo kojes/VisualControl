@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Providers.Abstract;
 using VueExample.Providers.Srv6;
+using VueExample.Providers.Srv6.Interfaces;
 using VueExample.ResponseObjects;
 using VueExample.ViewModels;
 
@@ -13,9 +14,10 @@ namespace VueExample.Controllers
     public class ShortLinkController : Controller
     {
         private readonly IShortLinkProvider _shortLinkProvider;
-        private readonly MeasurementRecordingService measurementRecordingService = new MeasurementRecordingService();
-        public ShortLinkController(IShortLinkProvider shortLinkProvider)
+        private readonly IMeasurementRecordingService _measurementRecordingService;
+        public ShortLinkController(IShortLinkProvider shortLinkProvider, IMeasurementRecordingService measurementRecordingService)
         {
+            _measurementRecordingService = measurementRecordingService;
             _shortLinkProvider = shortLinkProvider;
         }
 
@@ -30,7 +32,7 @@ namespace VueExample.Controllers
                                            : Ok(new List<MeasurementRecordingViewModel> 
                                                 {new MeasurementRecordingViewModel 
                                                 {Id = shortLinkInfo.TObject.MeasurementRecordingId, 
-                                                Name = measurementRecordingService.GetById(shortLinkInfo.TObject.MeasurementRecordingId).Name, 
+                                                Name = (await _measurementRecordingService.GetById(shortLinkInfo.TObject.MeasurementRecordingId)).Name, 
                                                 WaferId = shortLinkInfo.TObject.WaferId,
                                                 avStatisticParameters = shortLinkInfo.TObject.StatisticNameList}});
                       

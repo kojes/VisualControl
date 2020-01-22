@@ -8,10 +8,11 @@ using System.Data.SqlClient;
 using System;
 using System.Threading.Tasks;
 using VueExample.Entities;
+using VueExample.Providers.Srv6.Interfaces;
 
 namespace VueExample.Providers.Srv6
 {
-    public class MeasurementRecordingService : RepositorySRV6<MeasurementRecording>
+    public class MeasurementRecordingService : IMeasurementRecordingService
     {
 
         public async Task<MeasurementRecording> GetOrCreate(string name, int type, int bigMeasurementRecordingId, int? stageId = null) 
@@ -83,12 +84,12 @@ namespace VueExample.Providers.Srv6
             }
         }
 
-        public List<MeasurementRecording> GetByWaferId(string waferId)
+        public async Task<List<MeasurementRecording>> GetByWaferId(string waferId)
         {
             var measurementRecordingsList = new List<MeasurementRecording>();
             using (Srv6Context srv6Context = new Srv6Context())
             {
-                var idmrList = srv6Context.FkMrPs.Where(x => x.WaferId == waferId).Select(x => x.MeasurementRecordingId).ToList();
+                var idmrList = await srv6Context.FkMrPs.Where(x => x.WaferId == waferId).Select(x => x.MeasurementRecordingId).ToListAsync();
                 foreach (var idmr in idmrList)
                 {
                     measurementRecordingsList.Add(srv6Context.MeasurementRecordings.Find(idmr));
@@ -106,13 +107,7 @@ namespace VueExample.Providers.Srv6
             }
         }
 
-        public int? GetStageId(int measurementRecordingId)
-        {
-            using (Srv6Context srv6Context = new Srv6Context())
-            {
-                return srv6Context.MeasurementRecordings.FirstOrDefault(x => x.Id == measurementRecordingId).StageId;
-            }
-        }
+       
 
         public async Task<MeasurementRecording> GetByBmrIdAndName(int bmrId, string name)
         {
@@ -122,14 +117,14 @@ namespace VueExample.Providers.Srv6
             }
         }
 
-        public List<MeasurementRecording> GetByWaferIdAndStageNameAndElementId(string waferId, string stageName, int elementId)
+        public Task<List<MeasurementRecording>> GetByWaferIdAndStageNameAndElementId(string waferId, string stageName, int elementId)
         {
             using (Srv6Context srv6Context = new Srv6Context())
             {
                 var waferIdSqlParameter = new SqlParameter("waferId", waferId);
                 var stageNameSqlParameter = new SqlParameter("stageName", stageName);
                 var elementIdSqlParameter = new SqlParameter("elementId", elementId);
-                return srv6Context.MeasurementRecordings.FromSql("EXECUTE select_mr_by_stagename_waferid_elementid @waferId, @elementId, @stageName", waferIdSqlParameter, elementIdSqlParameter, stageNameSqlParameter).ToList();
+                return srv6Context.MeasurementRecordings.FromSql("EXECUTE select_mr_by_stagename_waferid_elementid @waferId, @elementId, @stageName", waferIdSqlParameter, elementIdSqlParameter, stageNameSqlParameter).ToListAsync();
             }
         }
 
@@ -143,6 +138,14 @@ namespace VueExample.Providers.Srv6
                 return measurementRecording;
             }
 
+        }
+
+        public async Task<MeasurementRecording> GetById(int id)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                 return await srv6Context.MeasurementRecordings.FirstOrDefaultAsync(x => x.Id == id);
+            }
         }
     }
 }

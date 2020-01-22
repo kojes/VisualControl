@@ -16,11 +16,12 @@ namespace VueExample.Controllers
         private readonly IUploaderService _uploaderService;
         private readonly ISRV6GraphicService _graphicService;
         private readonly IElementService _elementService;
-        private readonly MeasurementRecordingService _measurementRecordingService = new MeasurementRecordingService();
+        private readonly IMeasurementRecordingService _measurementRecordingService;
         private readonly IFolderService _folderService;
-        public UploadingController(IFolderService folderService, IUploaderService uploaderService, ISRV6GraphicService graphicService, IElementService elementService, IMapper mapper)
+        public UploadingController(IFolderService folderService, IUploaderService uploaderService, IMeasurementRecordingService measurementRecordingService, ISRV6GraphicService graphicService, IElementService elementService, IMapper mapper)
         {
             _uploaderService = uploaderService;
+            _measurementRecordingService = measurementRecordingService;
             _elementService = elementService;
             _folderService = folderService;
             _graphicService = graphicService;

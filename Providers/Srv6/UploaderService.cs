@@ -16,10 +16,11 @@ namespace VueExample.Providers.Srv6
         private readonly IDieProvider _dieProvider;
         private readonly IDieValueService _dieValueService;
         private readonly IShortLinkProvider _shortLinkProvider;
-        private readonly MeasurementRecordingService _measurementRecordingService = new MeasurementRecordingService();
-        public UploaderService (IStandartWaferService standartWaferService, IDieProvider dieProvider, IDieValueService dieValueService, IShortLinkProvider shortLinkProvider) 
+        private readonly IMeasurementRecordingService _measurementRecordingService;
+        public UploaderService (IStandartWaferService standartWaferService, IMeasurementRecordingService measurementRecordingService, IDieProvider dieProvider, IDieValueService dieValueService, IShortLinkProvider shortLinkProvider) 
         {
             _standartWaferService = standartWaferService;
+            _measurementRecordingService = measurementRecordingService;
             _dieProvider = dieProvider;
             _shortLinkProvider = shortLinkProvider;
             _dieValueService = dieValueService;

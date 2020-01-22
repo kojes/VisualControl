@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using VueExample.Models.SRV6;
 using VueExample.Services;
 using VueExample.Providers.Srv6;
+using System.Threading.Tasks;
+using VueExample.Providers.Srv6.Interfaces;
 
 namespace VueExample.Controllers
 {
@@ -15,18 +17,19 @@ namespace VueExample.Controllers
     {
         private readonly IAppCache cache;
         private readonly DieValueService dieValueService = new DieValueService();
-        private readonly MeasurementRecordingService measurementRecordingService = new MeasurementRecordingService();
+        private readonly IStageProvider _stageProvider;
         private readonly StatisticsCore.Services.StatisticService statisticService = new StatisticsCore.Services.StatisticService();
-        public StatisticController (IAppCache cache) 
+        public StatisticController (IAppCache cache, IStageProvider stageProvider) 
         {
+            _stageProvider = stageProvider;
             this.cache = cache;
         }
 
         [HttpGet]
-        public IActionResult GetDirtyCellsByMeasurementRecording (int measurementRecordingId) 
+        public async Task<IActionResult> GetDirtyCellsByMeasurementRecording (int measurementRecordingId) 
         {
             string measurementRecordingIdAsKey = Convert.ToString (measurementRecordingId);
-            var stageId = measurementRecordingService.GetStageId(measurementRecordingId);
+            var stageId = (await _stageProvider.GetByMeasurementRecordingId(measurementRecordingId)).StageId;
             Func<Dictionary<string, List<DieValue>>> cachedDieValueService = () => dieValueService.GetDieValuesByMeasurementRecording(measurementRecordingId);
             var dieValuesDictionary = cache.GetOrAdd($"V_{measurementRecordingIdAsKey}", cachedDieValueService);
             Func<Dictionary<string, List<VueExample.StatisticsCore.SingleParameterStatistic>>> cachedStatisticService = () => statisticService.GetSingleParameterStatisticByDieValues(dieValuesDictionary, stageId, 1.0);

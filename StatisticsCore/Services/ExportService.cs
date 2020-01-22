@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using LazyCache;
 using VueExample.Models.SRV6;
-using VueExample.Providers.Srv6;
 using VueExample.Services;
 using VueExample.StatisticsCore.Abstract;
 using VueExample.Providers;
 using VueExample.Models.SRV6.Export;
 using System.Threading.Tasks;
+using VueExample.Providers.Srv6.Interfaces;
 
 namespace VueExample.StatisticsCore.Services
 {
@@ -17,18 +17,19 @@ namespace VueExample.StatisticsCore.Services
     {
         private readonly IAppCache _appCache;        
         private readonly DieValueService _dieValueService = new DieValueService();
-        private readonly MeasurementRecordingService _measurementRecordingService = new MeasurementRecordingService();
+        private readonly IStageProvider _stageProvider;
         private readonly StatisticService _statisticService = new StatisticService();
         private readonly DieProvider _dieProvider = new DieProvider();
-        public ExportService(IAppCache appCache)
+        public ExportService(IAppCache appCache, IStageProvider stageProvider)
         {
             _appCache = appCache;
+            _stageProvider = stageProvider;
         }
-        public void PopulateKurbatovXLSByValues(KurbatovXLS kurbatovXLS)
+        public async Task PopulateKurbatovXLSByValues(KurbatovXLS kurbatovXLS)
         {
             foreach (var kurbatovParameter in kurbatovXLS.kpList)
             {
-                GetDieValues(kurbatovParameter); 
+                await GetDieValues(kurbatovParameter); 
             }
             kurbatovXLS.FindDirty();            
         }
@@ -37,7 +38,7 @@ namespace VueExample.StatisticsCore.Services
         {
             var statNamesList = new List<string>();
             string measurementRecordingIdAsKey = Convert.ToString(measurementRecordingId);
-            var stageId = _measurementRecordingService.GetStageId(measurementRecordingId);
+            var stageId = (await _stageProvider.GetByMeasurementRecordingId(measurementRecordingId)).StageId;
             Func<Dictionary<string, List<DieValue>>> cachedDieValueService = () => _dieValueService.GetDieValuesByMeasurementRecording(measurementRecordingId);
             var dieValuesDictionary = _appCache.GetOrAdd($"V_{measurementRecordingIdAsKey}", cachedDieValueService);
             Func<Dictionary<string, List<VueExample.StatisticsCore.SingleParameterStatistic>>> cachedStatisticService = () => _statisticService.GetSingleParameterStatisticByDieValues(dieValuesDictionary, stageId, 1.0);
@@ -50,10 +51,10 @@ namespace VueExample.StatisticsCore.Services
 
         
 
-        private void GetDieValues(KurbatovParameter kurbatovParameter)
+        private async Task GetDieValues(KurbatovParameter kurbatovParameter)
         {
             string measurementRecordingIdAsKey = Convert.ToString(kurbatovParameter.MeasurementRecordingId);
-            var stageId = _measurementRecordingService.GetStageId(kurbatovParameter.MeasurementRecordingId);
+            var stageId = (await _stageProvider.GetByMeasurementRecordingId(kurbatovParameter.MeasurementRecordingId)).StageId;
             Func<Dictionary<string, List<DieValue>>> cachedDieValueService = () => _dieValueService.GetDieValuesByMeasurementRecording(kurbatovParameter.MeasurementRecordingId);
             var dieValuesDictionary = _appCache.GetOrAdd($"V_{measurementRecordingIdAsKey}", cachedDieValueService);
             Func<Dictionary<string, List<VueExample.StatisticsCore.SingleParameterStatistic>>> cachedStatisticService = () => _statisticService.GetSingleParameterStatisticByDieValues(dieValuesDictionary, stageId, 1.0);
@@ -100,12 +101,12 @@ namespace VueExample.StatisticsCore.Services
             }
         }
 
-        public List<Dictionary<string, string>> Export(int measurementRecordingId, string statNames, string delimeter)
+        public async Task<List<Dictionary<string, string>>> Export(int measurementRecordingId, string statNames, string delimeter)
         {
             string measurementRecordingIdAsKey = Convert.ToString(measurementRecordingId);
             var statNamesList = statNames.Split(delimeter).ToList();
             var exportList = new List<Dictionary<string, string>>();
-            var stageId = _measurementRecordingService.GetStageId(measurementRecordingId);
+            var stageId = (await _stageProvider.GetByMeasurementRecordingId(measurementRecordingId)).StageId;
             Func<Dictionary<string, List<DieValue>>> cachedDieValueService = () => _dieValueService.GetDieValuesByMeasurementRecording(measurementRecordingId);
             var dieValuesDictionary = _appCache.GetOrAdd($"V_{measurementRecordingIdAsKey}", cachedDieValueService);
             Func<Dictionary<string, List<VueExample.StatisticsCore.SingleParameterStatistic>>> cachedStatisticService = () => _statisticService.GetSingleParameterStatisticByDieValues(dieValuesDictionary, stageId, 1.0);

@@ -5,8 +5,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VueExample.Models.SRV6;
-using VueExample.Providers;
-using VueExample.Providers.Srv6;
 using VueExample.Providers.Srv6.Interfaces;
 using VueExample.StatisticsCore.Abstract;
 using VueExample.ViewModels;
@@ -17,15 +15,17 @@ namespace VueExample.Controllers
     
     public class MeasurementRecordingController : Controller
     {
-        private readonly MeasurementRecordingService measurementRecordingService = new MeasurementRecordingService();
-        private readonly StageProvider _stageProvider = new StageProvider();
+        private readonly IMeasurementRecordingService _measurementRecordingService;
+        private readonly IStageProvider _stageProvider;
         private readonly IElementService _elementService;
         private readonly IExportProvider _exportProvider;
         private readonly IMapper _mapper;   
        
-        public MeasurementRecordingController(IElementService elementService, IMapper mapper, IExportProvider exportProvider)
+        public MeasurementRecordingController(IElementService elementService, IMapper mapper, IExportProvider exportProvider, IStageProvider stageProvider, IMeasurementRecordingService measurementRecordingService)
         {
             _elementService = elementService;
+            _stageProvider = stageProvider;
+            _measurementRecordingService = measurementRecordingService;
             _mapper = mapper;
             _exportProvider = exportProvider;
         }
@@ -35,7 +35,7 @@ namespace VueExample.Controllers
         [Route("")]
         public IActionResult GetMeasurementRecordingsByWaferId([FromQuery] string waferId)
         {
-            return Ok(measurementRecordingService.GetByWaferId(waferId));
+            return Ok(_measurementRecordingService.GetByWaferId(waferId));
         }
 
         [HttpPost]
@@ -43,7 +43,7 @@ namespace VueExample.Controllers
         [Route("getorcreate")]
         public async Task<IActionResult> GetOrCreate([FromBody] MeasurementRecordingWithBigMeasurementViewModel measurementRecordingWithBigMeasurementViewModel)
         {
-            var measurementRecording = await measurementRecordingService.GetOrCreate(measurementRecordingWithBigMeasurementViewModel.Name, 
+            var measurementRecording = await _measurementRecordingService.GetOrCreate(measurementRecordingWithBigMeasurementViewModel.Name, 
                                                                                 2, 
                                                                                 measurementRecordingWithBigMeasurementViewModel.BmrId, 
                                                                                 measurementRecordingWithBigMeasurementViewModel.StageId);
@@ -55,7 +55,7 @@ namespace VueExample.Controllers
         [Route("update-stage")]
         public async Task<IActionResult> UpdateStage([FromBody] StageMeasurementRecordingChunkViewModel stageMeasurementRecordingChunkViewModel)
         {
-            var measurementRecording = await measurementRecordingService.UpdateStage(stageMeasurementRecordingChunkViewModel.MeasurementRecordingId, 
+            var measurementRecording = await _measurementRecordingService.UpdateStage(stageMeasurementRecordingChunkViewModel.MeasurementRecordingId, 
                                                                                      stageMeasurementRecordingChunkViewModel.StageId);
             return Ok(measurementRecording);
         }
@@ -66,7 +66,7 @@ namespace VueExample.Controllers
         [Route("bmr/getorcreate")]
         public async Task<IActionResult> GetOrAddBigMeasurement([FromBody] BigMeasurementRecordingViewModel bigMeasurementRecordingViewModel)
         {
-            var bigMeasurementRecording = await measurementRecordingService.GetOrAddBigMeasurement(bigMeasurementRecordingViewModel.Name, bigMeasurementRecordingViewModel.WaferId);
+            var bigMeasurementRecording = await _measurementRecordingService.GetOrAddBigMeasurement(bigMeasurementRecordingViewModel.Name, bigMeasurementRecordingViewModel.WaferId);
             return Ok(bigMeasurementRecording);
         }  
 
@@ -75,7 +75,7 @@ namespace VueExample.Controllers
         [Route("wafer/{waferid}/stage")]
         public async Task<IActionResult> GetMeasurementRecordingWithStagesByWaferId([FromRoute] string waferId)
         {
-            var measurementRecordingList = measurementRecordingService.GetByWaferId(waferId).Distinct();
+            var measurementRecordingList = (await _measurementRecordingService.GetByWaferId(waferId)).Distinct();
             var stagesFullViewModelList = new List<StageFullViewModel>();
             var stagesList = measurementRecordingList.Select(x => x.StageId ?? 0).Distinct().ToList();
             stagesList.Remove(0);
@@ -108,7 +108,7 @@ namespace VueExample.Controllers
         [Route("{id:int}")]
         public IActionResult GetMeasurementRecordingById([FromRoute] int id)
         {
-            return Ok(measurementRecordingService.GetById(id));
+            return Ok(_measurementRecordingService.GetById(id));
         }
 
         
@@ -122,7 +122,7 @@ namespace VueExample.Controllers
             var mrList = new List<MeasurementRecordingViewModel>();
             if(element is null)
                 return (IActionResult)NotFound();
-            var measurementRecordingsList = measurementRecordingService.GetByWaferIdAndStageNameAndElementId(waferId, stageName, element.ElementId);
+            var measurementRecordingsList = await _measurementRecordingService.GetByWaferIdAndStageNameAndElementId(waferId, stageName, element.ElementId);
             foreach (var measurementRecording in measurementRecordingsList)
             {
                 mrList.Add(new MeasurementRecordingViewModel {Id = measurementRecording.Id, 

@@ -7,9 +7,9 @@ namespace VueExample.StatisticsCore.Abstract
 {
     public interface IExportProvider
     {
-        List<Dictionary<string, string>> Export(int idmr, string statNames, string delimeter);
+        Task<List<Dictionary<string, string>>> Export(int idmr, string statNames, string delimeter);
         Task<List<string>> GetStatisticsNameByMeasurementId(int measurementRecordingId);
-        void PopulateKurbatovXLSByValues(KurbatovXLS kurbatovXLS);
+        Task PopulateKurbatovXLSByValues(KurbatovXLS kurbatovXLS);
         
     }
 }

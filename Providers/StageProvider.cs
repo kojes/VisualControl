@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,14 +23,29 @@ namespace VueExample.Providers
             }
         }
 
-        public Task<List<Stage>> GetAll()
+        public async Task<List<Stage>> GetAll()
         {
-            throw new System.NotImplementedException();
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+               return await srv6Context.Stages.ToListAsync();
+            }
         }
 
-        public Task<Stage> GetById(int id)
+        public async Task<Stage> GetById(int stageId)
         {
-            throw new System.NotImplementedException();
+           using (Srv6Context srv6Context = new Srv6Context())
+           {
+               return await srv6Context.Stages.FirstOrDefaultAsync(x => x.StageId == stageId);
+           }
+        }
+
+        public async Task<Stage> GetByMeasurementRecordingId(int measurementRecordingId)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var stageId = (await srv6Context.MeasurementRecordings.FirstOrDefaultAsync(x => x.Id == measurementRecordingId))?.StageId;
+                return stageId is null ? throw new Exception() : await GetById((int)stageId);
+            }
         }
 
         public async Task<List<Stage>> GetStagesByProcessId(int processId)
