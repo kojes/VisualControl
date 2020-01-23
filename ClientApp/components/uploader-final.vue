@@ -89,8 +89,7 @@
                             <th class="text-left">Имя файла</th>
                             <th class="text-left">Тип измерения</th>
                             <th class="text-center">Тип карты</th>
-                            <th class="text-center">Комментарий</th>
-                            <th class="text-center">Удалить</th>     
+                            <th class="text-center">Комментарий</th>                           
                             <th class="text-left">Статус загрузки</th>
                                                 
                         </tr>
@@ -144,7 +143,6 @@
                                 </td>                            
                                 <td><v-text-field class="mt-6" v-model="operation.mapType" outlined label="Тип карты:"></v-text-field></td>
                                 <td><v-text-field class="mt-6" v-model="operation.comment" outlined label="Комментарий:"></v-text-field></td>  
-                                <td><v-btn icon color="primary" @click="deleteRow(operation.guid)"><v-icon>delete_outline</v-icon></v-btn></td>                         
                                 <td>
                                     <v-chip v-if="operation.uploadStatus === 'done'" color="success" text-color="white" @click="copyShortLinkToClipboard(operation.shortLink)">
                                         <v-avatar left>
@@ -164,13 +162,13 @@
                                         </v-avatar>
                                         Загрузка
                                     </v-chip>
-                                    <v-chip v-else-if="operation.uploadStatus === 'already'" color="teal" text-color="white" >
+                                    <v-chip v-else-if="operation.uploadStatus === 'already'" color="teal" text-color="white" close close-icon="delete" @click:close="deleteSpecific(operation)">
                                          <v-avatar left>
                                             <v-icon>check_circle_outline</v-icon>
-                                        </v-avatar>
+                                        </v-avatar>                                        
                                         Уже загружено
                                     </v-chip>                                    
-                                    <v-chip v-else-if="operation.uploadStatus === 'initial'" color="cyan lighten-2" text-color="white">
+                                    <v-chip v-else-if="operation.uploadStatus === 'initial'" color="cyan lighten-2" text-color="white" close close-icon="delete" @click:close="deleteRow(operation.guid)">
                                         <v-avatar left>
                                             <v-icon>schedule</v-icon>
                                         </v-avatar>
@@ -374,16 +372,36 @@ export default {
                     }
                 })
                 .then(response => {
-                    if(response.status === 204)
-                    {
-                        so.uploadStatus = "initial"
-                    }
-                    if(response.status === 200)
-                    {
-                        so.uploadStatus = "already"
+                  
+                    so.uploadStatus = "already"
+                    so.alreadyData = response.data                    
+                   
+                })
+                .catch(error => {
+                    so.uploadStatus = "initial"
+                    so.alreadyData = []
+                }); 
+            })    
+        },
+
+        async deleteSpecific(simpleOperation) {
+            simpleOperation.alreadyData.forEach(async ad => {
+                await this.$http.delete(`/api/measurementrecording/deletespecific/${ad.measurementRecordingId}/${ad.graphicId}`, {
+                    headers: {
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
                     }
                 })
-            })    
+                .then(response => {
+                    if(response.status === 204) {
+                        this.showSnackBar("График успешно удален")
+                    }
+                    else {
+                        this.showSnackBar("Ошибка при удалении")
+                    }                   
+                })
+            })
+            simpleOperation.uploadStatus = "initial";        
         },
 
         copyShortLinkToClipboard(shortLink) {

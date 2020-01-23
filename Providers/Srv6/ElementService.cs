@@ -111,12 +111,12 @@ namespace VueExample.Providers.Srv6
 
         public async Task<Element> GetByNameAndWafer(string name, string waferId)
         {
-             using (Srv6Context db = new Srv6Context())
-             {
-                 var waferIdSqlParameter = new SqlParameter("waferId", waferId);
-                 var elementNameSqlParameter = new SqlParameter("name", name);
-                 return await db.Elements.FromSql("EXECUTE dbo.select_element_by_waferId_elementname @waferId, @name", waferIdSqlParameter, elementNameSqlParameter).FirstOrDefaultAsync();
-             }
+            using (Srv6Context db = new Srv6Context())
+            {
+                var waferIdSqlParameter = new SqlParameter("waferId", waferId);
+                var elementNameSqlParameter = new SqlParameter("name", name);
+                return await db.Elements.FromSql("EXECUTE dbo.select_element_by_waferId_elementname @waferId, @name", waferIdSqlParameter, elementNameSqlParameter).FirstOrDefaultAsync();
+            }
         }
 
        

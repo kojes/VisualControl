@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using VueExample.Contexts;
 using System.Linq;
 using VueExample.Models.SRV6;
-using VueExample.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlClient;
 using System;
 using System.Threading.Tasks;
 using VueExample.Entities;
 using VueExample.Providers.Srv6.Interfaces;
+using VueExample.Exceptions;
 
 namespace VueExample.Providers.Srv6
 {
@@ -48,27 +48,20 @@ namespace VueExample.Providers.Srv6
             }
         }
 
-        public async Task<FkMrP> CreateFkMrP(int measurementRecordingId, short parameterId, string waferId)
+        public async Task<FkMrP> GetOrCreateFkMrP(int measurementRecordingId, short parameterId, string waferId)
         {
             using (Srv6Context srv6Context = new Srv6Context())
             {
-                var fkmrp = new FkMrP{MeasurementRecordingId = measurementRecordingId, WaferId = waferId, Id247 = parameterId};
-                srv6Context.Add(fkmrp);
-                await srv6Context.SaveChangesAsync();
+                var fkmrp = await srv6Context.FkMrPs.FirstOrDefaultAsync(x => x.MeasurementRecordingId == measurementRecordingId && x.Id247 == parameterId && x.WaferId == waferId);
+                if(fkmrp is null)
+                {
+                    fkmrp = new FkMrP{MeasurementRecordingId = measurementRecordingId, WaferId = waferId, Id247 = parameterId};
+                    srv6Context.Add(fkmrp);
+                    await srv6Context.SaveChangesAsync();
+                }              
                 return fkmrp;
             }
         }
-
-        public async Task<bool> IsExistFkMrGraphics(int measurementRecordingId, int graphicId) 
-        {
-            using(var db = new Srv6Context())
-            {
-                 return await db.FkMrGraphics.AnyAsync(x => x.MeasurementRecordingId == measurementRecordingId
-                                                                                 && x.GraphicId == graphicId);
-            }
-           
-        }
-
         public async Task<FkMrGraphic> AddOrGetFkMrGraphics(FkMrGraphic fkMrGraphic) 
         {
             using(var db = new Srv6Context())
@@ -145,6 +138,44 @@ namespace VueExample.Providers.Srv6
             using (Srv6Context srv6Context = new Srv6Context())
             {
                  return await srv6Context.MeasurementRecordings.FirstOrDefaultAsync(x => x.Id == id);
+            }
+        }
+
+        public async Task Delete(int measurementRecordingId)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var measurementRecording = await srv6Context.MeasurementRecordings.FirstOrDefaultAsync(x => x.Id == measurementRecordingId) 
+                                           ?? throw new RecordNotFoundException();                
+                var measurementRecordingSqlParameter = new SqlParameter("idmr", measurementRecording.Id);
+                srv6Context.MeasurementRecordings.FromSql("EXECUTE dbo.delete_full_measurement_recording @idmr", measurementRecordingSqlParameter);               
+            }
+        }
+
+        public async Task DeleteSpecificMeasurement(int measurementRecordingId, int graphicId)
+        {
+            using (Srv6Context srv6Context = new Srv6Context())
+            {
+                var graphicMeasurementRecording = await srv6Context.FkMrGraphics.FirstOrDefaultAsync(x => x.GraphicId == graphicId && x.MeasurementRecordingId == measurementRecordingId) 
+                                                  ?? throw new RecordNotFoundException();                                              
+                var valueList = await srv6Context.DieGraphics.Where(x => x.MeasurementRecordingId == measurementRecordingId && x.GraphicId == graphicId).ToListAsync();                                                
+                srv6Context.DieGraphics.RemoveRange(valueList);
+                srv6Context.FkMrGraphics.Remove(graphicMeasurementRecording);
+                await srv6Context.SaveChangesAsync();
+                if(await srv6Context.DieGraphics.AnyAsync(x => x.MeasurementRecordingId == measurementRecordingId)) 
+                {
+                    await Delete(measurementRecordingId);
+                }                                 
+            }
+        }
+
+        public async Task<FkMrGraphic> GetFkMrGraphics(int? measurementRecordingId, int graphicId)
+        {
+            measurementRecordingId = measurementRecordingId ?? throw new RecordNotFoundException();
+            using(var db = new Srv6Context())
+            {
+                 return await db.FkMrGraphics.FirstOrDefaultAsync(x => x.MeasurementRecordingId == measurementRecordingId
+                                                                                 && x.GraphicId == graphicId) ?? throw new RecordNotFoundException();
             }
         }
     }

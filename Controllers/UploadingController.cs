@@ -1,11 +1,13 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using VueExample.Entities;
 using VueExample.Models.SRV6.Uploader;
-using VueExample.Providers.Srv6;
 using VueExample.Providers.Srv6.Interfaces;
+using VueExample.ViewModels;
 
 namespace VueExample.Controllers
 {
@@ -43,7 +45,7 @@ namespace VueExample.Controllers
             {
                 uploadingFile.IsNewMeasurement = false;
             }         
-            await _measurementRecordingService.CreateFkMrP((int)uploadingFile.MeasurementRecordingId, 247, uploadingFile.WaferId);
+            await _measurementRecordingService.GetOrCreateFkMrP((int)uploadingFile.MeasurementRecordingId, 247, uploadingFile.WaferId);
             foreach (var graphicName in uploadingFile.GraphicNames)
             {
                 uploadingFile.Graphics.Add(await _graphicService.GetByCodeProductAndName(uploadingFile.CodeProductId, graphicName));
@@ -68,15 +70,14 @@ namespace VueExample.Controllers
         {
             var uploadingFile = uploadingFileJObject.ToObject<UploadingFile>();
             var measurementRecording = await _measurementRecordingService.GetByNameAndWaferId("оп." + uploadingFile.OperationName, uploadingFile.WaferId);
-            var graphic = await _graphicService.GetByCodeProductAndName(uploadingFile.CodeProductId, uploadingFile.GraphicNames.FirstOrDefault());
-            if(measurementRecording is null || graphic is null)
+            var fkMrGraphicsList = new List<FkMrGraphic>();
+            foreach (var graphicName in uploadingFile.GraphicNames)
             {
-                return NoContent();
-            }
-            else
-            {
-                return await _measurementRecordingService.IsExistFkMrGraphics(measurementRecording.Id, graphic.Id) ? Ok() : (IActionResult)NoContent();
-            }    
+                var graphic = await _graphicService.GetByCodeProductAndName(uploadingFile.CodeProductId, graphicName);
+                var fkMrGraphics = await _measurementRecordingService.GetFkMrGraphics(measurementRecording?.Id, graphic.Id);
+                fkMrGraphicsList.Add(fkMrGraphics);
+            }                 
+            return Ok(_mapper.Map<List<FkMrGraphic>, List<FKMRGraphicsViewModel>>(fkMrGraphicsList));         
         }
     }
 }

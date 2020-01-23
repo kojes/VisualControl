@@ -3,18 +3,22 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using AutoMapper;
+using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 using VueExample.Color;
 using VueExample.Contexts;
+using VueExample.Exceptions;
 using VueExample.Helpers;
 using VueExample.Hubs;
 using VueExample.Providers;
@@ -132,9 +136,9 @@ namespace VueExample
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+          
             if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
+            {              
                 app.UseBrowserLink();
                 app.UseStatusCodePages();
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
@@ -142,10 +146,15 @@ namespace VueExample
                     HotModuleReplacement = true
                 });
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+
+            app.UseGlobalExceptionHandler(x => {
+                x.ContentType = "application/json";
+                x.ResponseBody(s => JsonConvert.SerializeObject(new
+                {
+                    Message = "An error occurred while processing your request"
+                }));
+                x.Map<RecordNotFoundException>().ToStatusCode(StatusCodes.Status404NotFound);
+            });           
 
             app.UseSignalR(options =>
             {
@@ -153,7 +162,6 @@ namespace VueExample
             });
 
             app.UseCors("DefaultPolicy");
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

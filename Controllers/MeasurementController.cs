@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using VueExample.Extensions;
 using VueExample.ViewModels;
 using Newtonsoft.Json;
 using VueExample.Providers.ChipVerification.Abstract;

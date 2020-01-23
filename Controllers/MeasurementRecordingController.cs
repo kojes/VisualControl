@@ -50,6 +50,24 @@ namespace VueExample.Controllers
             return Ok(measurementRecording);
         }
 
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Route("delete/{measurementRecordingId:int}")]        
+        public async Task<IActionResult> Delete([FromRoute] int measurementRecordingId)
+        {
+            await _measurementRecordingService.Delete(measurementRecordingId);
+            return NoContent();
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Route("deletespecific/{measurementRecordingId:int}/{graphicId:int}")]        
+        public async Task<IActionResult> DeleteSpecificMeasurement([FromRoute] int measurementRecordingId, [FromRoute] int graphicId)
+        {
+            await _measurementRecordingService.DeleteSpecificMeasurement(measurementRecordingId, graphicId);
+            return NoContent();
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(MeasurementRecording), StatusCodes.Status200OK)]
         [Route("update-stage")]

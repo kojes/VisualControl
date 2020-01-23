@@ -13,6 +13,7 @@
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.1.0" />
     <PackageReference Include="Dapper" Version="1.60.1" />
     <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+    <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
     <PackageReference Include="GraphiQL" Version="1.2.0" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="LazyCache" Version="2.0.0" />
